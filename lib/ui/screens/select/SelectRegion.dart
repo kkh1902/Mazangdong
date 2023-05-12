@@ -7,12 +7,19 @@ class SelectRegionPage extends StatelessWidget {
     return Scaffold(
       appBar: null,
       body: Padding(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 50),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            LinearProgressIndicator(
-              value: 0.75, // 4/3 progress bar
-              minHeight: 10,
+            SizedBox(height: 50),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 20), // Added margin to the progress bar
+              child: LinearProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                backgroundColor: Colors.grey[200],
+                value: 0.75,
+                minHeight: 8.0,
+              ),
             ),
             SizedBox(height: 10),
             Column(
@@ -53,10 +60,10 @@ class SelectRegionPage extends StatelessWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => SelectCompletePage()),
-                  // ); // Handle next button pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SelectCompletePage()),
+                  ); // Handle next button pressed
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,

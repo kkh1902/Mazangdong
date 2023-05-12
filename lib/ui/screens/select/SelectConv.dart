@@ -7,7 +7,7 @@ class SelectConvPage extends StatelessWidget {
     return Scaffold(
       appBar: null,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 50),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -17,7 +17,8 @@ class SelectConvPage extends StatelessWidget {
               child: LinearProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                 backgroundColor: Colors.grey[200],
-                value: 0.25,
+                value: 0.5,
+                minHeight: 8.0,
               ),
             ),
             SizedBox(height: 20),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mazangdong/ui/screens/select/SelectConv.dart';
 import 'package:mazangdong/ui/screens/select/SelectGuardian.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
+import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
+import 'package:mazangdong/ui/screens/travel/TravelList.dart';
+import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
 
 
 void main() {
@@ -18,6 +21,9 @@ class MyApp extends StatelessWidget {
         '/selectGuardian': (context) => SelectGuardianPage(),
         '/selectConv': (context) => SelectConvPage(),
         '/selectRegion': (context) => SelectRegionPage(),
+        '/selectComplete': (context) => SelectCompletePage(),
+        '/TravelList': (context) => TravelListPage(),
+        '/TravelDetail': (context) => TravelDetailPage(),
 
       },
     );
@@ -52,10 +58,14 @@ class HomePage extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => SelectGuardianPage(),
                           ),
-                        );// Handle button press
+                        );
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        padding: EdgeInsets.symmetric(vertical: 20.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        primary: Colors.green, // 초록색 배경
                       ),
                       child: Text(
                         '시작하기',
