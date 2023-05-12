@@ -5,6 +5,9 @@ import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
+import 'package:mazangdong/ui/screens/map/maps.dart';
+import 'package:mazangdong/ui/screens/map/map2.dart';
+
 
 
 void main() {
@@ -24,6 +27,8 @@ class MyApp extends StatelessWidget {
         '/selectComplete': (context) => SelectCompletePage(),
         '/TravelList': (context) => TravelListPage(),
         '/TravelDetail': (context) => TravelDetailPage(),
+        '/maps': (context) => MapsPage(),
+        '/map2': (context) => Map2Page(),
 
       },
     );

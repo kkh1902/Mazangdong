@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mazangdong/ui/screens/map/maps.dart';
+import 'package:mazangdong/ui/screens/map/map2.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
 
 class TravelListPage extends StatelessWidget {
@@ -65,7 +67,21 @@ class TravelListPage extends StatelessWidget {
                             TextButton(
                               child: Text('전화하기'),
                               onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => MapsPage()),
+                                );
                                 // 전화하기 버튼 클릭 시 동작
+                              },
+                            ),
+                            TextButton(
+                              child: Text('지도테스트'),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => Map2Page()),
+                                );
+                                // 길안내 버튼 클릭 시 동작
                               },
                             ),
                           ],
