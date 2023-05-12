@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mazangdong/ui/screens/select/SelectParent.dart';
+import 'package:mazangdong/ui/screens/select/SelectConv.dart';
+import 'package:mazangdong/ui/screens/select/SelectGuardian.dart';
+import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
 
 
 void main() {
@@ -13,7 +15,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/selectParent': (context) => SelectParentPage(),
+        '/selectGuardian': (context) => SelectGuardianPage(),
+        '/selectConv': (context) => SelectConvPage(),
+        '/selectRegion': (context) => SelectRegionPage(),
+
       },
     );
   }
@@ -45,7 +50,7 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SelectParentPage(),
+                            builder: (context) => SelectGuardianPage(),
                           ),
                         );// Handle button press
                       },
