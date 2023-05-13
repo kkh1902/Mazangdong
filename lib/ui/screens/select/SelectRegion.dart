@@ -1,7 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 
-class SelectRegionPage extends StatelessWidget {
+class SelectRegionPage extends StatefulWidget {
+  @override
+  _SelectRegionPageState createState() => _SelectRegionPageState();
+}
+
+
+class _SelectRegionPageState extends State<SelectRegionPage> {
+  late TravelPlanModel travelPlan;
+
+  @override
+  void initState() {
+    super.initState();
+    // Call a function to fetch Conv information when the page is initialized
+    fetchConvInfo();
+  }
+
+  // Function to fetch Conv information
+  void fetchConvInfo() {
+    // Add your code here to fetch the Conv information
+    // For example, you can make an API request or retrieve it from a database
+    // Once you have the information, update the 'convInfo' variable and call setState() to update the UI
+    convInfo = 'Conv Information'; // Replace this with your actual code
+    setState(() {});
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +42,7 @@ class SelectRegionPage extends StatelessWidget {
               child: LinearProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                 backgroundColor: Colors.grey[200],
-                value: 0.75,
+                value: 0.8,
                 minHeight: 8.0,
               ),
             ),
@@ -53,7 +78,8 @@ class SelectRegionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('이전'),
+                child: Text('이전',
+                    style: TextStyle(fontSize:20, fontFamily: 'PretendardBold')),
               ),
             ),
             SizedBox(width: 10),
@@ -72,7 +98,8 @@ class SelectRegionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('다음'),
+                child: Text('다음',
+                    style: TextStyle(fontSize:20, fontFamily: 'PretendardBold')),
               ),
             ),
           ],

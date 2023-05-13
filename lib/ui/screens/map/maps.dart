@@ -6,7 +6,31 @@ class MapsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Google Maps'),
+        backgroundColor: Colors.white, // 배경색을 흰색으로 설정
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.grey, // 뒤로가기 화살표 색상을 회색으로 설정
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            // 뒤로가기 동작
+          },
+        ),
+        title: Row(
+          children: [
+            Text(
+              'Google Maps',
+              style: TextStyle(color: Colors.black), // 텍스트 색상을 검정색으로 설정
+            ),
+            Spacer(),
+            Icon(Icons.map_outlined,
+            color: Colors.grey), // 임시 아이콘 1
+            SizedBox(width: 10),
+            Icon(Icons.menu,
+            color: Colors.grey), // 임시 아이콘 2
+          ],
+        ),
       ),
       body: Column(
         children: [
