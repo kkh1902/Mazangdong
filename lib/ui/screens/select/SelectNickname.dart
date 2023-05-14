@@ -4,41 +4,37 @@ import 'package:mazangdong/ui/screens/select/SelectConv.dart';
 
 
 class SelectNicknamePage extends StatefulWidget {
-  final TravelPlanModel travelPlan;
+  // final TravelPlanModel travelPlan;
 
-  SelectNicknamePage({required this.travelPlan});
+  // SelectNicknamePage({required this.travelPlan});
 
   @override
   _SelectNicknamePageState createState() => _SelectNicknamePageState();
 }
 
 class _SelectNicknamePageState extends State<SelectNicknamePage> {
-  late TravelPlanModel travelPlan;
-
+  // late TravelPlanModel travelPlan;
   String nickname = '';
 
-  @override
-  void initState() {
-    super.initState();
-    travelPlan = widget.travelPlan;
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   travelPlan = widget.travelPlan;
+  // }
 
   void goToNextPage() {
-    widget.travelPlan.nickname = nickname;
-    // Update the nickname in the travel plan
-    // travelPlan = TravelPlanModel(
-    //   nickname: nickname,
-    //   // Add necessary variables here
-    // );
-    print("travelPlan: $travelPlan");
+    // widget.travelPlan.nickname = nickname;
+    // print("travelPlan: $travelPlan");
     // Navigate to the next page
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectConvPage(travelPlan: widget.travelPlan),
+        builder: (context) => SelectConvPage(),
       ),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {

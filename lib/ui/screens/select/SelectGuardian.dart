@@ -11,27 +11,38 @@ class SelectGuardianPage extends StatefulWidget {
 }
 
 class _SelectGuardianPageState extends State<SelectGuardianPage> {
-  bool isAlone = true; // 혼자 여행 여부 변수
-  bool isWithGuardian = false; // 보호자 동행 여부 변수
-  late TravelPlanModel travelPlan; // Declare travelPlan variable
+  List<bool> isItemSelected = [false, false, false, false, false, false];
+  List<String> selectedValues = ['', '', '', '', '', ''];
+
+  void handleSelection(int index) {
+    setState(() {
+      for (int i = 0; i < isItemSelected.length; i++) {
+        if (i == index) {
+          isItemSelected[i] = true; // Select the current index
+          selectedValues[i] = 'Selected'; // Update the selected value
+        } else {
+          isItemSelected[i] = false; // Deselect other indices
+          selectedValues[i] = ''; // Clear the selected value
+        }
+      }
+    });
+  }
+
 
   void goToNextPage() {
-    travelPlan = TravelPlanModel(
-      isTravelingAlone: isAlone,
-      // Add necessary variables here
-    );
+    // travelPlan = TravelPlanModel(
+    //   isTravelingAlone: isAlone,
+    // );
 
-    print("travelPlan: $travelPlan");
-
+    // print("travelPlan: $travelPlan");
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectNicknamePage(travelPlan: travelPlan),
+        builder: (context) => SelectNicknamePage(),
       ),
     );
   }
-
 
 
   @override
@@ -53,113 +64,38 @@ class _SelectGuardianPageState extends State<SelectGuardianPage> {
               ),
             ),
             SizedBox(height: 50),
-            Container(
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                '동행여부',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  backgroundColor: Colors.grey,
-                    fontFamily: 'PretendardBold'
-                ),
-              ),
-            ),
-            SizedBox(height: 30),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  '보호자와 동행하시나요?',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                      fontFamily: 'PretendardLight'
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isAlone = true;
-                      isWithGuardian = false;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isAlone ? Colors.grey[200] : Colors.transparent,
-                      border: isAlone ? Border.all(color: Colors.red, width: 1) : null,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.person,
-                          size: 40,
-                          color: Colors.black,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          '혼자 여행',
+            Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          '동행 여부',
                           style: TextStyle(
                             fontSize: 20,
-                            color: Colors.black,
-                              fontFamily: 'PretendardBold'
+                            color: Colors.white,
+                            backgroundColor: Colors.grey,
+                            fontFamily: 'PretendardBold',
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        children: [
+                          SizedBox(width: 10), // 왼쪽 여백
+                          buildInputRow('assets/images/trip.png', '혼자여행', 0),
+                          SizedBox(width: 20),
+                          buildInputRow('assets/images/trip.png', '보호자 동행 여행', 1),
+                          SizedBox(width: 10), // 오른쪽 여백
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isAlone = false;
-                      isWithGuardian = true;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isWithGuardian ? Colors.grey[200] : Colors.transparent,
-                      border: isWithGuardian ? Border.all(color: Colors.red, width: 1) : null,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.people,
-                          size: 40,
-                          color: Colors.black,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          '보호자 동행',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                              fontFamily: 'PretendardBold'
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                )
             ),
-
-
-            SizedBox(height: 200),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.all(10),
@@ -196,6 +132,37 @@ class _SelectGuardianPageState extends State<SelectGuardianPage> {
               style: TextStyle(fontSize: 20,
                   fontFamily: 'PretendardBold'),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildInputRow(String image, String text, int index) {
+    return Expanded(
+      child: InkWell(
+        onTap: () => handleSelection(index),
+        child: Container(
+          height: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isItemSelected[index] ? Colors.green : Colors.grey[200]!,
+              width: 2.0,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 10),
+              Image.asset(
+                image,
+                width: 50, // 이미지의 너비 설정
+                height: 50, // 이미지의 높이 설정
+              ),
+              SizedBox(height: 5),
+              Text(text),
+            ],
           ),
         ),
       ),

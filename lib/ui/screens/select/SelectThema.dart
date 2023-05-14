@@ -1,32 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mazangdong/models/TravelModel.dart';
-import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
+import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 
-class SelectConvPage extends StatefulWidget {
-  // final TravelPlanModel travelPlan;
-
-  // SelectConvPage({required this.travelPlan});
-
+class SelectThemaPage extends StatefulWidget {
   @override
-  _SelectConvPageState createState() => _SelectConvPageState();
+  _SelectThemaPageState createState() => _SelectThemaPageState();
 }
 
-
-class _SelectConvPageState extends State<SelectConvPage> {
-  // late TravelPlanModel travelPlan;
-
+class _SelectThemaPageState extends State<SelectThemaPage> {
   List<bool> isItemSelected = [false, false, false, false, false, false];
   List<String> selectedValues = ['', '', '', '', '', ''];
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   travelPlan = widget.travelPlan;
-  // }
-
   void handleSelection(int index) {
     setState(() {
-      isItemSelected[index] = !isItemSelected[index];
+      for (int i = 0; i < isItemSelected.length; i++) {
+        isItemSelected[i] = (i == index);
+      }
     });
   }
 
@@ -36,12 +24,10 @@ class _SelectConvPageState extends State<SelectConvPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectRegionPage(),
+        builder: (context) => SelectCompletePage(),
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +44,7 @@ class _SelectConvPageState extends State<SelectConvPage> {
               child: LinearProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                 backgroundColor: Colors.grey[200],
-                value: 0.6,
+                value: 0.8,
                 minHeight: 8.0,
               ),
             ),
@@ -72,7 +58,7 @@ class _SelectConvPageState extends State<SelectConvPage> {
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        '편의시설 입력',
+                        '테마 입력',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -118,9 +104,8 @@ class _SelectConvPageState extends State<SelectConvPage> {
           ],
         ),
       ),
-
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(10),
         child: Row(
           children: [
             Expanded(
@@ -134,9 +119,10 @@ class _SelectConvPageState extends State<SelectConvPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('이전',
-                    style: TextStyle(
-                        fontSize: 20, fontFamily: 'PretendardBold')),
+                child: Text(
+                  '이전',
+                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+                ),
               ),
             ),
             SizedBox(width: 10),
@@ -145,6 +131,7 @@ class _SelectConvPageState extends State<SelectConvPage> {
                 onPressed: () {
                   goToNextPage();
                 },
+                // onPressed: goToNextPage,
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,
                   padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -153,8 +140,8 @@ class _SelectConvPageState extends State<SelectConvPage> {
                   ),
                 ),
                 child: Text('다음',
-                    style: TextStyle(
-                        fontSize: 20, fontFamily: 'PretendardBold')),
+                    style:
+                        TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
               ),
             ),
           ],
@@ -194,5 +181,3 @@ class _SelectConvPageState extends State<SelectConvPage> {
     );
   }
 }
-
-

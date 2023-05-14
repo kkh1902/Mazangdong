@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mazangdong/models/TravelModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
+import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectConv.dart';
 import 'package:mazangdong/ui/screens/select/SelectGuardian.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 import 'package:mazangdong/ui/screens/select/SelectNickname.dart';
+import 'package:mazangdong/ui/screens/select/SelectThema.dart';
 import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
 import 'package:mazangdong/ui/screens/map/maps.dart';
@@ -19,6 +22,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   var travelPlanModel = TravelPlanModel(); // Example initialization
+  var regionModel = RegionModel();
+  var themaModel = ThemaModel();
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +32,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/selectGuardian': (context) => SelectGuardianPage(),
-        '/selectNickname': (context) => SelectNicknamePage(travelPlan: travelPlanModel),
-        '/selectConv': (context) => SelectConvPage(travelPlan: (context as Element).findAncestorWidgetOfExactType<SelectNicknamePage>()!.travelPlan),
+        '/selectNickname': (context) => SelectNicknamePage(),
+        '/selectConv': (context) => SelectConvPage(),
         '/selectRegion': (context) => SelectRegionPage(),
+        '/selectThema': (context) => SelectThemaPage(),
         '/selectComplete': (context) => SelectCompletePage(),
         '/TravelList': (context) => TravelListPage(),
         '/TravelDetail': (context) => TravelDetailPage(),

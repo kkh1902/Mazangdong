@@ -1,4 +1,4 @@
-class CategoryModel {
+class ThemaModel {
   bool? naturalScenerySelected;
   bool? trekkingSelected;
   bool? beachSelected;
@@ -6,7 +6,7 @@ class CategoryModel {
   bool? culturalArtSelected;
   bool? shoppingSelected;
 
-  CategoryModel({
+  ThemaModel({
     this.naturalScenerySelected,
     this.trekkingSelected,
     this.beachSelected,
