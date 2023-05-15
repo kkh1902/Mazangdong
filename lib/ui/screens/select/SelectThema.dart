@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mazangdong/models/ConvModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
+import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 
 class SelectThemaPage extends StatefulWidget {
+  final ConvModel convModel;
+  final RegionModel regionModel;
+
+  SelectThemaPage({
+    required this.convModel,
+    required this.regionModel,
+  }) : themaModel = ThemaModel();
+
+  final ThemaModel themaModel;
+
   @override
   _SelectThemaPageState createState() => _SelectThemaPageState();
 }
@@ -12,19 +25,26 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
 
   void handleSelection(int index) {
     setState(() {
-      for (int i = 0; i < isItemSelected.length; i++) {
-        isItemSelected[i] = (i == index);
-      }
+      isItemSelected[index] = !isItemSelected[index];
     });
   }
 
   void goToNextPage() {
-    // print("travelPlan: $travelPlan");
-    // Navigate to the next page
+    widget.themaModel.naturalScenerySelected = isItemSelected[0];
+    widget.themaModel.trekkingSelected = isItemSelected[1];
+    widget.themaModel.beachSelected = isItemSelected[2];
+    widget.themaModel.localSightseeingSelected = isItemSelected[3];
+    widget.themaModel.culturalArtSelected = isItemSelected[4];
+    widget.themaModel.shoppingSelected = isItemSelected[5];
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectCompletePage(),
+        builder: (context) => SelectCompletePage(
+          convModel: widget.convModel,
+          regionModel: widget.regionModel,
+          themaModel: widget.themaModel,
+        ),
       ),
     );
   }
@@ -71,9 +91,9 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                     Row(
                       children: [
                         SizedBox(width: 10), // 왼쪽 여백
-                        buildInputRow('assets/images/trip.png', '텍스트1', 0),
+                        buildInputRow('assets/images/trip.png', '자연경관', 0),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트2', 1),
+                        buildInputRow('assets/images/trip.png', '트레킹', 1),
                         SizedBox(width: 10), // 오른쪽 여백
                       ],
                     ),
@@ -81,9 +101,9 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트3', 2),
+                        buildInputRow('assets/images/trip.png', '바닷가', 2),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트4', 3),
+                        buildInputRow('assets/images/trip.png', '동네구경', 3),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -91,9 +111,9 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트5', 4),
+                        buildInputRow('assets/images/trip.png', '문화예술', 4),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트6', 5),
+                        buildInputRow('assets/images/trip.png', '쇼핑', 5),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -173,7 +193,9 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                 height: 50, // 이미지의 높이 설정
               ),
               SizedBox(height: 5),
-              Text(text),
+              Text(text,
+                  style: TextStyle(
+                      fontFamily: 'PretendardSemiBOld', fontSize: 18)),
             ],
           ),
         ),

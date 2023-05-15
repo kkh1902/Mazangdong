@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mazangdong/models/TravelModel.dart';
+import 'package:mazangdong/models/ConvModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
+import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
 
 class SelectConvPage extends StatefulWidget {
-  // final TravelPlanModel travelPlan;
+  final ConvModel convModel;
 
-  // SelectConvPage({required this.travelPlan});
+  SelectConvPage({
+    required this.convModel,
+  });
 
   @override
   _SelectConvPageState createState() => _SelectConvPageState();
@@ -13,16 +17,9 @@ class SelectConvPage extends StatefulWidget {
 
 
 class _SelectConvPageState extends State<SelectConvPage> {
-  // late TravelPlanModel travelPlan;
+  List<bool> isItemSelected = [false, false, false, false, false];
+  List<String> selectedValues = ['', '', '', '', ''];
 
-  List<bool> isItemSelected = [false, false, false, false, false, false];
-  List<String> selectedValues = ['', '', '', '', '', ''];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   travelPlan = widget.travelPlan;
-  // }
 
   void handleSelection(int index) {
     setState(() {
@@ -31,12 +28,19 @@ class _SelectConvPageState extends State<SelectConvPage> {
   }
 
   void goToNextPage() {
-    // print("travelPlan: $travelPlan");
-    // Navigate to the next page
+    widget.convModel.parkingSelected = isItemSelected[0];
+    widget.convModel.wheelchairRentalSelected = isItemSelected[1];
+    widget.convModel.accessibleRestroomSelected = isItemSelected[2];
+    widget.convModel.unauthorizedParkingSelected = isItemSelected[3];
+    widget.convModel.elevatorSelected = isItemSelected[4];
+
+
+    print("convenienceModel: ${widget.convModel}");
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectRegionPage(),
+        builder: (context) => SelectRegionPage(
+          convModel: widget.convModel),
       ),
     );
   }
@@ -85,9 +89,9 @@ class _SelectConvPageState extends State<SelectConvPage> {
                     Row(
                       children: [
                         SizedBox(width: 10), // 왼쪽 여백
-                        buildInputRow('assets/images/trip.png', '텍스트1', 0),
+                        buildInputRow('assets/images/trip.png', '장애인 주차장', 0),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트2', 1),
+                        buildInputRow('assets/images/trip.png', '휠체어 대어', 1),
                         SizedBox(width: 10), // 오른쪽 여백
                       ],
                     ),
@@ -95,9 +99,9 @@ class _SelectConvPageState extends State<SelectConvPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트3', 2),
+                        buildInputRow('assets/images/trip.png', '장애인 전용 화장실', 2),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트4', 3),
+                        buildInputRow('assets/images/trip.png', '무단차/경사로', 3),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -105,10 +109,8 @@ class _SelectConvPageState extends State<SelectConvPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트5', 4),
+                        buildInputRow('assets/images/trip.png', '엘리베이터', 4),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트6', 5),
-                        SizedBox(width: 10),
                       ],
                     ),
                   ],
@@ -186,7 +188,9 @@ class _SelectConvPageState extends State<SelectConvPage> {
                 height: 50, // 이미지의 높이 설정
               ),
               SizedBox(height: 5),
-              Text(text),
+              Text(text,
+                  style: TextStyle(
+                      fontFamily: 'PretendardSemiBOld', fontSize: 18)),
             ],
           ),
         ),

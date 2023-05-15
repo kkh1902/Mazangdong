@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:mazangdong/ui/screens/travel/TravelList.dart';
+import 'package:mazangdong/models/ConvModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
+import 'package:mazangdong/models/ThemaModel.dart';
 
 class SelectCompletePage extends StatelessWidget {
+  final ConvModel convModel;
+  final RegionModel regionModel;
+  final ThemaModel themaModel;
+
+  SelectCompletePage({
+    required this.convModel,
+    required this.regionModel,
+    required this.themaModel,
+  }){
+  print("convModel: $convModel");
+  print("regionModel: $regionModel");
+  print("themaModel: $themaModel");
+}
+
+  void goToNextPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TravelListPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,17 +73,14 @@ class SelectCompletePage extends StatelessWidget {
                   ),
                 ),
                 child: Text('이전',
-                    style: TextStyle(fontSize:20, fontFamily: 'PretendardBold')),
+                    style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
               ),
             ),
             SizedBox(width: 10),
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => TravelListPage()),
-                  );
+                  goToNextPage(context);
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,
@@ -67,7 +90,7 @@ class SelectCompletePage extends StatelessWidget {
                   ),
                 ),
                 child: Text('다음',
-                    style: TextStyle(fontSize:20, fontFamily: 'PretendardBold')),
+                    style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
               ),
             ),
           ],
@@ -76,6 +99,4 @@ class SelectCompletePage extends StatelessWidget {
     );
   }
 }
-
-
 

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mazangdong/models/TravelModel.dart';
+import 'package:mazangdong/models/ConvModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 import 'package:mazangdong/ui/screens/select/SelectThema.dart';
 
 class SelectRegionPage extends StatefulWidget {
-  // final TravelPlanModel travelPlan;
+  final ConvModel convModel;
 
-  // SelectRegionPage({required this.travelPlan});
+  SelectRegionPage({
+    required this.convModel,
+  }) : regionModel = RegionModel();
+
+  final RegionModel regionModel;
 
   @override
   _SelectRegionPageState createState() => _SelectRegionPageState();
@@ -14,6 +19,7 @@ class SelectRegionPage extends StatefulWidget {
 
 
 class _SelectRegionPageState extends State<SelectRegionPage> {
+  final RegionModel regionModel = RegionModel();
   List<bool> isItemSelected = [false, false, false, false, false, false,false, false];
   List<String> selectedValues = ['', '', '', '', '', '','',''];
   // late TravelPlanModel travelPlan;
@@ -31,12 +37,21 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
   }
 
   void goToNextPage() {
-    // print("travelPlan: $travelPlan");
-    // Navigate to the next page
+    widget.regionModel.seoulSelected = isItemSelected[0];
+    widget.regionModel.busanSelected = isItemSelected[1];
+    widget.regionModel.incheonSelected = isItemSelected[2];
+    widget.regionModel.daeguSelected = isItemSelected[3];
+    widget.regionModel.daejeonSelected = isItemSelected[4];
+    widget.regionModel.gwangjuSelected = isItemSelected[5];
+    widget.regionModel.ulsanSelected = isItemSelected[6];
+    widget.regionModel.sejongSelected = isItemSelected[7];
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectThemaPage(),
+        builder: (context) => SelectThemaPage(
+          convModel: widget.convModel,
+          regionModel: widget.regionModel,
+        ),
       ),
     );
   }
@@ -84,9 +99,9 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                     Row(
                       children: [
                         SizedBox(width: 10), // 왼쪽 여백
-                        buildInputRow('assets/images/trip.png', '텍스트1', 0),
+                        buildInputRow('assets/images/trip.png', '서울특별시', 0),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트2', 1),
+                        buildInputRow('assets/images/trip.png', '부산광역시', 1),
                         SizedBox(width: 10), // 오른쪽 여백
                       ],
                     ),
@@ -94,9 +109,9 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트3', 2),
+                        buildInputRow('assets/images/trip.png', '인천광역시', 2),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트4', 3),
+                        buildInputRow('assets/images/trip.png', '대구광역시', 3),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -104,9 +119,9 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트5', 4),
+                        buildInputRow('assets/images/trip.png', '대전광역시', 4),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트6', 5),
+                        buildInputRow('assets/images/trip.png', '광주광역시', 5),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -114,9 +129,9 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '텍스트7', 6),
+                        buildInputRow('assets/images/trip.png', '울산광역시', 6),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '텍스트8', 7),
+                        buildInputRow('assets/images/trip.png', '세종시', 7),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -194,7 +209,9 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                 height: 50, // 이미지의 높이 설정
               ),
               SizedBox(height: 5),
-              Text(text),
+              Text(text,
+                  style: TextStyle(
+                      fontFamily: 'PretendardSemiBOld', fontSize: 18)),
             ],
           ),
         ),

@@ -1,38 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:mazangdong/models/TravelModel.dart';
+import 'package:mazangdong/models/ConvModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
+
 import 'package:mazangdong/ui/screens/select/SelectConv.dart';
 
 
 class SelectNicknamePage extends StatefulWidget {
-  // final TravelPlanModel travelPlan;
+  final ConvModel convModel;
 
-  // SelectNicknamePage({required this.travelPlan});
+  SelectNicknamePage({required this.convModel});
 
   @override
   _SelectNicknamePageState createState() => _SelectNicknamePageState();
 }
 
 class _SelectNicknamePageState extends State<SelectNicknamePage> {
-  // late TravelPlanModel travelPlan;
   String nickname = '';
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   travelPlan = widget.travelPlan;
-  // }
+
 
   void goToNextPage() {
-    // widget.travelPlan.nickname = nickname;
-    // print("travelPlan: $travelPlan");
+    widget.convModel.nickname = nickname; // Update the nickname property
+
+    print("convenienceModel nickname: ${widget.convModel.nickname}");
+    print("convenienceModel isTravelingAlone: ${widget.convModel.isTravelingAlone}");
+    print("convenienceModel parkingSelected: ${widget.convModel.parkingSelected}");
+    print("convenienceModel: ${widget.convModel}");
+
     // Navigate to the next page
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectConvPage(),
+        builder: (context) => SelectConvPage(
+          convModel : widget.convModel,
+        ),
       ),
     );
   }
+
+
 
 
 

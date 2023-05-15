@@ -1,4 +1,4 @@
-class TravelPlanModel {
+class ConvModel {
   String? nickname;
   bool? isTravelingAlone;
   bool? parkingSelected;
@@ -9,14 +9,14 @@ class TravelPlanModel {
 
   @override
   String toString() {
-    return 'Travel Plan: {nickname: $nickname, isTravelingAlone: $isTravelingAlone, '
+    return 'conveninceModel: {nickname: $nickname, isTravelingAlone: $isTravelingAlone, '
         'parkingSelected: $parkingSelected, wheelchairRentalSelected: $wheelchairRentalSelected, '
         'accessibleRestroomSelected: $accessibleRestroomSelected, '
         'unauthorizedParkingSelected: $unauthorizedParkingSelected, '
         'elevatorSelected: $elevatorSelected}';
   }
 
-  TravelPlanModel({
+  ConvModel({
     this.nickname,
     this.isTravelingAlone,
     this.parkingSelected,

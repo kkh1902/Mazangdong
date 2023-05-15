@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mazangdong/models/TravelModel.dart';
+import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectConv.dart';
@@ -14,6 +14,8 @@ import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
 import 'package:mazangdong/ui/screens/map/maps.dart';
 import 'package:mazangdong/ui/screens/map/map2.dart';
 
+import 'dart:convert';
+
 
 
 void main() {
@@ -21,7 +23,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  var travelPlanModel = TravelPlanModel(); // Example initialization
+  var convModel = ConvModel(); // Example initialization
   var regionModel = RegionModel();
   var themaModel = ThemaModel();
 
@@ -32,11 +34,11 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/selectGuardian': (context) => SelectGuardianPage(),
-        '/selectNickname': (context) => SelectNicknamePage(),
-        '/selectConv': (context) => SelectConvPage(),
-        '/selectRegion': (context) => SelectRegionPage(),
-        '/selectThema': (context) => SelectThemaPage(),
-        '/selectComplete': (context) => SelectCompletePage(),
+        '/selectNickname': (context) => SelectNicknamePage(convModel: convModel),
+        '/selectConv': (context) => SelectConvPage(convModel: convModel),
+        '/selectRegion': (context) => SelectRegionPage(convModel: convModel),
+        '/selectThema': (context) => SelectThemaPage(convModel: convModel,regionModel: regionModel,),
+        '/selectComplete': (context) => SelectCompletePage(convModel: convModel,regionModel: regionModel,themaModel:themaModel),
         '/TravelList': (context) => TravelListPage(),
         '/TravelDetail': (context) => TravelDetailPage(),
         '/maps': (context) => MapsPage(),
@@ -49,6 +51,41 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   void _sendRequest() async {
+    var url = 'https://se-fjnsi.run.goorm.site/info';
+    // JSON 데이터 준비
+    var data = {
+      'together': '0',
+      'parking': '1',
+      'bathchair': '1',
+      'restroom': '1',
+      'region': '1',
+    };
+
+    // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
+    var uri = Uri.parse(url);
+    var queryParameters = data.entries.map((e) => '${e.key}=${e.value}').join('&');
+    var requestUrl = Uri.parse('$uri?$queryParameters');
+
+    var response = await http.get(requestUrl);
+    var responseBody = json.decode(response.body);
+
+    print(uri);
+    print(queryParameters);
+    print(requestUrl);
+
+    if (response.statusCode == 200) {
+      print('Response: ${response.body}');
+      print('responseBody: ${responseBody}');
+      print('uri: ${uri}');
+      print('queryParameters: ${queryParameters}');
+      print('requestUrl: ${requestUrl}');
+      // TODO: Handle the response data here
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
+  }
+
+  void _sendRequest2() async {
     var url = 'https://se-fjnsi.run.goorm.site/a';
     var response = await http.get(Uri.parse(url));
 
