@@ -40,10 +40,10 @@ class _TravelListPageState extends State<TravelListPage> {
             SizedBox(height: 15.0),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 0.5,
-                )
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 0.5,
+                  )
               ),
             ),
             SizedBox(height: 10.0),
@@ -76,19 +76,21 @@ class _TravelListPageState extends State<TravelListPage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
-                  children: List.generate(5, (index) {
+                  children: List.generate(8, (index) {
                     return Padding(
                       padding: EdgeInsets.only(bottom: 10.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white, // 박스 색깔 흰색
                           borderRadius: BorderRadius.circular(8.0),
+                          // width: 90,height: 100,
                         ),
                         child: ListTile(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          leading: Image.asset('assets/images/trip.png'),
+                          leading: Image.asset('assets/images/3.jpg',
+                            width: 100,height: 100,),
                           title: Text('제주 문화공원'),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,6 +142,33 @@ class _TravelListPageState extends State<TravelListPage> {
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 20.0, // Fixed height of 20
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  "sssssssssssssssss",
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              TextButton(
+                child: Text(
+                  "확인",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                onPressed: () {
+                  // Handle confirm button press
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

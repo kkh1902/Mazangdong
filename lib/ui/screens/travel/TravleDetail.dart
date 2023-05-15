@@ -16,7 +16,8 @@ class TravelDetailPage extends StatelessWidget {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                Image.asset('assets/images/trip.png'),
+                Image.asset('assets/images/doll.jpg',
+                  fit: BoxFit.cover,),
                 Image.asset('assets/images/trip.png'),
                 Image.asset('assets/images/trip.png'),
               ],

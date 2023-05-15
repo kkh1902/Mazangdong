@@ -1,28 +1,28 @@
 class ConvModel {
   String? nickname;
-  bool? isTravelingAlone;
-  bool? parkingSelected;
-  bool? wheelchairRentalSelected;
-  bool? accessibleRestroomSelected;
-  bool? unauthorizedParkingSelected;
-  bool? elevatorSelected;
+  int? isTravelingAlone;
+  List<int> selectedOptions;
 
   @override
   String toString() {
-    return 'conveninceModel: {nickname: $nickname, isTravelingAlone: $isTravelingAlone, '
-        'parkingSelected: $parkingSelected, wheelchairRentalSelected: $wheelchairRentalSelected, '
-        'accessibleRestroomSelected: $accessibleRestroomSelected, '
-        'unauthorizedParkingSelected: $unauthorizedParkingSelected, '
-        'elevatorSelected: $elevatorSelected}';
+    return 'convenienceModel: {nickname: $nickname, isTravelingAlone: $isTravelingAlone, selectedOptions: $selectedOptions}';
   }
 
   ConvModel({
     this.nickname,
     this.isTravelingAlone,
-    this.parkingSelected,
-    this.wheelchairRentalSelected,
-    this.accessibleRestroomSelected,
-    this.unauthorizedParkingSelected,
-    this.elevatorSelected,
-  });
+    List<int>? selectedOptions,
+  }) : selectedOptions = selectedOptions ?? [];
+
+  bool isOptionSelected(int option) {
+    return selectedOptions.contains(option);
+  }
+
+  void toggleOption(int option) {
+    if (isOptionSelected(option)) {
+      selectedOptions.remove(option);
+    } else {
+      selectedOptions.add(option);
+    }
+  }
 }

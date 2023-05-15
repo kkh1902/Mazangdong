@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
@@ -19,7 +20,55 @@ class SelectCompletePage extends StatelessWidget {
   print("themaModel: $themaModel");
 }
 
+  void _sendRequest() async {
+    var url = 'https://se-fjnsi.run.goorm.site/info';
+
+    // JSON 데이터 변경후 GET 요청하기
+
+    // var data = {
+    //   'together': convModel.isTravelingAlone,
+    //   'parking': convModel.parkingSelected,
+    //   'bathchair': convModel.wheelchairRentalSelected,
+    //   'restroom': convModel.accessibleRestroomSelected,
+    //   'region': regionModel.seoulSelected,
+    // };
+
+    var data = {
+      'together': '1',
+      'parking': '1',
+      'bathchair': '1',
+      'restroom': '1',
+      'region': '1',
+    };
+
+
+    // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
+    var uri = Uri.parse(url);
+    var queryParameters = data.entries.map((e) => '${e.key}=${e.value}').join('&');
+    var requestUrl = Uri.parse('$uri?$queryParameters');
+
+    var response = await http.get(requestUrl);
+
+    print("uri: $uri");
+    print("queryParameters: $queryParameters");
+    print("requestUrl: $requestUrl");
+
+    if (response.statusCode == 200) {
+      print('Response: ${response.body}');
+      print('uri: ${uri}');
+      print('queryParameters: ${queryParameters}');
+      print('requestUrl: ${requestUrl}');
+      // TODO: Handle the response data here
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
+  }
+
+
+
+
   void goToNextPage(BuildContext context) {
+    _sendRequest();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -27,6 +76,8 @@ class SelectCompletePage extends StatelessWidget {
       ),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {

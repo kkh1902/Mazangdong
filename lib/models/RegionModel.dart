@@ -1,26 +1,24 @@
 class RegionModel {
-  bool? seoulSelected;
-  bool? busanSelected;
-  bool? incheonSelected;
-  bool? daeguSelected;
-  bool? daejeonSelected;
-  bool? gwangjuSelected;
-  bool? ulsanSelected;
-  bool? sejongSelected;
+  List<int> selectedRegions;
 
   RegionModel({
-    this.seoulSelected,
-    this.busanSelected,
-    this.incheonSelected,
-    this.daeguSelected,
-    this.daejeonSelected,
-    this.gwangjuSelected,
-    this.ulsanSelected,
-    this.sejongSelected,
-  });
+    List<int>? selectedRegions,
+  }) : selectedRegions = selectedRegions ?? [];
 
   @override
   String toString() {
-    return 'Region: {seoulSelected: $seoulSelected, busanSelected: $busanSelected, incheonSelected: $incheonSelected, daeguSelected: $daeguSelected, daejeonSelected: $daejeonSelected, gwangjuSelected: $gwangjuSelected, ulsanSelected: $ulsanSelected, sejongSelected: $sejongSelected}';
+    return 'RegionModel: {selectedRegions: $selectedRegions}';
+  }
+
+  bool isRegionSelected(int region) {
+    return selectedRegions.contains(region);
+  }
+
+  void toggleRegion(int region) {
+    if (isRegionSelected(region)) {
+      selectedRegions.remove(region);
+    } else {
+      selectedRegions.add(region);
+    }
   }
 }

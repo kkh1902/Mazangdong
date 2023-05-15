@@ -24,7 +24,6 @@ class _SelectNicknamePageState extends State<SelectNicknamePage> {
 
     print("convenienceModel nickname: ${widget.convModel.nickname}");
     print("convenienceModel isTravelingAlone: ${widget.convModel.isTravelingAlone}");
-    print("convenienceModel parkingSelected: ${widget.convModel.parkingSelected}");
     print("convenienceModel: ${widget.convModel}");
 
     // Navigate to the next page

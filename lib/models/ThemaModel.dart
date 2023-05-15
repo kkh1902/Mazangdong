@@ -1,22 +1,24 @@
 class ThemaModel {
-  bool? naturalScenerySelected;
-  bool? trekkingSelected;
-  bool? beachSelected;
-  bool? localSightseeingSelected;
-  bool? culturalArtSelected;
-  bool? shoppingSelected;
+  List<int> selectedCategories;
 
   ThemaModel({
-    this.naturalScenerySelected,
-    this.trekkingSelected,
-    this.beachSelected,
-    this.localSightseeingSelected,
-    this.culturalArtSelected,
-    this.shoppingSelected,
-  });
+    List<int>? selectedCategories,
+  }) : selectedCategories = selectedCategories ?? [];
 
   @override
   String toString() {
-    return 'Category: {naturalScenerySelected: $naturalScenerySelected, trekkingSelected: $trekkingSelected, beachSelected: $beachSelected, localSightseeingSelected: $localSightseeingSelected, culturalArtSelected: $culturalArtSelected, shoppingSelected: $shoppingSelected}';
+    return 'ThemaModel: {selectedCategories: $selectedCategories}';
+  }
+
+  bool isCategorySelected(int category) {
+    return selectedCategories.contains(category);
+  }
+
+  void toggleCategory(int category) {
+    if (isCategorySelected(category)) {
+      selectedCategories.remove(category);
+    } else {
+      selectedCategories.add(category);
+    }
   }
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mazangdong/models/ConvModel.dart';
-import 'package:mazangdong/models/RegionModel.dart';
-import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
 
 class SelectConvPage extends StatefulWidget {
@@ -15,37 +13,38 @@ class SelectConvPage extends StatefulWidget {
   _SelectConvPageState createState() => _SelectConvPageState();
 }
 
-
 class _SelectConvPageState extends State<SelectConvPage> {
   List<bool> isItemSelected = [false, false, false, false, false];
-  List<String> selectedValues = ['', '', '', '', ''];
+  int counter = 1;
 
 
   void handleSelection(int index) {
     setState(() {
+      if (isItemSelected[index]) {
+        widget.convModel.selectedOptions.remove(index);
+      } else {
+        widget.convModel.selectedOptions.add(index);
+      }
       isItemSelected[index] = !isItemSelected[index];
+      widget.convModel.selectedOptions.sort(); // Sort the list in ascending order
+      widget.convModel.selectedOptions.asMap().forEach((idx, value) {
+        isItemSelected[value] = true;
+      });
     });
   }
 
+
   void goToNextPage() {
-    widget.convModel.parkingSelected = isItemSelected[0];
-    widget.convModel.wheelchairRentalSelected = isItemSelected[1];
-    widget.convModel.accessibleRestroomSelected = isItemSelected[2];
-    widget.convModel.unauthorizedParkingSelected = isItemSelected[3];
-    widget.convModel.elevatorSelected = isItemSelected[4];
-
-
     print("convenienceModel: ${widget.convModel}");
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SelectRegionPage(
-          convModel: widget.convModel),
+          convModel: widget.convModel,
+        ),
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +135,10 @@ class _SelectConvPageState extends State<SelectConvPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('이전',
-                    style: TextStyle(
-                        fontSize: 20, fontFamily: 'PretendardBold')),
+                child: Text(
+                  '이전',
+                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+                ),
               ),
             ),
             SizedBox(width: 10),
@@ -154,9 +154,10 @@ class _SelectConvPageState extends State<SelectConvPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('다음',
-                    style: TextStyle(
-                        fontSize: 20, fontFamily: 'PretendardBold')),
+                child: Text(
+                  '다음',
+                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+                ),
               ),
             ),
           ],
@@ -184,13 +185,17 @@ class _SelectConvPageState extends State<SelectConvPage> {
               SizedBox(height: 10),
               Image.asset(
                 image,
-                width: 50, // 이미지의 너비 설정
-                height: 50, // 이미지의 높이 설정
+                width: 50,
+                height: 50,
               ),
               SizedBox(height: 5),
-              Text(text,
-                  style: TextStyle(
-                      fontFamily: 'PretendardSemiBOld', fontSize: 18)),
+              Text(
+                text,
+                style: TextStyle(
+                  fontFamily: 'PretendardSemiBOld',
+                  fontSize: 18,
+                ),
+              ),
             ],
           ),
         ),
@@ -198,5 +203,6 @@ class _SelectConvPageState extends State<SelectConvPage> {
     );
   }
 }
+
 
 

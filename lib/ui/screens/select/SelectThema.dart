@@ -20,22 +20,30 @@ class SelectThemaPage extends StatefulWidget {
 }
 
 class _SelectThemaPageState extends State<SelectThemaPage> {
-  List<bool> isItemSelected = [false, false, false, false, false, false];
-  List<String> selectedValues = ['', '', '', '', '', ''];
+  List<bool> isItemSelected = [false, false, false, false, false,false];
+  int counter = 1;
 
   void handleSelection(int index) {
     setState(() {
-      isItemSelected[index] = !isItemSelected[index];
+      widget.themaModel.toggleCategory(index); // Toggle the category selection in the ThemaModel
+      isItemSelected[index] = widget.themaModel.isCategorySelected(index);
+
+      if (isItemSelected[index]) {
+        // Add the category to the selectedCategories list
+        if (!widget.themaModel.selectedCategories.contains(index)) {
+          widget.themaModel.selectedCategories.add(index);
+        }
+      } else {
+        // Remove the category from the selectedCategories list
+        widget.themaModel.selectedCategories.remove(index);
+      }
     });
   }
 
+
   void goToNextPage() {
-    widget.themaModel.naturalScenerySelected = isItemSelected[0];
-    widget.themaModel.trekkingSelected = isItemSelected[1];
-    widget.themaModel.beachSelected = isItemSelected[2];
-    widget.themaModel.localSightseeingSelected = isItemSelected[3];
-    widget.themaModel.culturalArtSelected = isItemSelected[4];
-    widget.themaModel.shoppingSelected = isItemSelected[5];
+    print("convenienceModel: ${widget.convModel}");
+    print("themaModel: ${widget.themaModel}");
 
     Navigator.push(
       context,

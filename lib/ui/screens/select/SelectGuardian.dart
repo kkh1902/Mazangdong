@@ -10,17 +10,17 @@ class SelectGuardianPage extends StatefulWidget {
 
 class _SelectGuardianPageState extends State<SelectGuardianPage> {
   List<bool> isItemSelected = [false, false, false, false, false, false];
-  List<String> selectedValues = ['', '', '', '', '', ''];
+  List<String> selectedValues = ['0', '0', '0', '0', '0', '0']; // 초기 값 설정
 
   void handleSelection(int index) {
     setState(() {
       for (int i = 0; i < isItemSelected.length; i++) {
         if (i == index) {
           isItemSelected[i] = true; // Select the current index
-          selectedValues[i] = 'Selected'; // Update the selected value
+          selectedValues[i] = '1'; // Update the selected value
         } else {
           isItemSelected[i] = false; // Deselect other indices
-          selectedValues[i] = ''; // Clear the selected value
+          selectedValues[i] = '0'; // Clear the selected value
         }
       }
     });
@@ -31,12 +31,7 @@ class _SelectGuardianPageState extends State<SelectGuardianPage> {
   void goToNextPage() {
     ConvModel convenienceModel = ConvModel(
       nickname: '',
-      isTravelingAlone: isItemSelected[0],
-      parkingSelected: isItemSelected[1],
-      wheelchairRentalSelected: isItemSelected[2],
-      accessibleRestroomSelected: isItemSelected[3],
-      unauthorizedParkingSelected: isItemSelected[4],
-      elevatorSelected: isItemSelected[5],
+      isTravelingAlone: isItemSelected[0] ? 1 : 0,
     );
     print(convenienceModel);
 

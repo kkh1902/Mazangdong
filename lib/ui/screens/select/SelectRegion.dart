@@ -21,30 +21,24 @@ class SelectRegionPage extends StatefulWidget {
 class _SelectRegionPageState extends State<SelectRegionPage> {
   final RegionModel regionModel = RegionModel();
   List<bool> isItemSelected = [false, false, false, false, false, false,false, false];
-  List<String> selectedValues = ['', '', '', '', '', '','',''];
-  // late TravelPlanModel travelPlan;
+  int? selectedRegionIndex; // Track the selected region index
 
-  void handleSelection(int selectedIndex) {
+  void handleSelection(int index) {
     setState(() {
-      for (int i = 0; i < isItemSelected.length; i++) {
-        if (i == selectedIndex) {
-          isItemSelected[i] = true;
-        } else {
-          isItemSelected[i] = false;
-        }
+      if (selectedRegionIndex == index) {
+        selectedRegionIndex = null; // Deselect the region if it's already selected
+      } else {
+        selectedRegionIndex = index; // Select the region
+      }
+      widget.regionModel.selectedRegions.clear(); // Clear the previous selected region
+      if (selectedRegionIndex != null) {
+        widget.regionModel.selectedRegions.add(index); // Add the selected region
       }
     });
   }
 
   void goToNextPage() {
-    widget.regionModel.seoulSelected = isItemSelected[0];
-    widget.regionModel.busanSelected = isItemSelected[1];
-    widget.regionModel.incheonSelected = isItemSelected[2];
-    widget.regionModel.daeguSelected = isItemSelected[3];
-    widget.regionModel.daejeonSelected = isItemSelected[4];
-    widget.regionModel.gwangjuSelected = isItemSelected[5];
-    widget.regionModel.ulsanSelected = isItemSelected[6];
-    widget.regionModel.sejongSelected = isItemSelected[7];
+    print("regionModel: ${widget.regionModel}");
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -187,6 +181,8 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
   }
 
   Widget buildInputRow(String image, String text, int index) {
+    final isSelected = selectedRegionIndex == index;
+
     return Expanded(
       child: InkWell(
         onTap: () => handleSelection(index),
@@ -195,7 +191,7 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isItemSelected[index] ? Colors.green : Colors.grey[200]!,
+              color: isSelected ? Colors.green : Colors.grey[200]!,
               width: 2.0,
             ),
           ),
@@ -205,13 +201,17 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
               SizedBox(height: 10),
               Image.asset(
                 image,
-                width: 50, // 이미지의 너비 설정
-                height: 50, // 이미지의 높이 설정
+                width: 50,
+                height: 50,
               ),
               SizedBox(height: 5),
-              Text(text,
-                  style: TextStyle(
-                      fontFamily: 'PretendardSemiBOld', fontSize: 18)),
+              Text(
+                text,
+                style: TextStyle(
+                  fontFamily: 'PretendardSemiBold',
+                  fontSize: 18,
+                ),
+              ),
             ],
           ),
         ),
