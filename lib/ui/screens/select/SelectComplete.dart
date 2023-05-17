@@ -118,6 +118,7 @@ class SelectCompletePage extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
+                  primary: Color(0xff50bcdf),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
@@ -134,7 +135,7 @@ class SelectCompletePage extends StatelessWidget {
                   goToNextPage(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
+                  primary: Color(0xffa3cc9b),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

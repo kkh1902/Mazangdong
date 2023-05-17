@@ -20,18 +20,21 @@ class _SelectConvPageState extends State<SelectConvPage> {
 
   void handleSelection(int index) {
     setState(() {
-      if (isItemSelected[index]) {
-        widget.convModel.selectedOptions.remove(index);
-      } else {
-        widget.convModel.selectedOptions.add(index);
-      }
       isItemSelected[index] = !isItemSelected[index];
-      widget.convModel.selectedOptions.sort(); // Sort the list in ascending order
-      widget.convModel.selectedOptions.asMap().forEach((idx, value) {
-        isItemSelected[value] = true;
-      });
+      widget.convModel.selectedOptions.clear();
+      for (int i = 0; i < isItemSelected.length; i++) {
+        if (isItemSelected[i]) {
+          widget.convModel.selectedOptions.add(1);
+        } else {
+          widget.convModel.selectedOptions.add(0);
+        }
+      }
     });
   }
+
+
+
+
 
 
   void goToNextPage() {
@@ -130,6 +133,7 @@ class _SelectConvPageState extends State<SelectConvPage> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
+                  primary: Color(0xff50bcdf), // 214, 260, 245
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
@@ -148,7 +152,7 @@ class _SelectConvPageState extends State<SelectConvPage> {
                   goToNextPage();
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
+                  primary: Color(0xffa3cc9b),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

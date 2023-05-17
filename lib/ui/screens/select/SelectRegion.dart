@@ -148,6 +148,7 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                   Navigator.pop(context); // Handle previous button press
                 },
                 style: ElevatedButton.styleFrom(
+                  primary: Color(0xff50bcdf),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
@@ -164,7 +165,7 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                   goToNextPage(); // Handle next button pressed
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
+                  primary: Color(0xffa3cc9b),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

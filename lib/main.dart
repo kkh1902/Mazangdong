@@ -144,7 +144,7 @@ class HomePage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
-                        primary: Colors.green, // 초록색 배경
+                        primary: Color(0xffa3cc9b),// 초록색 배경
                       ),
                       child: Text(
                         '시작하기',

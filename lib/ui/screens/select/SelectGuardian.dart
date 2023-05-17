@@ -84,10 +84,10 @@ class _SelectGuardianPageState extends State<SelectGuardianPage> {
                         Row(
                           children: [
                             SizedBox(width: 10), // 왼쪽 여백
-                            buildInputRow('assets/images/trip.png', '혼자여행', 0),
+                            buildInputRow('assets/images/person.png', '혼자여행', 0),
                             SizedBox(width: 20),
                             buildInputRow(
-                                'assets/images/trip.png', '보호자 동행 여행', 1),
+                                'assets/images/person.png', '보호자 동행 여행', 1),
                             SizedBox(width: 10), // 오른쪽 여백
                           ],
                         ),
@@ -122,7 +122,7 @@ class _SelectGuardianPageState extends State<SelectGuardianPage> {
                 goToNextPage();
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.green,
+                primary: Color(0xffa3cc9b),
                 onPrimary: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),

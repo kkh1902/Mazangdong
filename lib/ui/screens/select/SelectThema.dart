@@ -25,17 +25,14 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
 
   void handleSelection(int index) {
     setState(() {
-      widget.themaModel.toggleCategory(index); // Toggle the category selection in the ThemaModel
-      isItemSelected[index] = widget.themaModel.isCategorySelected(index);
-
-      if (isItemSelected[index]) {
-        // Add the category to the selectedCategories list
-        if (!widget.themaModel.selectedCategories.contains(index)) {
-          widget.themaModel.selectedCategories.add(index);
+      isItemSelected[index] = !isItemSelected[index];
+      widget.themaModel.selectedCategories.clear();
+      for (int i = 0; i < isItemSelected.length; i++) {
+        if (isItemSelected[i]) {
+          widget.themaModel.selectedCategories.add(1);
+        } else {
+          widget.themaModel.selectedCategories.add(0);
         }
-      } else {
-        // Remove the category from the selectedCategories list
-        widget.themaModel.selectedCategories.remove(index);
       }
     });
   }
@@ -142,6 +139,7 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
+                  primary: Color(0xff50bcdf),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
@@ -161,7 +159,7 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                 },
                 // onPressed: goToNextPage,
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
+                  primary: Color(0xffa3cc9b),
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

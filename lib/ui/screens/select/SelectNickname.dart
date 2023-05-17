@@ -124,7 +124,7 @@ class _SelectNicknamePageState extends State<SelectNicknamePage> {
           child: ElevatedButton(
             onPressed: goToNextPage,
             style: ElevatedButton.styleFrom(
-              primary: Colors.green,
+              primary: Color(0xffa3cc9b),
               onPrimary: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
