@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class RecommendaccomodationlistPage extends StatefulWidget {
+class RecommendtourlistPage extends StatefulWidget {
   @override
-  _RecommendaccomodationlistPageState createState() =>
-      _RecommendaccomodationlistPageState();
+  _RecommendtourlistPageState createState() => _RecommendtourlistPageState();
 }
 
-class _RecommendaccomodationlistPageState
-    extends State<RecommendaccomodationlistPage> {
+class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
   List<String> tourList = [
-    '숙소 1',
-    '숙소 2',
-    '숙소 3',
-    '숙소 4',
-    '숙소 5',
+    '텍스트 1',
+    '텍스트 2',
+    '텍스트 2',
+    '텍스트 2',
+    '텍스트 2',
+    '텍스트 2',
+    '텍스트 2',
   ];
 
   int selectedIndex = -1;

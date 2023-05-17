@@ -51,7 +51,7 @@ class _RecommendaccomodationlistPageState
                       },
                     ),
                     Text(
-                      '추천 관광지 목록',
+                      '추천 숙소 목록',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

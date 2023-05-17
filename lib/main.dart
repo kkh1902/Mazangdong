@@ -11,12 +11,12 @@ import 'package:mazangdong/ui/screens/select/SelectNickname.dart';
 import 'package:mazangdong/ui/screens/select/SelectThema.dart';
 import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
+import 'package:mazangdong/ui/screens/travel/RecommedTourlist.dart';
+import 'package:mazangdong/ui/screens/travel/Recommendaccomodationlist.dart';
 import 'package:mazangdong/ui/screens/map/maps.dart';
 import 'package:mazangdong/ui/screens/map/map2.dart';
 
 import 'dart:convert';
-
-
 
 void main() {
   runApp(MyApp());
@@ -34,16 +34,24 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/selectGuardian': (context) => SelectGuardianPage(),
-        '/selectNickname': (context) => SelectNicknamePage(convModel: convModel),
+        '/selectNickname': (context) =>
+            SelectNicknamePage(convModel: convModel),
         '/selectConv': (context) => SelectConvPage(convModel: convModel),
         '/selectRegion': (context) => SelectRegionPage(convModel: convModel),
-        '/selectThema': (context) => SelectThemaPage(convModel: convModel,regionModel: regionModel,),
-        '/selectComplete': (context) => SelectCompletePage(convModel: convModel,regionModel: regionModel,themaModel:themaModel),
-        '/TravelList': (context) => TravelListPage(),
-        '/TravelDetail': (context) => TravelDetailPage(),
+        '/selectThema': (context) => SelectThemaPage(
+              convModel: convModel,
+              regionModel: regionModel,
+            ),
+        '/selectComplete': (context) => SelectCompletePage(
+            convModel: convModel,
+            regionModel: regionModel,
+            themaModel: themaModel),
+        '/travelList': (context) => TravelListPage(),
+        '/travelDetail': (context) => TravelDetailPage(),
+        '/recommendtourlist': (context) => RecommendtourlistPage(),
+        '/recommendaccomlist': (context) => RecommendaccomodationlistPage(),
         '/maps': (context) => MapsPage(),
-        '/map2': (context) => Map2Page(),
-
+        '/map2': (context) => Maps2Page(),
       },
     );
   }
@@ -63,7 +71,8 @@ class HomePage extends StatelessWidget {
 
     // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
     var uri = Uri.parse(url);
-    var queryParameters = data.entries.map((e) => '${e.key}=${e.value}').join('&');
+    var queryParameters =
+        data.entries.map((e) => '${e.key}=${e.value}').join('&');
     var requestUrl = Uri.parse('$uri?$queryParameters');
 
     var response = await http.get(requestUrl);
@@ -97,7 +106,6 @@ class HomePage extends StatelessWidget {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -126,9 +134,7 @@ class HomePage extends StatelessWidget {
                         ),
                         primary: Colors.blue, // 초록색 배경
                       ),
-                      child: Text(
-                        '테스트'
-                      )),
+                      child: Text('테스트')),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -144,12 +150,12 @@ class HomePage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
-                        primary: Color(0xffa3cc9b),// 초록색 배경
+                        primary: Color(0xffa3cc9b), // 초록색 배경
                       ),
                       child: Text(
                         '시작하기',
-                        style: TextStyle(fontSize: 20.0,
-                        fontFamily: 'PretendardBold'),
+                        style: TextStyle(
+                            fontSize: 20.0, fontFamily: 'PretendardBold'),
                       ),
                     ),
                   ),

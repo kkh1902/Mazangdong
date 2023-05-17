@@ -14,11 +14,11 @@ class SelectCompletePage extends StatelessWidget {
     required this.convModel,
     required this.regionModel,
     required this.themaModel,
-  }){
-  print("convModel: $convModel");
-  print("regionModel: $regionModel");
-  print("themaModel: $themaModel");
-}
+  }) {
+    print("convModel: $convModel");
+    print("regionModel: $regionModel");
+    print("themaModel: $themaModel");
+  }
 
   void _sendRequest() async {
     var url = 'https://se-fjnsi.run.goorm.site/info';
@@ -41,10 +41,10 @@ class SelectCompletePage extends StatelessWidget {
       'region': '1',
     };
 
-
     // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
     var uri = Uri.parse(url);
-    var queryParameters = data.entries.map((e) => '${e.key}=${e.value}').join('&');
+    var queryParameters =
+        data.entries.map((e) => '${e.key}=${e.value}').join('&');
     var requestUrl = Uri.parse('$uri?$queryParameters');
 
     var response = await http.get(requestUrl);
@@ -64,9 +64,6 @@ class SelectCompletePage extends StatelessWidget {
     }
   }
 
-
-
-
   void goToNextPage(BuildContext context) {
     _sendRequest();
     Navigator.push(
@@ -76,8 +73,6 @@ class SelectCompletePage extends StatelessWidget {
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +94,8 @@ class SelectCompletePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Image.asset('assets/images/trip.png'), // Replace 'path_to_your_image' with the actual path or asset name of your image
+            Image.asset(
+                'assets/images/trip.png'), // Replace 'path_to_your_image' with the actual path or asset name of your image
             SizedBox(height: 20),
             Text(
               '완료되었습니다.',
@@ -125,7 +121,8 @@ class SelectCompletePage extends StatelessWidget {
                   ),
                 ),
                 child: Text('이전',
-                    style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
+                    style:
+                        TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
               ),
             ),
             SizedBox(width: 10),
@@ -142,7 +139,8 @@ class SelectCompletePage extends StatelessWidget {
                   ),
                 ),
                 child: Text('다음',
-                    style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
+                    style:
+                        TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
               ),
             ),
           ],
@@ -151,4 +149,3 @@ class SelectCompletePage extends StatelessWidget {
     );
   }
 }
-
