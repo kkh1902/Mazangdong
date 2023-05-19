@@ -4,6 +4,9 @@ import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:convert';
+
 
 class SelectCompletePage extends StatelessWidget {
   final ConvModel convModel;
@@ -27,11 +30,13 @@ class SelectCompletePage extends StatelessWidget {
 
     // var data = {
     //   'together': convModel.isTravelingAlone,
-    //   'parking': convModel.parkingSelected,
-    //   'bathchair': convModel.wheelchairRentalSelected,
-    //   'restroom': convModel.accessibleRestroomSelected,
-    //   'region': regionModel.seoulSelected,
+    //   'parking': convModel.selectedOptions,
+    //   'bathchair': convModel.selectedOptions,
+    //   'restroom': convModel.selectedOptions,
+    //   'region': regionModel.selectedRegions,
     // };
+    // print("data $data");
+
 
     var data = {
       'together': '1',
@@ -58,6 +63,8 @@ class SelectCompletePage extends StatelessWidget {
       print('uri: ${uri}');
       print('queryParameters: ${queryParameters}');
       print('requestUrl: ${requestUrl}');
+      final decodedData = json.decode(response.body);
+      debugPrint('Response: $decodedData');
       // TODO: Handle the response data here
     } else {
       print('Request failed with status: ${response.statusCode}');

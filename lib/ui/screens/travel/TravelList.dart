@@ -25,6 +25,28 @@ class _TravelListPageState extends State<TravelListPage> {
   ];
   List<String> slideImages = ['3.jpg', '3.jpg', '3.jpg', '3.jpg', '3.jpg'];
   int selectedSlideIndex = 0;
+  List<LatLng> slideCoordinates = [
+    LatLng(37.7749, -122.4194), // Slide 0에 대한 좌표
+    LatLng(20.7833, -122.4167), // Slide 1에 대한 좌표
+    LatLng(40.7914, -122.4086), // Slide 2에 대한 좌표
+    LatLng(50.7914, -122.4086),
+    LatLng(60.7914, -122.4086),
+    // 나머지 슬라이드에 대한 좌표를 추가하세요
+  ];
+
+  GoogleMapController? _controller;
+
+  void updateMapCameraPosition() {
+    if (_controller != null && selectedSlideIndex >= 0 && selectedSlideIndex < slideCoordinates.length) {
+      LatLng selectedCoordinate = slideCoordinates[selectedSlideIndex];
+      CameraPosition cameraPosition = CameraPosition(
+        target: selectedCoordinate,
+        zoom: 12,
+      );
+      _controller!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +186,9 @@ class _TravelListPageState extends State<TravelListPage> {
                             setState(() {
                               selectedSlideIndex = index;
                             });
+                            updateMapCameraPosition(); // 선택된 슬라이드에 따라 지도 위치를 업데이트합니다.
                           },
+
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
@@ -191,7 +215,7 @@ class _TravelListPageState extends State<TravelListPage> {
                                         padding: EdgeInsets.all(8.0),
                                         child: ClipRRect(
                                           borderRadius:
-                                              BorderRadius.circular(30),
+                                          BorderRadius.circular(30),
                                           child: Image.asset(
                                             'assets/images/${slideImages[index]}',
                                             fit: BoxFit.cover,
@@ -204,12 +228,12 @@ class _TravelListPageState extends State<TravelListPage> {
                                   Text(
                                     'Slide $index',
                                     style:
-                                        TextStyle(fontFamily: 'pretendardBold'),
+                                    TextStyle(fontFamily: 'pretendardBold'),
                                   ),
                                   Text(
                                     'Subtitle for Slide $index',
                                     style:
-                                        TextStyle(fontFamily: 'pretendardBold'),
+                                    TextStyle(fontFamily: 'pretendardBold'),
                                   ),
                                 ],
                               ),
@@ -239,7 +263,9 @@ class _TravelListPageState extends State<TravelListPage> {
                       zoom: 12,
                     ),
                     onMapCreated: (GoogleMapController controller) {
-                      // Handle map created
+                      setState(() {
+                        _controller = controller;
+                      });
                     },
                     markers: Set<Marker>.from([
                       Marker(
