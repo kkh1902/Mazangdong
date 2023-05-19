@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
-
 class MapsPage extends StatefulWidget {
   @override
   _MapsPageState createState() => _MapsPageState();
@@ -17,6 +16,7 @@ class _MapsPageState extends State<MapsPage> {
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
   List<LatLng> _polylineCoordinates = [];
+  List<String> _instructions = [];
 
   @override
   void initState() {
@@ -65,7 +65,8 @@ class _MapsPageState extends State<MapsPage> {
           Expanded(
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
-                target: LatLng(37.7749, -122.4194),
+                target: LatLng(37.5665,
+                    126.9780), // Set the target location to Seoul, South Korea
                 zoom: 11.0,
               ),
               onMapCreated: (controller) {
@@ -80,20 +81,13 @@ class _MapsPageState extends State<MapsPage> {
           SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: _polylineCoordinates.length,
+              itemCount: _instructions.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundImage: AssetImage('assets/images/trip.png'),
                   ),
-                  title: Text('Item $index'),
-                  subtitle: Text('Description $index'),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      // Handle button tap
-                    },
-                    child: Text('Button'),
-                  ),
+                  title: Text(_instructions[index]),
                 );
               },
             ),
@@ -105,23 +99,29 @@ class _MapsPageState extends State<MapsPage> {
 
   Future<void> getDirections() async {
     try {
-      String apiKey = 'apiAIzaSyB8kES7TqH9XlChyxRgQCTMndQvkqLLfjg';
+      String apiKey =
+          'AIzaSyAD2Tf6yBI9jb2abxGVZGlMKmoqDglhYzs'; // Replace with your own API key
       String url =
-          'https://maps.googleapis.com/maps/api/directions/json?origin=37.7749,-122.4194&destination=37.7833,-122.4167&key=$apiKey';
+          'https://maps.googleapis.com/maps/api/directions/json?origin=37.5665,126.9780&destination=37.5642,127.0017&key=$apiKey&mode=transit';
 
       final response = await http.get(Uri.parse(url));
+
       if (response.statusCode == 200) {
         final decodedData = json.decode(response.body);
+        print('decode :$decodedData'); // Print the response data
         List<dynamic> routes = decodedData['routes'];
         if (routes.isNotEmpty) {
           List<dynamic> legs = routes[0]['legs'];
           if (legs.isNotEmpty) {
             List<dynamic> steps = legs[0]['steps'];
             _polylineCoordinates = _decodePolyline(steps);
+            _instructions = _getInstructions(steps);
             drawRoute();
             setMarkers();
           }
         }
+      } else {
+        print('Error: Request failed with status code ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
@@ -169,16 +169,36 @@ class _MapsPageState extends State<MapsPage> {
     return poly;
   }
 
+  List<String> _getInstructions(List<dynamic> steps) {
+    List<String> instructions = [];
+    for (int i = 0; i < steps.length; i++) {
+      if (steps[i]['travel_mode'] == 'TRANSIT') {
+        String instruction = steps[i]['html_instructions'];
+        instructions.add(instruction);
+      }
+    }
+    return instructions;
+  }
+
   void drawRoute() {
     if (_mapController != null && _polylineCoordinates.length > 1) {
       final polyline = Polyline(
         polylineId: PolylineId('route'),
         points: _polylineCoordinates,
-        color: Colors.blue,
+        color: Colors.white, // Set road color to white
         width: 3,
       );
+
+      final roadPolyline = Polyline(
+        polylineId: PolylineId('road'),
+        points: _polylineCoordinates,
+        color: Colors.blue, // Set the road color to white
+        width: 4,
+      );
+
       setState(() {
         _polylines.add(polyline);
+        _polylines.add(roadPolyline);
       });
     }
   }

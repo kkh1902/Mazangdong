@@ -37,6 +37,8 @@ dependencies:
   url_launcher: ^6.0.0
   permission_handler: ^10.2.0
   flutter_polyline_points: ^1.0.0
+  flutter_html: ^2.1.0
+  dots_indicator: ^2.0.0
 
 
 
@@ -63,6 +65,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/images/select/
   uses-material-design: true
   fonts:
     - family: PretendardBold

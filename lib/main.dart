@@ -58,54 +58,6 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  void _sendRequest() async {
-    var url = 'https://se-fjnsi.run.goorm.site/info';
-    // JSON 데이터 준비
-    var data = {
-      'together': '0',
-      'parking': '1',
-      'bathchair': '1',
-      'restroom': '1',
-      'region': '1',
-    };
-
-    // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
-    var uri = Uri.parse(url);
-    var queryParameters =
-        data.entries.map((e) => '${e.key}=${e.value}').join('&');
-    var requestUrl = Uri.parse('$uri?$queryParameters');
-
-    var response = await http.get(requestUrl);
-    var responseBody = json.decode(response.body);
-
-    print(uri);
-    print(queryParameters);
-    print(requestUrl);
-
-    if (response.statusCode == 200) {
-      print('Response: ${response.body}');
-      print('responseBody: ${responseBody}');
-      print('uri: ${uri}');
-      print('queryParameters: ${queryParameters}');
-      print('requestUrl: ${requestUrl}');
-      // TODO: Handle the response data here
-    } else {
-      print('Request failed with status: ${response.statusCode}');
-    }
-  }
-
-  void _sendRequest2() async {
-    var url = 'https://se-fjnsi.run.goorm.site/a';
-    var response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      print('Response: ${response.body}');
-      // TODO: Handle the response data here
-    } else {
-      print('Request failed with status: ${response.statusCode}');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -125,16 +77,6 @@ class HomePage extends StatelessWidget {
               padding: EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  ElevatedButton(
-                      onPressed: _sendRequest,
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        primary: Colors.blue, // 초록색 배경
-                      ),
-                      child: Text('테스트')),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
