@@ -4,23 +4,26 @@ import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
+import 'package:mazangdong/models/ResponseModel.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
-
 
 class SelectCompletePage extends StatelessWidget {
   final ConvModel convModel;
   final RegionModel regionModel;
   final ThemaModel themaModel;
+  late final ResponseModel responseModel;
 
   SelectCompletePage({
     required this.convModel,
     required this.regionModel,
     required this.themaModel,
-  }) {
+  }) 
+  {
     print("convModel: $convModel");
     print("regionModel: $regionModel");
     print("themaModel: $themaModel");
+    responseModel = ResponseModel(trip: [], lodging: []);
   }
 
   void _sendRequest() async {
@@ -29,30 +32,30 @@ class SelectCompletePage extends StatelessWidget {
     // JSON 데이터 변경후 GET 요청하기
 
     // var data = {
-    //   'together': convModel.isTravelingAlone,
-    //   'parking': convModel.selectedOptions,
-    //   'bathchair': convModel.selectedOptions,
-    //   'restroom': convModel.selectedOptions,
-    //   'region': regionModel.selectedRegions,
+    //   'together': convModel.isTravelingAlone.toString(),
+    //   'parking': convModel.selectedOptions[0].toString(),
+    //   'wheelchair': convModel.selectedOptions[1].toString(),
+    //   'restroom': convModel.selectedOptions[2].toString(),
+    //   'region': regionModel.selectedRegions[0].toString(),
     // };
-    // print("data $data");
-
 
     var data = {
       'together': '1',
       'parking': '1',
-      'bathchair': '1',
+      'wheelchair': '1',
       'restroom': '1',
       'region': '1',
     };
+
+    print("data $data");
 
     // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
     var uri = Uri.parse(url);
     var queryParameters =
         data.entries.map((e) => '${e.key}=${e.value}').join('&');
     var requestUrl = Uri.parse('$uri?$queryParameters');
-
     var response = await http.get(requestUrl);
+
 
     print("uri: $uri");
     print("queryParameters: $queryParameters");
@@ -64,6 +67,8 @@ class SelectCompletePage extends StatelessWidget {
       print('queryParameters: ${queryParameters}');
       print('requestUrl: ${requestUrl}');
       final decodedData = json.decode(response.body);
+      final responseModel = ResponseModel.fromJson(decodedData);
+      responseModel.printData();
       debugPrint('Response: $decodedData');
       // TODO: Handle the response data here
     } else {
@@ -76,7 +81,7 @@ class SelectCompletePage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TravelListPage(),
+        builder: (context) => TravelListPage(responseModel: responseModel),
       ),
     );
   }

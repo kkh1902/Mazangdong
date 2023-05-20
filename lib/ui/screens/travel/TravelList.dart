@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:mazangdong/ui/screens/travel/RecommedTourlist.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
+import 'package:mazangdong/models/ResponseModel.dart';
 import 'package:mazangdong/ui/screens/travel/Recommendaccomodationlist.dart';
 import 'package:mazangdong/ui/screens/map/maps.dart';
 import 'package:mazangdong/ui/screens/map/map2.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart'; // or 'package:naver_map_plugin/naver_map_plugin.dart'
+import 'package:naver_map_plugin/naver_map_plugin.dart';
+// Rest of your code
+
 
 class TravelListPage extends StatefulWidget {
+  final ResponseModel responseModel;
+
+  TravelListPage({required this.responseModel});
+
   @override
   _TravelListPageState createState() => _TravelListPageState();
 }
@@ -17,12 +26,8 @@ class _TravelListPageState extends State<TravelListPage> {
     '#관광지',
     '#문화',
     '#유적',
-    '#유적',
-    '#유적',
-    '#유적',
-    '#유적',
-    '#유적',
   ];
+
   List<String> slideImages = ['3.jpg', '3.jpg', '3.jpg', '3.jpg', '3.jpg'];
   int selectedSlideIndex = 0;
   List<LatLng> slideCoordinates = [
@@ -34,19 +39,20 @@ class _TravelListPageState extends State<TravelListPage> {
     // 나머지 슬라이드에 대한 좌표를 추가하세요
   ];
 
-  GoogleMapController? _controller;
+  NaverMapController? _controller;
 
   void updateMapCameraPosition() {
-    if (_controller != null && selectedSlideIndex >= 0 && selectedSlideIndex < slideCoordinates.length) {
+    if (_controller != null &&
+        selectedSlideIndex >= 0 &&
+        selectedSlideIndex < slideCoordinates.length) {
       LatLng selectedCoordinate = slideCoordinates[selectedSlideIndex];
       CameraPosition cameraPosition = CameraPosition(
         target: selectedCoordinate,
         zoom: 12,
       );
-      _controller!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+      _controller!.moveCamera(cameraPosition);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +194,6 @@ class _TravelListPageState extends State<TravelListPage> {
                             });
                             updateMapCameraPosition(); // 선택된 슬라이드에 따라 지도 위치를 업데이트합니다.
                           },
-
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
@@ -215,7 +220,7 @@ class _TravelListPageState extends State<TravelListPage> {
                                         padding: EdgeInsets.all(8.0),
                                         child: ClipRRect(
                                           borderRadius:
-                                          BorderRadius.circular(30),
+                                              BorderRadius.circular(30),
                                           child: Image.asset(
                                             'assets/images/${slideImages[index]}',
                                             fit: BoxFit.cover,
@@ -228,12 +233,12 @@ class _TravelListPageState extends State<TravelListPage> {
                                   Text(
                                     'Slide $index',
                                     style:
-                                    TextStyle(fontFamily: 'pretendardBold'),
+                                        TextStyle(fontFamily: 'pretendardBold'),
                                   ),
                                   Text(
                                     'Subtitle for Slide $index',
                                     style:
-                                    TextStyle(fontFamily: 'pretendardBold'),
+                                        TextStyle(fontFamily: 'pretendardBold'),
                                   ),
                                 ],
                               ),
@@ -252,28 +257,17 @@ class _TravelListPageState extends State<TravelListPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        37.7749,
-                        -122.4194,
-                      ),
-                      zoom: 12,
-                    ),
-                    onMapCreated: (GoogleMapController controller) {
-                      setState(() {
-                        _controller = controller;
-                      });
-                    },
-                    markers: Set<Marker>.from([
+                child: NaverMap(
+                  onMapCreated: (controller) {
+                    _controller = controller;
+                  },
+                  markers: [
+                    for (var coordinate in slideCoordinates)
                       Marker(
-                        markerId: MarkerId('selectedSlide'),
-                        position: LatLng(37.7749, -122.4194),
+                        markerId: MarkerId(coordinate.toString()),
+                        position: coordinate,
                       ),
-                    ]),
-                  ),
+                  ],
                 ),
               ),
             ),

@@ -4,6 +4,12 @@ import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 
+import 'package:flutter/material.dart';
+import 'package:mazangdong/models/ConvModel.dart';
+import 'package:mazangdong/models/RegionModel.dart';
+import 'package:mazangdong/models/ThemaModel.dart';
+import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
+
 class SelectThemaPage extends StatefulWidget {
   final ConvModel convModel;
   final RegionModel regionModel;
@@ -20,26 +26,37 @@ class SelectThemaPage extends StatefulWidget {
 }
 
 class _SelectThemaPageState extends State<SelectThemaPage> {
-  List<bool> isItemSelected = [false, false, false, false, false,false];
-  int counter = 1;
+  List<bool> isItemSelected = [false, false];
+  List<String> selectedValues = ['0', '0'];
+  int? selectedIndex;
 
   void handleSelection(int index) {
     setState(() {
-      isItemSelected[index] = !isItemSelected[index];
-      widget.themaModel.selectedCategories.clear();
-      for (int i = 0; i < isItemSelected.length; i++) {
-        if (isItemSelected[i]) {
-          widget.themaModel.selectedCategories.add(1);
-        } else {
-          widget.themaModel.selectedCategories.add(0);
-        }
+      if (selectedIndex == index) {
+        selectedIndex = null; // Deselect the item if it's already selected
+      } else {
+        selectedIndex = index; // Select the item
       }
+
+      // Update the isItemSelected list based on the selectedIndex
+      for (int i = 0; i < isItemSelected.length; i++) {
+        isItemSelected[i] = (i == selectedIndex);
+      }
+
+      if (selectedIndex == 0) {
+        widget.themaModel.isCarhave = 1;
+      } else if (selectedIndex == 1) {
+        widget.themaModel.isCarhave = 0;
+      } else {
+        widget.themaModel.isCarhave = null;
+      }
+
+      widget.themaModel.toggleCategory(index);
     });
   }
 
-
   void goToNextPage() {
-    print("convenienceModel: ${widget.convModel}");
+    print("convModel: ${widget.convModel}");
     print("themaModel: ${widget.themaModel}");
 
     Navigator.push(
@@ -83,7 +100,7 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        '테마 입력',
+                        '자차 여부',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -96,32 +113,13 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
                     Row(
                       children: [
                         SizedBox(width: 10), // 왼쪽 여백
-                        buildInputRow('assets/images/trip.png', '자연경관', 0),
+                        buildInputRow('assets/images/trip.png', '네', 0),
                         SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '트레킹', 1),
+                        buildInputRow('assets/images/trip.png', '아니오', 1),
                         SizedBox(width: 10), // 오른쪽 여백
                       ],
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '바닷가', 2),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '동네구경', 3),
-                        SizedBox(width: 10),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '문화예술', 4),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '쇼핑', 5),
-                        SizedBox(width: 10),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -201,7 +199,7 @@ class _SelectThemaPageState extends State<SelectThemaPage> {
               SizedBox(height: 5),
               Text(text,
                   style: TextStyle(
-                      fontFamily: 'PretendardSemiBOld', fontSize: 18)),
+                      fontFamily: 'PretendardSemiBold', fontSize: 18)),
             ],
           ),
         ),

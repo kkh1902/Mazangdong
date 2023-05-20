@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
+import 'package:mazangdong/models/ResponseModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectConv.dart';
 import 'package:mazangdong/ui/screens/select/SelectGuardian.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
@@ -15,7 +16,6 @@ import 'package:mazangdong/ui/screens/travel/RecommedTourlist.dart';
 import 'package:mazangdong/ui/screens/travel/Recommendaccomodationlist.dart';
 import 'package:mazangdong/ui/screens/map/maps.dart';
 import 'package:mazangdong/ui/screens/map/map2.dart';
-
 import 'dart:convert';
 
 void main() {
@@ -26,6 +26,9 @@ class MyApp extends StatelessWidget {
   var convModel = ConvModel(); // Example initialization
   var regionModel = RegionModel();
   var themaModel = ThemaModel();
+  var responseModel = ResponseModel(trip: [], lodging: []);
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,7 @@ class MyApp extends StatelessWidget {
             convModel: convModel,
             regionModel: regionModel,
             themaModel: themaModel),
-        '/travelList': (context) => TravelListPage(),
+        '/travelList': (context) => TravelListPage(responseModel: responseModel),
         '/travelDetail': (context) => TravelDetailPage(),
         '/recommendtourlist': (context) => RecommendtourlistPage(),
         '/recommendaccomlist': (context) => RecommendaccomodationlistPage(),

@@ -134,6 +134,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.0"
+  flutter_naver_map:
+    dependency: "direct main"
+    description:
+      name: flutter_naver_map
+      sha256: "3dc21443af5487aaca1e2fecb6d825cc3b513fa199ccc7704e1238f0d59f10ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.7"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -288,6 +296,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  naver_map_plugin:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: d6029c020e13c926ff5f94b445b4f65abb48b85f
+      url: "https://github.com/LBSTECH/naver_map_plugin.git"
+    source: git
+    version: "0.9.7"
   nested:
     dependency: transitive
     description:

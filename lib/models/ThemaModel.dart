@@ -1,13 +1,15 @@
 class ThemaModel {
   List<int> selectedCategories;
+  int? isCarhave;
 
   ThemaModel({
     List<int>? selectedCategories,
+    this.isCarhave,
   }) : selectedCategories = selectedCategories ?? [];
 
   @override
   String toString() {
-    return 'ThemaModel: {selectedCategories: $selectedCategories}';
+    return 'ThemaModel: {selectedCategories: $selectedCategories, isCarhave: $isCarhave}';
   }
 
   bool isCategorySelected(int category) {
@@ -20,5 +22,6 @@ class ThemaModel {
     } else {
       selectedCategories.add(category);
     }
+    isCarhave = selectedCategories.isNotEmpty ? 1 : 0;
   }
 }
