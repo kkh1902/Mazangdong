@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:naver_map_plugin/naver_map_plugin.dart' hide LatLng;
+import 'package:naver_map_plugin/naver_map_plugin.dart' hide CameraPosition, CameraUpdate;
 import 'package:mazangdong/ui/screens/travel/RecommedTourlist.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
+import 'package:mazangdong/models/ResponseModel.dart';
 import 'package:mazangdong/ui/screens/travel/Recommendaccomodationlist.dart';
-import 'package:mazangdong/ui/screens/map/maps.dart';
-import 'package:mazangdong/ui/screens/map/map2.dart';
 
 class TravelListPage extends StatefulWidget {
+  final ResponseModel responseModel;
+
+  TravelListPage({required this.responseModel});
+
   @override
   _TravelListPageState createState() => _TravelListPageState();
 }
@@ -17,36 +21,32 @@ class _TravelListPageState extends State<TravelListPage> {
     '#관광지',
     '#문화',
     '#유적',
-    '#유적',
-    '#유적',
-    '#유적',
-    '#유적',
-    '#유적',
   ];
-  List<String> slideImages = ['3.jpg', '3.jpg', '3.jpg', '3.jpg', '3.jpg'];
+
+  List<String> slideImages = [];
+  List<LatLng> slideCoordinates = [];
+  List<String> touristAttractionNames = [];
+
+  NaverMapController? _controller;
+  List<Marker> markers = [];
   int selectedSlideIndex = 0;
-  List<LatLng> slideCoordinates = [
-    LatLng(37.7749, -122.4194), // Slide 0에 대한 좌표
-    LatLng(20.7833, -122.4167), // Slide 1에 대한 좌표
-    LatLng(40.7914, -122.4086), // Slide 2에 대한 좌표
-    LatLng(50.7914, -122.4086),
-    LatLng(60.7914, -122.4086),
-    // 나머지 슬라이드에 대한 좌표를 추가하세요
-  ];
 
-  GoogleMapController? _controller;
+  @override
+  void initState() {
+    super.initState();
 
-  void updateMapCameraPosition() {
-    if (_controller != null && selectedSlideIndex >= 0 && selectedSlideIndex < slideCoordinates.length) {
-      LatLng selectedCoordinate = slideCoordinates[selectedSlideIndex];
-      CameraPosition cameraPosition = CameraPosition(
-        target: selectedCoordinate,
-        zoom: 12,
-      );
-      _controller!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    final response = widget.responseModel;
+    for (var tripModel in response.trip) {
+      slideImages.add(tripModel.gwangwangjibunho.toString()); // Add the tourist attraction name to slideImages
+      slideCoordinates.add(LatLng(tripModel.latitude, tripModel.longitude)); // Assuming you have latitude and longitude properties in TripModel
+      touristAttractionNames.add(tripModel.gwangwangjiyeon); // Add the tourist attraction name to the list
     }
-  }
 
+    print("touristAttractionNames$touristAttractionNames");
+    print("slideCoordinates$slideCoordinates");
+
+    _addMarkers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +72,7 @@ class _TravelListPageState extends State<TravelListPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => TravelDetailPage()),
+                      MaterialPageRoute(builder: (context) => TravelDetailPage()),
                     );
                     // Handle Tourist Attractions button tap
                   },
@@ -94,9 +93,7 @@ class _TravelListPageState extends State<TravelListPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              RecommendaccomodationlistPage()),
+                      MaterialPageRoute(builder: (context) => RecommendaccomodationlistPage()),
                     );
                     // Handle Accommodation button tap
                   },
@@ -118,8 +115,7 @@ class _TravelListPageState extends State<TravelListPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => RecommendtourlistPage()),
+                      MaterialPageRoute(builder: (context) => RecommendtourlistPage()),
                     );
                   },
                   style: TextButton.styleFrom(
@@ -186,9 +182,8 @@ class _TravelListPageState extends State<TravelListPage> {
                             setState(() {
                               selectedSlideIndex = index;
                             });
-                            updateMapCameraPosition(); // 선택된 슬라이드에 따라 지도 위치를 업데이트합니다.
+                            _updateMapPosition(index);
                           },
-
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
@@ -214,10 +209,9 @@ class _TravelListPageState extends State<TravelListPage> {
                                       child: Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: ClipRRect(
-                                          borderRadius:
-                                          BorderRadius.circular(30),
+                                          borderRadius: BorderRadius.circular(30),
                                           child: Image.asset(
-                                            'assets/images/${slideImages[index]}',
+                                            'assets/images/trip/${slideImages[index]}.jpg',
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -226,14 +220,8 @@ class _TravelListPageState extends State<TravelListPage> {
                                   ),
                                   SizedBox(height: 10),
                                   Text(
-                                    'Slide $index',
-                                    style:
-                                    TextStyle(fontFamily: 'pretendardBold'),
-                                  ),
-                                  Text(
-                                    'Subtitle for Slide $index',
-                                    style:
-                                    TextStyle(fontFamily: 'pretendardBold'),
+                                    touristAttractionNames[index],
+                                    style: TextStyle(fontFamily: 'pretendardBold'),
                                   ),
                                 ],
                               ),
@@ -254,25 +242,11 @@ class _TravelListPageState extends State<TravelListPage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        37.7749,
-                        -122.4194,
-                      ),
-                      zoom: 12,
-                    ),
-                    onMapCreated: (GoogleMapController controller) {
-                      setState(() {
-                        _controller = controller;
-                      });
+                  child: NaverMap(
+                    onMapCreated: (controller) {
+                      _controller = controller;
                     },
-                    markers: Set<Marker>.from([
-                      Marker(
-                        markerId: MarkerId('selectedSlide'),
-                        position: LatLng(37.7749, -122.4194),
-                      ),
-                    ]),
+                    markers: markers.toList(),
                   ),
                 ),
               ),
@@ -287,12 +261,12 @@ class _TravelListPageState extends State<TravelListPage> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Maps2Page(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => Maps2Page(),
+                  //   ),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xff50bcdf), // 214, 260, 245
@@ -311,12 +285,12 @@ class _TravelListPageState extends State<TravelListPage> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MapsPage(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => MapsPage(),
+                  //   ),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xffa3cc9b),
@@ -335,5 +309,32 @@ class _TravelListPageState extends State<TravelListPage> {
         ),
       ),
     );
+  }
+
+  void _updateMapPosition(int index) {
+    if (_controller != null) {
+      _controller!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: slideCoordinates[index],
+            zoom: 15.0, // Adjust the zoom level as needed
+          ),
+        ),
+      );
+    }
+  }
+
+
+
+
+
+  void _addMarkers() {
+    for (int i = 0; i < slideCoordinates.length; i++) {
+      final marker = Marker(
+        markerId: MarkerId('$i'),
+        position: slideCoordinates[i],
+      );
+      markers.add(marker);
+    }
   }
 }
