@@ -42,15 +42,33 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    allprojects {
+        repositories {
+            google()
+            jcenter()
+            maven {
+                url 'https://naver.jfrog.io/artifactory/maven/'
+            }
+        }
+    }
+
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.mazangdong"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 20
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+    }
+
+    lintOptions {
+        warningsAsErrors true
+        disable 'deprecation'
+        enable 'deprecation'
+        checkDependencies true
     }
 
     buildTypes {
@@ -68,4 +86,5 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.naver.maps:map-sdk:3.16.0'
 }

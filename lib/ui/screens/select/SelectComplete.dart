@@ -1,80 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/models/ResponseModel.dart';
-import 'package:flutter/foundation.dart';
+import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'dart:convert';
 
-class SelectCompletePage extends StatelessWidget {
+class SelectCompletePage extends StatefulWidget {
   final ConvModel convModel;
   final RegionModel regionModel;
   final ThemaModel themaModel;
-  late final ResponseModel responseModel;
 
   SelectCompletePage({
     required this.convModel,
     required this.regionModel,
     required this.themaModel,
-  }) 
-  {
-    print("convModel: $convModel");
-    print("regionModel: $regionModel");
-    print("themaModel: $themaModel");
+  });
+
+  @override
+  _SelectCompletePageState createState() => _SelectCompletePageState();
+}
+
+class _SelectCompletePageState extends State<SelectCompletePage> {
+  late ResponseModel responseModel;
+
+  @override
+  void initState() {
+    super.initState();
     responseModel = ResponseModel(trip: [], lodging: []);
   }
 
-  void _sendRequest() async {
-    var url = 'https://se-fjnsi.run.goorm.site/info';
-
-    // JSON 데이터 변경후 GET 요청하기
-
-    // var data = {
-    //   'together': convModel.isTravelingAlone.toString(),
-    //   'parking': convModel.selectedOptions[0].toString(),
-    //   'wheelchair': convModel.selectedOptions[1].toString(),
-    //   'restroom': convModel.selectedOptions[2].toString(),
-    //   'region': regionModel.selectedRegions[0].toString(),
-    // };
-
+  Future<void> _sendRequest() async {
+    var url = 'https://majangdong.run.goorm.site/info';
     var data = {
       'together': '1',
       'parking': '1',
       'wheelchair': '1',
       'restroom': '1',
-      'region': '1',
+      'region': '8',
     };
 
-    print("data $data");
-
-    // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
     var uri = Uri.parse(url);
-    var queryParameters =
-        data.entries.map((e) => '${e.key}=${e.value}').join('&');
+    var queryParameters = data.entries.map((e) => '${e.key}=${e.value}').join('&');
     var requestUrl = Uri.parse('$uri?$queryParameters');
-    var response = await http.get(requestUrl);
 
+    try {
+      var response = await http.get(requestUrl);
+      print("response$response");
 
-    print("uri: $uri");
-    print("queryParameters: $queryParameters");
-    print("requestUrl: $requestUrl");
+      if (response.statusCode == 200) {
+        final decodedData = json.decode(response.body);
+        final responseModel = ResponseModel.fromJson(decodedData);
 
-    if (response.statusCode == 200) {
-      print('Response: ${response.body}');
-      print('uri: ${uri}');
-      print('queryParameters: ${queryParameters}');
-      print('requestUrl: ${requestUrl}');
-      final decodedData = json.decode(response.body);
-      final responseModel = ResponseModel.fromJson(decodedData);
-      responseModel.printData();
-      debugPrint('Response: $decodedData');
-      // TODO: Handle the response data here
-    } else {
-      print('Request failed with status: ${response.statusCode}');
+        for (var i = 0; i < responseModel.trip.length; i++) {
+          final tripModel = responseModel.trip[i];
+          final juso = tripModel.juso;
+          print("vvvvvvvvv");
+          print("placeNAME: $juso");
+          final naverApiKey = 'sublv1reyj';
+          final naverApiKeys = 'NTPYfyaR24WYaFDibcGFOvo2DDv9neN6lJZ8mZRz';
+          final naverApiUrl = 'https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode';
+
+          var naverResponse = await http.get(
+            Uri.parse('$naverApiUrl?query=$juso'),
+            headers: {
+              'X-NCP-APIGW-API-KEY-ID': naverApiKey,
+              'X-NCP-APIGW-API-KEY': naverApiKeys,
+            },
+          );
+          print("sssssssssssssssssssssssssssssssssssssssssssssssssss");
+
+          print(naverResponse.body);
+
+          if (naverResponse.statusCode == 200) {
+            final naverDecodedData = json.decode(naverResponse.body);
+            final addresses = naverDecodedData['addresses'];
+            if (addresses.isNotEmpty) {
+              final firstAddress = addresses[0];
+              final latitude = double.parse(firstAddress['y']);
+              final longitude = double.parse(firstAddress['x']);
+
+              final updatedTripModel = TripModel(
+                gwangwangjibunho: tripModel.gwangwangjibunho,
+                gwangwangjiyeon: tripModel.gwangwangjiyeon,
+                bunryu: tripModel.bunryu,
+                jiyangbunho: tripModel.jiyangbunho,
+                juso: tripModel.juso,
+                muneobunho: tripModel.muneobunho,
+                juchayeobu: tripModel.juchayeobu,
+                hwichesil: tripModel.hwichesil,
+                hwajangsir: tripModel.hwajangsir,
+                imagegyeongryo: tripModel.imagegyeongryo,
+                latitude: latitude,
+                longitude: longitude,
+              );
+
+              responseModel.trip[i] = updatedTripModel;
+
+            }
+          } else {
+            print('Naver API request failed with status: ${naverResponse.statusCode}');
+          }
+        }
+
+        setState(() {
+          print('시발 ㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹ$responseModel');
+          responseModel.printData();
+          this.responseModel = responseModel;
+        });
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
     }
   }
+
+
+
+
+
+
 
   void goToNextPage(BuildContext context) {
     _sendRequest();
@@ -106,8 +153,7 @@ class SelectCompletePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Image.asset(
-                'assets/images/trip.png'), // Replace 'path_to_your_image' with the actual path or asset name of your image
+            Image.asset('assets/images/trip.png'),
             SizedBox(height: 20),
             Text(
               '완료되었습니다.',
@@ -132,9 +178,10 @@ class SelectCompletePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('이전',
-                    style:
-                        TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
+                child: Text(
+                  '이전',
+                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+                ),
               ),
             ),
             SizedBox(width: 10),
@@ -150,9 +197,10 @@ class SelectCompletePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text('다음',
-                    style:
-                        TextStyle(fontSize: 20, fontFamily: 'PretendardBold')),
+                child: Text(
+                  '다음',
+                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+                ),
               ),
             ),
           ],

@@ -53,8 +53,8 @@ class MyApp extends StatelessWidget {
         '/travelDetail': (context) => TravelDetailPage(),
         '/recommendtourlist': (context) => RecommendtourlistPage(),
         '/recommendaccomlist': (context) => RecommendaccomodationlistPage(),
-        '/maps': (context) => MapsPage(),
-        '/map2': (context) => Maps2Page(),
+        // '/maps': (context) => MapsPage(),
+        // '/map2': (context) => Maps2Page(),
       },
     );
   }

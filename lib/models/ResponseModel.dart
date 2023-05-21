@@ -30,6 +30,8 @@ class ResponseModel {
       print('휠체어대여: ${tripModel.hwichesil}');
       print('엘리베이터: ${tripModel.hwajangsir}');
       print('화장실: ${tripModel.imagegyeongryo}');
+      print('위도: ${tripModel.latitude}');
+      print('경도: ${tripModel.longitude}');
       print('----------------------------');
     }
 
@@ -45,9 +47,12 @@ class ResponseModel {
       print('엘리베이터: ${lodgingModel.hwajangsir}');
       print('화장실: ${lodgingModel.imagegyeongryo}');
       print('장애인객실여부: ${lodgingModel.jangaeingaeksilyeobu}');
+      print('위도: ${lodgingModel.latitude}');
+      print('경도: ${lodgingModel.longitude}');
       print('----------------------------');
     }
   }
+
 }
 
 class TripModel {
@@ -61,6 +66,8 @@ class TripModel {
   final String hwichesil;
   final String hwajangsir;
   final String imagegyeongryo;
+  final double latitude; // 추가된 위도
+  final double longitude; // 추가된 경도
 
   TripModel({
     required this.gwangwangjibunho,
@@ -73,6 +80,8 @@ class TripModel {
     required this.hwichesil,
     required this.hwajangsir,
     required this.imagegyeongryo,
+    required this.latitude,
+    required this.longitude,
   });
 
   factory TripModel.fromJson(Map<String, dynamic> json) {
@@ -87,6 +96,8 @@ class TripModel {
       hwichesil: json['휠체어대여'],
       hwajangsir: json['엘리베이터'],
       imagegyeongryo: json['화장실'],
+      latitude: 0.0, // Initialize with default values
+      longitude: 0.0, // Initialize with default values
     );
   }
 }
@@ -102,6 +113,8 @@ class LodgingModel {
   final String hwajangsir;
   final String imagegyeongryo;
   final String jangaeingaeksilyeobu;
+  final double? latitude; // 추가된 위도
+  final double? longitude; // 추가된 경도
 
   LodgingModel({
     required this.sungbaksiseolbunho,
@@ -114,6 +127,8 @@ class LodgingModel {
     required this.hwajangsir,
     required this.imagegyeongryo,
     required this.jangaeingaeksilyeobu,
+    required this.latitude,
+    required this.longitude,
   });
 
   factory LodgingModel.fromJson(Map<String, dynamic> json) {
@@ -128,6 +143,8 @@ class LodgingModel {
       hwajangsir: json['엘리베이터'],
       imagegyeongryo: json['화장실'],
       jangaeingaeksilyeobu: json['장애인객실여부'],
+      latitude: 0.0, // Initialize with default values
+      longitude: 0.0, // Initialize with default values
     );
   }
 }
