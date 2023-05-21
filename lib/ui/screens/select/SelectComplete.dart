@@ -47,73 +47,50 @@ class _SelectCompletePageState extends State<SelectCompletePage> {
 
     try {
       var response = await http.get(requestUrl);
-      print("response$response");
 
       if (response.statusCode == 200) {
-        final decodedData = json.decode(response.body);
-        final responseModel = ResponseModel.fromJson(decodedData);
+        var jsonResponse = json.decode(response.body);
+        print('SSSSS$jsonResponse');
 
-        for (var i = 0; i < responseModel.trip.length; i++) {
-          final tripModel = responseModel.trip[i];
-          final juso = tripModel.juso;
-          print("vvvvvvvvv");
-          print("placeNAME: $juso");
-          final naverApiKey = 'sublv1reyj';
-          final naverApiKeys = 'NTPYfyaR24WYaFDibcGFOvo2DDv9neN6lJZ8mZRz';
-          final naverApiUrl = 'https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode';
+        responseModel = ResponseModel.fromJson(jsonResponse);
 
-          var naverResponse = await http.get(
-            Uri.parse('$naverApiUrl?query=$juso'),
-            headers: {
-              'X-NCP-APIGW-API-KEY-ID': naverApiKey,
-              'X-NCP-APIGW-API-KEY': naverApiKeys,
-            },
-          );
-          print("sssssssssssssssssssssssssssssssssssssssssssssssssss");
-
-          print(naverResponse.body);
-
-          if (naverResponse.statusCode == 200) {
-            final naverDecodedData = json.decode(naverResponse.body);
-            final addresses = naverDecodedData['addresses'];
-            if (addresses.isNotEmpty) {
-              final firstAddress = addresses[0];
-              final latitude = double.parse(firstAddress['y']);
-              final longitude = double.parse(firstAddress['x']);
-
-              final updatedTripModel = TripModel(
-                gwangwangjibunho: tripModel.gwangwangjibunho,
-                gwangwangjiyeon: tripModel.gwangwangjiyeon,
-                bunryu: tripModel.bunryu,
-                jiyangbunho: tripModel.jiyangbunho,
-                juso: tripModel.juso,
-                muneobunho: tripModel.muneobunho,
-                juchayeobu: tripModel.juchayeobu,
-                hwichesil: tripModel.hwichesil,
-                hwajangsir: tripModel.hwajangsir,
-                imagegyeongryo: tripModel.imagegyeongryo,
-                latitude: latitude,
-                longitude: longitude,
-              );
-
-              responseModel.trip[i] = updatedTripModel;
-
+        // Iterate over trip models and add latitude and longitude
+        for (var tripModel in responseModel.trip) {
+          var geocodeUrl =
+              'https://maps.googleapis.com/maps/api/geocode/json?address=${tripModel.juso}&key=AIzaSyAD2Tf6yBI9jb2abxGVZGlMKmoqDglhYzs';
+          print("시발시발시발시발시발시발시발시발시발시발시발시발시발시발시발");
+          print("tripModel: ${tripModel.juso}");
+          print('geocodeUrl: $geocodeUrl');
+          var geocodeResponse = await http.get(Uri.parse(geocodeUrl));
+          if (geocodeResponse.statusCode == 200) {
+            var geocodeJson = json.decode(geocodeResponse.body);
+            if (geocodeJson['results'] != null && geocodeJson['results'].isNotEmpty) {
+              var location = geocodeJson['results'][0]['geometry']['location'];
+              tripModel.latitude = location['lat'];
+              tripModel.longitude = location['lng'];
             }
-          } else {
-            print('Naver API request failed with status: ${naverResponse.statusCode}');
           }
         }
 
-        setState(() {
-          print('시발 ㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹㅍㄹㄹㄹㄹ$responseModel');
-          responseModel.printData();
-          this.responseModel = responseModel;
-        });
+        // Iterate over lodging models and add latitude and longitude
+        for (var lodgingModel in responseModel.lodging) {
+          var geocodeUrl =
+              'https://maps.googleapis.com/maps/api/geocode/json?address=${lodgingModel.sungbaksiseoljuso}&key=AIzaSyAD2Tf6yBI9jb2abxGVZGlMKmoqDglhYzs';
+          var geocodeResponse = await http.get(Uri.parse(geocodeUrl));
+          if (geocodeResponse.statusCode == 200) {
+            var geocodeJson = json.decode(geocodeResponse.body);
+            if (geocodeJson['results'] != null && geocodeJson['results'].isNotEmpty) {
+              var location = geocodeJson['results'][0]['geometry']['location'];
+              lodgingModel.latitude = location['lat'];
+              lodgingModel.longitude = location['lng'];
+            }
+          }
+        }
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
-    } catch (e) {
-      print('An error occurred: $e');
+    } catch (error) {
+      print('Error occurred during request: $error');
     }
   }
 
@@ -123,8 +100,10 @@ class _SelectCompletePageState extends State<SelectCompletePage> {
 
 
 
-  void goToNextPage(BuildContext context) {
-    _sendRequest();
+
+
+  void goToNextPage(BuildContext context) async {
+    await _sendRequest();
     Navigator.push(
       context,
       MaterialPageRoute(

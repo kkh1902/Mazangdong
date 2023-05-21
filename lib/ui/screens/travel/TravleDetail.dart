@@ -102,27 +102,27 @@ class _TravelDetailPageState extends State<TravelDetailPage> {
               children: [
                 CircleAvatar(
                   backgroundImage:
-                      AssetImage('assets/images/safety_check_icon.png'),
+                      AssetImage('assets/images/convenince/parking.png'),
                   radius: 30,
                 ),
                 CircleAvatar(
                   backgroundImage:
-                      AssetImage('assets/images/safety_check_icon.png'),
+                      AssetImage('assets/images/wc.png'),
                   radius: 30,
                 ),
                 CircleAvatar(
                   backgroundImage:
-                      AssetImage('assets/images/safety_check_icon.png'),
+                      AssetImage('assets/images/wheel.png'),
                   radius: 30,
                 ),
                 CircleAvatar(
                   backgroundImage:
-                      AssetImage('assets/images/safety_check_icon.png'),
+                      AssetImage('assets/images/wheeldog.png'),
                   radius: 30,
                 ),
                 CircleAvatar(
                   backgroundImage:
-                      AssetImage('assets/images/safety_check_icon.png'),
+                      AssetImage('assets/images/경사로.png'),
                   radius: 30,
                 ),
               ],

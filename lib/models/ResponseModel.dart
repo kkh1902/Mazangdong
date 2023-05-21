@@ -17,6 +17,7 @@ class ResponseModel {
       ),
     );
   }
+
   void printData() {
     print('Trip:');
     for (var tripModel in trip) {
@@ -32,6 +33,7 @@ class ResponseModel {
       print('화장실: ${tripModel.imagegyeongryo}');
       print('위도: ${tripModel.latitude}');
       print('경도: ${tripModel.longitude}');
+      print('설명: ${tripModel.sulmyung}');
       print('----------------------------');
     }
 
@@ -52,7 +54,6 @@ class ResponseModel {
       print('----------------------------');
     }
   }
-
 }
 
 class TripModel {
@@ -66,8 +67,9 @@ class TripModel {
   final String hwichesil;
   final String hwajangsir;
   final String imagegyeongryo;
-  final double latitude; // 추가된 위도
-  final double longitude; // 추가된 경도
+  double? latitude; // Nullable latitude
+  double? longitude; // Nullable longitude
+  final String sulmyung;
 
   TripModel({
     required this.gwangwangjibunho,
@@ -80,8 +82,9 @@ class TripModel {
     required this.hwichesil,
     required this.hwajangsir,
     required this.imagegyeongryo,
-    required this.latitude,
-    required this.longitude,
+    this.latitude,
+    this.longitude,
+    required this.sulmyung,
   });
 
   factory TripModel.fromJson(Map<String, dynamic> json) {
@@ -96,8 +99,9 @@ class TripModel {
       hwichesil: json['휠체어대여'],
       hwajangsir: json['엘리베이터'],
       imagegyeongryo: json['화장실'],
-      latitude: 0.0, // Initialize with default values
-      longitude: 0.0, // Initialize with default values
+      latitude: json['위도']?.toDouble(),
+      longitude: json['경도']?.toDouble(),
+      sulmyung: json['설명'],
     );
   }
 }
@@ -113,8 +117,8 @@ class LodgingModel {
   final String hwajangsir;
   final String imagegyeongryo;
   final String jangaeingaeksilyeobu;
-  final double? latitude; // 추가된 위도
-  final double? longitude; // 추가된 경도
+  double? latitude; // Nullable latitude
+  double? longitude; // Nullable longitude
 
   LodgingModel({
     required this.sungbaksiseolbunho,
@@ -127,8 +131,8 @@ class LodgingModel {
     required this.hwajangsir,
     required this.imagegyeongryo,
     required this.jangaeingaeksilyeobu,
-    required this.latitude,
-    required this.longitude,
+    this.latitude,
+    this.longitude,
   });
 
   factory LodgingModel.fromJson(Map<String, dynamic> json) {
@@ -143,8 +147,8 @@ class LodgingModel {
       hwajangsir: json['엘리베이터'],
       imagegyeongryo: json['화장실'],
       jangaeingaeksilyeobu: json['장애인객실여부'],
-      latitude: 0.0, // Initialize with default values
-      longitude: 0.0, // Initialize with default values
+      latitude: json['위도']?.toDouble(),
+      longitude: json['경도']?.toDouble(),
     );
   }
 }

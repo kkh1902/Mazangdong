@@ -35,11 +35,13 @@ class _TravelListPageState extends State<TravelListPage> {
     super.initState();
 
     final response = widget.responseModel;
+
     for (var tripModel in response.trip) {
       slideImages.add(tripModel.gwangwangjibunho.toString());
-      slideCoordinates.add(LatLng(tripModel.latitude, tripModel.longitude));
+      slideCoordinates.add(LatLng(tripModel.latitude ?? 0.0, tripModel.longitude ?? 0.0));
       touristAttractionNames.add(tripModel.gwangwangjiyeon);
     }
+    print("slideCoordinates$slideCoordinates");
   }
 
   @override
@@ -310,17 +312,20 @@ class _TravelListPageState extends State<TravelListPage> {
 
   void _updateMapPosition(int index) {
     if (_controller != null) {
-      _controller!.animateCamera(
-        CameraUpdate.newLatLng(slideCoordinates[index]),
-      );
-      setState(() {
-        markers = Set.of([
-          Marker(
-            markerId: MarkerId('SelectedLocation'),
-            position: slideCoordinates[index],
-          ),
-        ]);
-      });
+      if (slideCoordinates[index].latitude != null && slideCoordinates[index].longitude != null) {
+        _controller!.animateCamera(
+          CameraUpdate.newLatLng(slideCoordinates[index]),
+        );
+        setState(() {
+          markers = Set.of([
+            Marker(
+              markerId: MarkerId('SelectedLocation'),
+              position: slideCoordinates[index],
+            ),
+          ]);
+        });
+      }
     }
   }
+
 }
