@@ -40,6 +40,9 @@ dependencies:
   flutter_html: ^2.1.0
   dots_indicator: ^2.0.0
   google_maps_flutter: ^2.2.0
+  flutter_reorderable_list:
+  image: ^3.0.2
+  provider: ^6.0.0
 
 
 
@@ -70,6 +73,8 @@ flutter:
     - assets/images/
     - assets/images/select/
     - assets/images/trip/
+    - assets/images/marker/
+    - assets/images/convenince/
 
   uses-material-design: true
   fonts:

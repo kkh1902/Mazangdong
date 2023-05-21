@@ -1,25 +1,45 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mazangdong/models/ResponseModel.dart';
+
 
 class RecommendtourlistPage extends StatefulWidget {
+  final List<String> touristAttractionNames;
+  final List<int> gwangwangjibunho;// Define the parameter
+
+  RecommendtourlistPage({
+    required this.touristAttractionNames,
+    required this.gwangwangjibunho}); // Add the constructor
+
+  // tripmodel 값
   @override
   _RecommendtourlistPageState createState() => _RecommendtourlistPageState();
 }
 
 class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
-  List<String> tourList = [
-    '텍스트 1',
-    '텍스트 2',
-    '텍스트 2',
-    '텍스트 2',
-    '텍스트 2',
-    '텍스트 2',
-    '텍스트 2',
-  ];
+  late ResponseModel responseModel;
+
 
   int selectedIndex = -1;
+  List<String> tourList = [];
+  List<int> gwangbunho = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Add the touristAttractionNames to tourList
+    tourList.addAll(widget.touristAttractionNames);
+    gwangbunho.addAll(widget.gwangwangjibunho);
+
+  }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
+    print(gwangbunho);
     return Scaffold(
       appBar: null,
       body: Container(

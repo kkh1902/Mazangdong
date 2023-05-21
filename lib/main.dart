@@ -16,6 +16,7 @@ import 'package:mazangdong/ui/screens/travel/RecommedTourlist.dart';
 import 'package:mazangdong/ui/screens/travel/Recommendaccomodationlist.dart';
 import 'package:mazangdong/ui/screens/map/maps.dart';
 import 'package:mazangdong/ui/screens/map/map2.dart';
+import 'package:mazangdong/ui/screens/map/maproad.dart';
 import 'dart:convert';
 
 void main() {
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
   var regionModel = RegionModel();
   var themaModel = ThemaModel();
   var responseModel = ResponseModel(trip: [], lodging: []);
-
+  List<String> touristAttractionNames = []; // 변수 선언부분을 수정합니다.
+  List<int> gwangwangjibunho = [];
 
 
   @override
@@ -50,11 +52,12 @@ class MyApp extends StatelessWidget {
             regionModel: regionModel,
             themaModel: themaModel),
         '/travelList': (context) => TravelListPage(responseModel: responseModel),
-        '/travelDetail': (context) => TravelDetailPage(),
-        '/recommendtourlist': (context) => RecommendtourlistPage(),
+        '/travelDetail': (context) => TravelDetailPage(bunho: ModalRoute.of(context)!.settings.arguments as int),
+        '/recommendtourlist': (context) => RecommendtourlistPage(touristAttractionNames:touristAttractionNames,gwangwangjibunho:gwangwangjibunho ),
         '/recommendaccomlist': (context) => RecommendaccomodationlistPage(),
-        // '/maps': (context) => MapsPage(),
-        // '/map2': (context) => Maps2Page(),
+        '/maps': (context) => MapsPage(),
+        '/map2': (context) => Maps2Page(),
+        '/maproad': (context) => MapRoadPage(),
       },
     );
   }

@@ -96,12 +96,6 @@ class _SelectCompletePageState extends State<SelectCompletePage> {
 
 
 
-
-
-
-
-
-
   void goToNextPage(BuildContext context) async {
     await _sendRequest();
     Navigator.push(
