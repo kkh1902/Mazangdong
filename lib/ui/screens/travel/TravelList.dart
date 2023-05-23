@@ -71,7 +71,7 @@ class _TravelListPageState extends State<TravelListPage> {
   Widget build(BuildContext context) {
     bool _isDoubleTap = false;
     var selectedModel = Provider.of<SelectedModel>(context);
-    // selectedModel.selectedList = []; 초기화 할때
+    // selectedModel.selectedList = []; 
     print(selectedModel.selectedList);
     return Scaffold(
       body: Padding(

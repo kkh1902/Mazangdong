@@ -35,11 +35,13 @@ class SelectedModel extends ChangeNotifier {
           final data = json.decode(response.body);
           final address = data[0]['주소'] as String;
           final gwangjiName = data[0]['관광지이름'] as String;
+          final juso = data[0]['주소'] as String;
           final coordinates = await _getCoordinates(address);
           if (coordinates != null) {
             final attractionData = {
               'name': gwangjiName,
               'coordinates': coordinates,
+              'juso': juso,
             };
             attractionsList.add(attractionData);
           }

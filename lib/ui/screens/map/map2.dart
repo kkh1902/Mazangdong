@@ -28,6 +28,12 @@ class _Maps2PageState extends State<Maps2Page> {
 
   Completer<GoogleMapController> _controllerCompleter = Completer<GoogleMapController>();
 
+
+  CameraPosition initialCameraPosition = CameraPosition(
+      target: LatLng(37.5665, 126.9780), // Default position or modify it to the desired location
+      zoom: 11.0, // Default zoom level or modify it to the desired level
+    );
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +42,13 @@ class _Maps2PageState extends State<Maps2Page> {
         .then((attractionsList) {
       _addMarkers(attractionsList);
       _createPolylines();
+      LatLng center = _calculateCenterPosition(); // Calculate the center position
+      setState(() {
+        initialCameraPosition = CameraPosition(
+          target: center,
+          zoom: 11.0, // Adjust the zoom level as needed
+        );
+      });
     }).catchError((error) {
       print("An error occurred while fetching data: $error");
     });
@@ -44,6 +57,7 @@ class _Maps2PageState extends State<Maps2Page> {
   LatLng _getCoordinates(LatLng coordinates) {
     return coordinates;
   }
+
 
   void _addMarkers(List<Map<String, dynamic>> attractionsList) async {
     for (int i = 0; i < attractionsList.length; i++) {
@@ -92,6 +106,19 @@ class _Maps2PageState extends State<Maps2Page> {
     setState(() {
       _polylines.add(polyline);
     });
+  }
+
+  LatLng _calculateCenterPosition() {
+    // Calculate the center position using _markerCoordinates
+    double sumLat = 0;
+    double sumLng = 0;
+    for (LatLng position in _markerCoordinates) {
+      sumLat += position.latitude;
+      sumLng += position.longitude;
+    }
+    double centerLat = sumLat / _markerCoordinates.length;
+    double centerLng = sumLng / _markerCoordinates.length;
+    return LatLng(centerLat, centerLng);
   }
 
   double _calculateZoomLevel(LatLngBounds bounds) {
@@ -167,20 +194,19 @@ class _Maps2PageState extends State<Maps2Page> {
       return _markerCoordinates.first;
     }
 
-    // 기본 위치를 반환하거나 원하는 위치로 수정할 수 있습니다.
+    // Default position or modify it to the desired location
     return LatLng(37.5665, 126.9780);
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     LatLngBounds? bounds = _getBounds();
-    CameraPosition initialCameraPosition;
-    print( Provider.of<SelectedModel>(context, listen: false)
-        .fetchDataFromDatabase());
+    print('sssss');
+    print(bounds);
+    print(Provider.of<SelectedModel>(context, listen: false).fetchDataFromDatabase());
 
     if (bounds != null) {
+      print('ssssss');
       LatLng center = LatLng(
         (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
         (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
@@ -269,26 +295,26 @@ class _Maps2PageState extends State<Maps2Page> {
                 return isItemDeletedList[index]
                     ? SizedBox.shrink()
                     : ListTile(
-                  key: Key('$index'),
-                  leading: CircleAvatar(
-                    radius: 16.0,
-                    backgroundColor: Colors.blue,
-                    child: Text(
-                      '${index + 1}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.0,
-                      ),
-                    ),
-                  ),
-                  title: Text(itemList[index]),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      _deleteItem(index);
-                    },
-                  ),
-                );
+                        key: Key('$index'),
+                        leading: CircleAvatar(
+                          radius: 16.0,
+                          backgroundColor: Colors.blue,
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ),
+                        title: Text(itemList[index]),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            _deleteItem(index);
+                          },
+                        ),
+                      );
               },
               onReorder: (oldIndex, newIndex) {
                 if (newIndex > oldIndex) {
