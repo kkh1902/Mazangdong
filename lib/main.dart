@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:mazangdong/models/SelectedModel.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
@@ -20,7 +22,14 @@ import 'package:mazangdong/ui/screens/map/maproad.dart';
 import 'dart:convert';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SelectedModel()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -51,7 +60,13 @@ class MyApp extends StatelessWidget {
             convModel: convModel,
             regionModel: regionModel,
             themaModel: themaModel),
-        '/travelList': (context) => TravelListPage(responseModel: responseModel),
+        '/travelList': (context) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => SelectedModel()),
+          ],
+          child: TravelListPage(responseModel: responseModel),
+        ),
+
         '/travelDetail': (context) => TravelDetailPage(bunho: ModalRoute.of(context)!.settings.arguments as int),
         '/recommendtourlist': (context) => RecommendtourlistPage(touristAttractionNames:touristAttractionNames,gwangwangjibunho:gwangwangjibunho ),
         '/recommendaccomlist': (context) => RecommendaccomodationlistPage(),

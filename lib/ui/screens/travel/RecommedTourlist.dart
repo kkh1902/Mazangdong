@@ -1,24 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mazangdong/models/ResponseModel.dart';
+import 'package:mazangdong/models/SelectedModel.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 
 class RecommendtourlistPage extends StatefulWidget {
   final List<String> touristAttractionNames;
-  final List<int> gwangwangjibunho;// Define the parameter
+  final List<int> gwangwangjibunho;
 
   RecommendtourlistPage({
     required this.touristAttractionNames,
-    required this.gwangwangjibunho}); // Add the constructor
+    required this.gwangwangjibunho,
+  });
 
-  // tripmodel 값
   @override
   _RecommendtourlistPageState createState() => _RecommendtourlistPageState();
 }
 
 class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
   late ResponseModel responseModel;
-
+  late SelectedModel selectedModel;
 
   int selectedIndex = -1;
   List<String> tourList = [];
@@ -27,19 +30,47 @@ class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
   @override
   void initState() {
     super.initState();
-    // Add the touristAttractionNames to tourList
     tourList.addAll(widget.touristAttractionNames);
     gwangbunho.addAll(widget.gwangwangjibunho);
-
+    fetchData(gwangbunho[0]);
   }
 
+  String name = ''; // 데이터를 저장할 변수들
+  int jucha = 0;
+  int wheel = 0;
+  int elevator = 0;
+  int restroom = 0;
 
+  void fetchData(int bunho) async {
+    try {
+      final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/detail/$bunho'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print(data);
+        print(data.runtimeType);
 
+        // 데이터를 가져온 후 필요한 값들을 설정해줍니다.
+        setState(() {
+          // 예시로 데이터를 가져와서 필드에 설정해주는 코드를 작성해주세요.
+          name = data[0]['관광지이름'];
+          jucha = int.parse(data[0]['주차여부']);
+          wheel = int.parse(data[0]['휠체어대여']);
+          elevator = int.parse(data[0]['엘리베이터']);
+          restroom = int.parse(data[0]['화장실']);
+        });
+      } else {
+        print('Failed to fetch data');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
-    print(gwangbunho);
+    selectedModel = Provider.of<SelectedModel>(context, listen: false);
+
     return Scaffold(
       appBar: null,
       body: Container(
@@ -57,7 +88,7 @@ class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(15.0, 70.0, 15.0, 10.0),
+            padding: const EdgeInsets.fromLTRB(30.0, 70.0, 30.0, 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -77,7 +108,7 @@ class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 50), // Adjust the width as needed
+                    SizedBox(width: 50),
                   ],
                 ),
                 ListView.separated(
@@ -111,8 +142,7 @@ class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
                           title: Align(
                             alignment: Alignment.center,
                             child: Text(
-                              tourList[
-                                  index], // Display the tour text dynamically
+                              tourList[index],
                               style: TextStyle(
                                 fontSize: 20,
                                 decoration: TextDecoration.underline,
@@ -122,37 +152,31 @@ class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
                           subtitle: Container(
                             margin: EdgeInsets.only(top: 8.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/3.jpg'),
-                                  radius: 15,
-                                ),
-                                SizedBox(width: 4),
-                                CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/3.jpg'),
-                                  radius: 15,
-                                ),
-                                SizedBox(width: 4),
-                                CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/3.jpg'),
-                                  radius: 15,
-                                ),
-                                SizedBox(width: 4),
-                                CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/3.jpg'),
-                                  radius: 15,
-                                ),
-                                SizedBox(width: 4),
-                                CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/3.jpg'),
-                                  radius: 15,
-                                ),
+                                if (jucha == 1)
+                                  CircleAvatar(
+                                    backgroundImage: AssetImage('assets/images/convenince/parking.png'),
+                                    radius: 20,
+                                  ),
+                                if (wheel == 1)
+                                  CircleAvatar(
+                                    backgroundImage: AssetImage('assets/images/convenince/wheel.png'),
+                                    radius: 20,
+                                  ),
+                                  CircleAvatar(
+                                    backgroundImage: AssetImage('assets/images/convenince/wheeldog.png'),
+                                    radius: 20,
+                                  ),
+                                if (restroom == 1)
+                                  CircleAvatar(
+                                    backgroundImage: AssetImage('assets/images/convenince/wc.png'),
+                                    radius: 20,
+                                  ),
+                                  CircleAvatar(
+                                    backgroundImage: AssetImage('assets/images/convenince/경사로.png'),
+                                    radius: 20,
+                                  ),
                               ],
                             ),
                           ),
@@ -161,7 +185,7 @@ class _RecommendtourlistPageState extends State<RecommendtourlistPage> {
                             height: 50,
                             child: IconButton(
                               onPressed: () {
-                                // Add button onPressed logic here
+                                selectedModel.addItem(gwangbunho[index]);
                               },
                               icon: Icon(
                                 Icons.add,

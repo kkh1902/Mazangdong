@@ -58,7 +58,6 @@ class _SelectCompletePageState extends State<SelectCompletePage> {
         for (var tripModel in responseModel.trip) {
           var geocodeUrl =
               'https://maps.googleapis.com/maps/api/geocode/json?address=${tripModel.juso}&key=AIzaSyAD2Tf6yBI9jb2abxGVZGlMKmoqDglhYzs';
-          print("시발시발시발시발시발시발시발시발시발시발시발시발시발시발시발");
           print("tripModel: ${tripModel.juso}");
           print('geocodeUrl: $geocodeUrl');
           var geocodeResponse = await http.get(Uri.parse(geocodeUrl));

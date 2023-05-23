@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_reorderable_list/flutter_reorderable_list.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:mazangdong/ui/screens/map/maproad.dart';
+import 'package:provider/provider.dart';
+import 'package:mazangdong/models/SelectedModel.dart';
 
 class Maps2Page extends StatefulWidget {
   @override
@@ -16,42 +19,45 @@ class Maps2Page extends StatefulWidget {
 
 class _Maps2PageState extends State<Maps2Page> {
   List<String> itemList = List.generate(10, (index) => 'Item ${index + 1}');
-  bool isEditing = false; // 편집 모드 여부를 나타내는 변수
-  List<bool> isItemDeletedList =
-  List.generate(10, (index) => false); // 각 아이템의 삭제 여부를 나타내는 변수
+  bool isEditing = false;
+  List<bool> isItemDeletedList = List.generate(10, (index) => false);
 
-  Set<Marker> _markers = {}; // 마커 집합 변수
-  List<LatLng> _markerCoordinates = [
-    LatLng(37.7749, -122.4194), // 좌표 1
-    LatLng(37.7805, -122.4128), // 좌표 2
-    LatLng(37.7880, -122.4056), // 좌표 3
-  ];
+  Set<Marker> _markers = {};
+  List<LatLng> _markerCoordinates = [];
+  Set<Polyline> _polylines = {};
+
+  Completer<GoogleMapController> _controllerCompleter = Completer<GoogleMapController>();
 
   @override
   void initState() {
     super.initState();
-    _addMarkers();
+    Provider.of<SelectedModel>(context, listen: false)
+        .fetchDataFromDatabase()
+        .then((attractionsList) {
+      _addMarkers(attractionsList);
+      _createPolylines();
+    }).catchError((error) {
+      print("An error occurred while fetching data: $error");
+    });
   }
 
-  void _addMarkers() async {
-    List<LatLng> markerCoordinates = [
-      LatLng(37.7749, -122.4194), // 좌표 1
-      LatLng(37.7805, -122.4128), // 좌표 2
-      LatLng(37.7880, -122.4056), // 좌표 3
-    ];
+  LatLng _getCoordinates(LatLng coordinates) {
+    return coordinates;
+  }
 
-    for (int i = 0; i < markerCoordinates.length; i++) {
-      LatLng position = markerCoordinates[i];
+  void _addMarkers(List<Map<String, dynamic>> attractionsList) async {
+    for (int i = 0; i < attractionsList.length; i++) {
+      LatLng position = _getCoordinates(attractionsList[i]['coordinates']);
+      _markerCoordinates.add(position); // Add the position to the list
       String markerImagePath = 'assets/images/marker/${i + 1}.png';
 
-      BitmapDescriptor customMarker =
-      await _getCustomMarker(markerImagePath, i + 1);
+      BitmapDescriptor customMarker = await _getCustomMarker(markerImagePath, i + 1);
 
       Marker marker = Marker(
         markerId: MarkerId('Marker $i'),
         position: position,
         icon: customMarker,
-        infoWindow: InfoWindow(title: '${i + 1}'),
+        infoWindow: InfoWindow(title: attractionsList[i]['name']),
       );
 
       setState(() {
@@ -60,8 +66,7 @@ class _Maps2PageState extends State<Maps2Page> {
     }
   }
 
-  Future<BitmapDescriptor> _getCustomMarker(
-      String imagePath, int index) async {
+  Future<BitmapDescriptor> _getCustomMarker(String imagePath, int index) async {
     final ByteData markerImageData = await rootBundle.load(imagePath);
     final Uint8List markerImageBytes = markerImageData.buffer.asUint8List();
 
@@ -74,8 +79,119 @@ class _Maps2PageState extends State<Maps2Page> {
     });
   }
 
+  void _createPolylines() {
+    // Create a polyline using the _markerCoordinates list
+    Polyline polyline = Polyline(
+      polylineId: PolylineId('dottedLine'),
+      color: Colors.blue,
+      width: 4,
+      points: _markerCoordinates,
+      patterns: [PatternItem.dot, PatternItem.gap(10)],
+    );
+
+    setState(() {
+      _polylines.add(polyline);
+    });
+  }
+
+  double _calculateZoomLevel(LatLngBounds bounds) {
+    const double padding = 50.0;
+    final double maxZoom = 21.0;
+
+    double minZoom = 0.0;
+    double zoom;
+
+    double mapWidth = MediaQuery.of(context).size.width - (2 * padding);
+    double mapHeight = MediaQuery.of(context).size.height - (2 * padding);
+
+    double angle = bounds.northeast.latitude - bounds.southwest.latitude;
+    double angle2 = bounds.northeast.longitude - bounds.southwest.longitude;
+
+    double deltaLat = angle;
+    double deltaLng = angle2;
+
+    double zoomLat = _calculateZoom(mapHeight, deltaLat);
+    double zoomLng = _calculateZoom(mapWidth, deltaLng);
+
+    minZoom = min(zoomLat, zoomLng);
+
+    zoom = minZoom > maxZoom ? maxZoom : minZoom;
+
+    return zoom;
+  }
+
+  double _calculateZoom(double mapSize, double delta) {
+    const double tileSize = 256.0;
+    double zoom;
+    double maxZoom = 21.0;
+    double worldSize = tileSize * pow(2, maxZoom - 1);
+
+    zoom = log(worldSize * mapSize / (tileSize * delta)) / ln2;
+
+    return zoom;
+  }
+
+  LatLngBounds? _getBounds() {
+    if (_markerCoordinates.isEmpty) {
+      return null;
+    }
+
+    double minLat = double.infinity;
+    double maxLat = -double.infinity;
+    double minLng = double.infinity;
+    double maxLng = -double.infinity;
+
+    for (LatLng position in _markerCoordinates) {
+      if (position.latitude < minLat) {
+        minLat = position.latitude;
+      }
+      if (position.latitude > maxLat) {
+        maxLat = position.latitude;
+      }
+      if (position.longitude < minLng) {
+        minLng = position.longitude;
+      }
+      if (position.longitude > maxLng) {
+        maxLng = position.longitude;
+      }
+    }
+
+    LatLng southwest = LatLng(minLat, minLng);
+    LatLng northeast = LatLng(maxLat, maxLng);
+
+    return LatLngBounds(southwest: southwest, northeast: northeast);
+  }
+
+  LatLng _getFirstMarkerPosition() {
+    if (_markerCoordinates.isNotEmpty) {
+      return _markerCoordinates.first;
+    }
+
+    // 기본 위치를 반환하거나 원하는 위치로 수정할 수 있습니다.
+    return LatLng(37.5665, 126.9780);
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    LatLngBounds? bounds = _getBounds();
+    CameraPosition initialCameraPosition;
+    print( Provider.of<SelectedModel>(context, listen: false)
+        .fetchDataFromDatabase());
+
+    if (bounds != null) {
+      LatLng center = LatLng(
+        (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+        (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+      );
+      double zoom = _calculateZoomLevel(bounds);
+      initialCameraPosition = CameraPosition(target: center, zoom: zoom);
+    } else {
+      LatLng firstMarkerPosition = _getFirstMarkerPosition();
+      initialCameraPosition = CameraPosition(target: firstMarkerPosition, zoom: 11.0);
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -107,21 +223,12 @@ class _Maps2PageState extends State<Maps2Page> {
             width: double.infinity,
             height: 300,
             child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _markerCoordinates[0],
-                zoom: 11.0,
-              ),
+              mapType: MapType.normal,
+              initialCameraPosition: initialCameraPosition,
               markers: _markers,
-              polylines: Set<Polyline>.from([
-                Polyline(
-                  polylineId: PolylineId('route'),
-                  color: Colors.blue,
-                  width: 4,
-                  points: _markerCoordinates,
-                ),
-              ]),
+              polylines: _polylines,
               onMapCreated: (GoogleMapController controller) {
-                // Optional: You can do something with the controller here
+                _controllerCompleter.complete(controller);
               },
             ),
           ),
