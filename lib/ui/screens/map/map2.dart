@@ -75,6 +75,7 @@ class _Maps2PageState extends State<Maps2Page> {
     }
   }
 
+
   Future<BitmapDescriptor> _getCustomMarker(String imagePath, int index) async {
     final ByteData markerImageData = await rootBundle.load(imagePath);
     final Uint8List markerImageBytes = markerImageData.buffer.asUint8List();
@@ -178,7 +179,7 @@ class _Maps2PageState extends State<Maps2Page> {
     minZoom = min(zoomLat, zoomLng);
 
     zoom = minZoom > maxZoom ? maxZoom : minZoom;
-    double minZoomAdjustment = 1.0; // Set the minimum zoom level adjustment
+    double minZoomAdjustment = 2.0; // Set the minimum zoom level adjustment
 
     if (zoom > minZoomAdjustment) {
       zoom -= minZoomAdjustment;
@@ -323,9 +324,16 @@ class _Maps2PageState extends State<Maps2Page> {
                   }
                   setState(() {
                     final item = itemList.removeAt(oldIndex);
+                    final marker = _markers.elementAt(oldIndex);
+                    final coordinate = _markerCoordinates.removeAt(oldIndex);
+
                     itemList.insert(newIndex, item);
+                    _markers.remove(marker);
+                    _markerCoordinates.insert(newIndex, coordinate);
+                    _markers.add(marker);
                   });
                 },
+
               ),
             ),
           ],

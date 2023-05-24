@@ -65,12 +65,18 @@ class _MapRoadPageState extends State<MapRoadPage> {
 
         print('step2');
 
+        List<String> trafficData = [];
+
         for (final directions in responseData) {
           print('step1');
           print(directions);
           for (final step in directions) {
             print('step');
             print(step);
+            final String type = step['type'];
+            final String num = step['num'];
+            final int time = step['time'];
+            final int distance = step['distance'];
             final double startX = double.parse(step['sx'].toString());
             final double startY = double.parse(step['sy'].toString());
             final double endX = double.parse(step['ex'].toString());
@@ -79,7 +85,12 @@ class _MapRoadPageState extends State<MapRoadPage> {
             LatLng startCoordinates = LatLng(startY, startX);
             LatLng endCoordinates = LatLng(endY, endX);
 
+            String traffic = 'Type: $type, Number: $num, Time: $time, Distance: $distance';
+            trafficData.add(traffic);
+
             print('startCoordinates');
+
+
             print(startCoordinates);
 
             _coordinatesList.add(startCoordinates);
@@ -91,6 +102,7 @@ class _MapRoadPageState extends State<MapRoadPage> {
         print(_coordinatesList);
         setState(() {
           _coordinatesList = _coordinatesList; // 전역 변수에 할당
+          _trafficData = trafficData;
         });
         _createMarkers();
       } else {
@@ -101,7 +113,7 @@ class _MapRoadPageState extends State<MapRoadPage> {
     }
 
 
-    
+
   }
 
 
