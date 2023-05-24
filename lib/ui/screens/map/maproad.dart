@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:mazangdong/models/SelectedModel.dart';
+import 'dart:math';
 
 class MapRoadPage extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class MapRoadPage extends StatefulWidget {
 }
 
 class _MapRoadPageState extends State<MapRoadPage> {
+
+  Set<Polyline> _polylines = {}; // _polylines 변수 선언
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = {};
   List<String> _trafficData = [];
@@ -33,7 +36,6 @@ class _MapRoadPageState extends State<MapRoadPage> {
       });
       _addMarkers();
       _fetchAttractionDetails();
-      _createMarkers();
     }).catchError((error) {
       print("An error occurred while fetching data: $error");
     });
@@ -61,10 +63,14 @@ class _MapRoadPageState extends State<MapRoadPage> {
         print("KEY");
         print(responseData[0]);
 
-        List<LatLng> _coordinatesList = [];
+        print('step2');
 
-        for (final directions in responseData[0]) {
+        for (final directions in responseData) {
+          print('step1');
+          print(directions);
           for (final step in directions) {
+            print('step');
+            print(step);
             final double startX = double.parse(step['sx'].toString());
             final double startY = double.parse(step['sy'].toString());
             final double endX = double.parse(step['ex'].toString());
@@ -83,6 +89,10 @@ class _MapRoadPageState extends State<MapRoadPage> {
 
         print('Coordinates List:');
         print(_coordinatesList);
+        setState(() {
+          _coordinatesList = _coordinatesList; // 전역 변수에 할당
+        });
+        _createMarkers();
       } else {
         print('Failed to fetch attraction details. Error: ${response.statusCode}');
       }
@@ -94,24 +104,9 @@ class _MapRoadPageState extends State<MapRoadPage> {
     
   }
 
-  void _createMarkers() async {
-    print("createMarkers");
-    print("_coordinatesList");
-    print(_coordinatesList);
-    // for (int i = 0; i < _coordinatesList.length; i++) {
-    //   Marker marker = Marker(
-    //     markerId: MarkerId('marker_$i'),
-    //     position: positions[i],
-    //     infoWindow: InfoWindow(
-    //       title: 'Marker $i',
-    //       snippet: 'Snippet $i',
-    //     ),
-    //     icon: BitmapDescriptor.defaultMarker,
-    //   );
 
-    //     markers.add(marker);
-    //   }
- }
+
+
 
   void _addMarkers() async {
     for (int i = 0; i < _attractionsList.length; i++) {
@@ -131,7 +126,81 @@ class _MapRoadPageState extends State<MapRoadPage> {
         _markers.add(marker);
       });
     }
+
+    // 카메라 위치 업데이트
+
+    LatLngBounds bounds = _getLatLngBounds();
+    CameraUpdate cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 50); // 마커 주위에 여유 공간을 추가하여 조정
+
+    GoogleMapController controller = await _controller.future;
+    controller.animateCamera(cameraUpdate);
   }
+
+  // 카메라 위치 경계선 계산
+  LatLngBounds _getLatLngBounds() {
+    double minLat = double.infinity;
+    double minLng = double.infinity;
+    double maxLat = -double.infinity;
+    double maxLng = -double.infinity;
+
+    for (Marker marker in _markers) {
+      double lat = marker.position.latitude;
+      double lng = marker.position.longitude;
+
+      minLat = min(lat, minLat);
+      minLng = min(lng, minLng);
+      maxLat = max(lat, maxLat);
+      maxLng = max(lng, maxLng);
+    }
+
+    LatLngBounds bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
+    );
+
+    return bounds;
+  }
+
+
+  void _createMarkers() {
+    print("createMarkers 실행");
+    List<Polyline> polylines = [];
+
+    for (int i = 0; i < _coordinatesList.length - 1; i += 2) {
+      LatLng start = _coordinatesList[i];
+      LatLng end = _coordinatesList[i + 1];
+
+      Polyline polyline = Polyline(
+        polylineId: PolylineId('polyline_$i'),
+        points: [start, end],
+        color: Colors.blue,
+        width: 3,
+        patterns: [PatternItem.dot, PatternItem.gap(10)],
+      );
+
+      polylines.add(polyline);
+    }
+
+    for (int i = 0; i < _coordinatesList.length; i++) {
+      Marker marker = Marker(
+        markerId: MarkerId('marker_$i'),
+        position: _coordinatesList[i],
+        infoWindow: InfoWindow(
+          title: 'Marker $i',
+          snippet: 'Snippet $i',
+        ),
+        icon: BitmapDescriptor.defaultMarker,
+      );
+
+      _markers.add(marker);
+    }
+
+    setState(() {
+      _polylines = polylines.toSet();
+    });
+  }
+
+
 
   LatLng _getCoordinates(LatLng coordinates) {
     return coordinates;
@@ -154,17 +223,22 @@ class _MapRoadPageState extends State<MapRoadPage> {
       body: Column(
         children: [
           Expanded(
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(37.5665, 126.9780),
-                zoom: 11.0,
+            child: Container(
+              height: 300,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(37.5665, 126.9780),
+                  zoom: 11.0,
+                ),
+                markers: _markers,
+                polylines: _polylines,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
               ),
-              markers: _markers,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
             ),
           ),
+
           SizedBox(height: 10),
           Expanded(
             child: ListView.builder(

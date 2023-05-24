@@ -18,7 +18,7 @@ class Maps2Page extends StatefulWidget {
 }
 
 class _Maps2PageState extends State<Maps2Page> {
-  List<String> itemList = List.generate(10, (index) => 'Item ${index + 1}');
+  List<String> itemList = [];
   bool isEditing = false;
   List<bool> isItemDeletedList = List.generate(10, (index) => false);
 
@@ -28,36 +28,29 @@ class _Maps2PageState extends State<Maps2Page> {
 
   Completer<GoogleMapController> _controllerCompleter = Completer<GoogleMapController>();
 
-
-  CameraPosition initialCameraPosition = CameraPosition(
-      target: LatLng(37.5665, 126.9780), // Default position or modify it to the desired location
-      zoom: 11.0, // Default zoom level or modify it to the desired level
-    );
+  LatLngBounds? _bounds;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<SelectedModel>(context, listen: false)
-        .fetchDataFromDatabase()
-        .then((attractionsList) {
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      List<Map<String, dynamic>> attractionsList = await Provider.of<SelectedModel>(context, listen: false).fetchDataFromDatabase();
       _addMarkers(attractionsList);
       _createPolylines();
-      LatLng center = _calculateCenterPosition(); // Calculate the center position
-      setState(() {
-        initialCameraPosition = CameraPosition(
-          target: center,
-          zoom: 11.0, // Adjust the zoom level as needed
-        );
-      });
-    }).catchError((error) {
+      _calculateBounds();
+      setState(() {});
+    } catch (error) {
       print("An error occurred while fetching data: $error");
-    });
+    }
   }
 
   LatLng _getCoordinates(LatLng coordinates) {
     return coordinates;
   }
-
 
   void _addMarkers(List<Map<String, dynamic>> attractionsList) async {
     for (int i = 0; i < attractionsList.length; i++) {
@@ -76,6 +69,8 @@ class _Maps2PageState extends State<Maps2Page> {
 
       setState(() {
         _markers.add(marker);
+        itemList.add(attractionsList[i]['name']); // Add the marker's name to itemList
+        isItemDeletedList.add(false);
       });
     }
   }
@@ -89,9 +84,12 @@ class _Maps2PageState extends State<Maps2Page> {
 
   void _deleteItem(int index) {
     setState(() {
-      isItemDeletedList[index] = true;
+
+      isItemDeletedList.removeAt(index); // isItemDeletedList에서도 해당 항목 제거
+      itemList.removeAt(index); // itemList에서도 삭제된 항목 제거
     });
   }
+
 
   void _createPolylines() {
     // Create a polyline using the _markerCoordinates list
@@ -108,20 +106,57 @@ class _Maps2PageState extends State<Maps2Page> {
     });
   }
 
-  LatLng _calculateCenterPosition() {
-    // Calculate the center position using _markerCoordinates
-    double sumLat = 0;
-    double sumLng = 0;
-    for (LatLng position in _markerCoordinates) {
-      sumLat += position.latitude;
-      sumLng += position.longitude;
+  void _calculateBounds() {
+    if (_markerCoordinates.isNotEmpty) {
+      double minLat = double.infinity;
+      double maxLat = -double.infinity;
+      double minLng = double.infinity;
+      double maxLng = -double.infinity;
+
+      for (LatLng position in _markerCoordinates) {
+        if (position.latitude < minLat) {
+          minLat = position.latitude;
+        }
+        if (position.latitude > maxLat) {
+          maxLat = position.latitude;
+        }
+        if (position.longitude < minLng) {
+          minLng = position.longitude;
+        }
+        if (position.longitude > maxLng) {
+          maxLng = position.longitude;
+        }
+      }
+
+      LatLng southwest = LatLng(minLat, minLng);
+      LatLng northeast = LatLng(maxLat, maxLng);
+
+      _bounds = LatLngBounds(southwest: southwest, northeast: northeast);
     }
-    double centerLat = sumLat / _markerCoordinates.length;
-    double centerLng = sumLng / _markerCoordinates.length;
-    return LatLng(centerLat, centerLng);
   }
 
-  double _calculateZoomLevel(LatLngBounds bounds) {
+  CameraPosition _getCameraPosition() {
+    LatLngBounds? bounds = _getBounds(); // Call the _getBounds function
+    CameraPosition initialCameraPosition;
+
+    if (bounds != null) {
+      LatLng center = LatLng(
+        (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+        (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+      );
+      double zoom = _calculateZoomLevel();
+      initialCameraPosition = CameraPosition(target: center, zoom: zoom);
+    } else {
+      // Set default position or desired position
+      LatLng defaultPosition = LatLng(37.5665, 126.9780);
+      double defaultZoom = 11.0;
+      initialCameraPosition = CameraPosition(target: defaultPosition, zoom: defaultZoom);
+    }
+
+    return initialCameraPosition;
+  }
+
+  double _calculateZoomLevel() {
     const double padding = 50.0;
     final double maxZoom = 21.0;
 
@@ -131,8 +166,8 @@ class _Maps2PageState extends State<Maps2Page> {
     double mapWidth = MediaQuery.of(context).size.width - (2 * padding);
     double mapHeight = MediaQuery.of(context).size.height - (2 * padding);
 
-    double angle = bounds.northeast.latitude - bounds.southwest.latitude;
-    double angle2 = bounds.northeast.longitude - bounds.southwest.longitude;
+    double angle = _bounds!.northeast.latitude - _bounds!.southwest.latitude;
+    double angle2 = _bounds!.northeast.longitude - _bounds!.southwest.longitude;
 
     double deltaLat = angle;
     double deltaLng = angle2;
@@ -143,6 +178,13 @@ class _Maps2PageState extends State<Maps2Page> {
     minZoom = min(zoomLat, zoomLng);
 
     zoom = minZoom > maxZoom ? maxZoom : minZoom;
+    double minZoomAdjustment = 1.0; // Set the minimum zoom level adjustment
+
+    if (zoom > minZoomAdjustment) {
+      zoom -= minZoomAdjustment;
+    } else {
+      zoom = 1.0;
+    }
 
     return zoom;
   }
@@ -159,176 +201,166 @@ class _Maps2PageState extends State<Maps2Page> {
   }
 
   LatLngBounds? _getBounds() {
-    if (_markerCoordinates.isEmpty) {
-      return null;
+    if (_bounds != null) {
+      LatLng southwest = _bounds!.southwest;
+      LatLng northeast = _bounds!.northeast;
+
+      return LatLngBounds(southwest: southwest, northeast: northeast);
     }
-
-    double minLat = double.infinity;
-    double maxLat = -double.infinity;
-    double minLng = double.infinity;
-    double maxLng = -double.infinity;
-
-    for (LatLng position in _markerCoordinates) {
-      if (position.latitude < minLat) {
-        minLat = position.latitude;
-      }
-      if (position.latitude > maxLat) {
-        maxLat = position.latitude;
-      }
-      if (position.longitude < minLng) {
-        minLng = position.longitude;
-      }
-      if (position.longitude > maxLng) {
-        maxLng = position.longitude;
-      }
-    }
-
-    LatLng southwest = LatLng(minLat, minLng);
-    LatLng northeast = LatLng(maxLat, maxLng);
-
-    return LatLngBounds(southwest: southwest, northeast: northeast);
-  }
-
-  LatLng _getFirstMarkerPosition() {
-    if (_markerCoordinates.isNotEmpty) {
-      return _markerCoordinates.first;
-    }
-
-    // Default position or modify it to the desired location
-    return LatLng(37.5665, 126.9780);
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     LatLngBounds? bounds = _getBounds();
-    print('sssss');
-    print(bounds);
-    print(Provider.of<SelectedModel>(context, listen: false).fetchDataFromDatabase());
+    CameraPosition initialCameraPosition = _getCameraPosition();
 
     if (bounds != null) {
-      print('ssssss');
-      LatLng center = LatLng(
-        (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
-        (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
-      );
-      double zoom = _calculateZoomLevel(bounds);
-      initialCameraPosition = CameraPosition(target: center, zoom: zoom);
-    } else {
-      LatLng firstMarkerPosition = _getFirstMarkerPosition();
-      initialCameraPosition = CameraPosition(target: firstMarkerPosition, zoom: 11.0);
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.grey,
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.grey,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          title: Row(
+            children: [
+              Text(
+                'Google Maps',
+                style: TextStyle(color: Colors.black),
+              ),
+              Spacer(),
+              Icon(Icons.map_outlined, color: Colors.grey),
+              SizedBox(width: 10),
+              Icon(Icons.menu, color: Colors.grey),
+            ],
+          ),
         ),
-        title: Row(
+        body: Column(
           children: [
-            Text(
-              'Google Maps',
-              style: TextStyle(color: Colors.black),
+            Container(
+              width: double.infinity,
+              height: 300,
+              child: GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: initialCameraPosition,
+                markers: _markers,
+                polylines: _polylines,
+                onMapCreated: (GoogleMapController controller) {
+                  _controllerCompleter.complete(controller);
+                },
+              ),
             ),
-            Spacer(),
-            Icon(Icons.map_outlined, color: Colors.grey),
-            SizedBox(width: 10),
-            Icon(Icons.menu, color: Colors.grey),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 300,
-            child: GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: initialCameraPosition,
-              markers: _markers,
-              polylines: _polylines,
-              onMapCreated: (GoogleMapController controller) {
-                _controllerCompleter.complete(controller);
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '여행 순서',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MapRoadPage()),
-                    );
-                  },
-                  child: Text(
-                    '다음',
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Travel Order',
                     style: TextStyle(
-                      color: Colors.white,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapRoadPage()),
+                      );
+                    },
+                    child: Text(
+                      'Next',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ReorderableListView.builder(
-              padding: EdgeInsets.only(top: 16.0),
-              itemCount: itemList.length,
-              itemBuilder: (context, index) {
-                return isItemDeletedList[index]
-                    ? SizedBox.shrink()
-                    : ListTile(
-                        key: Key('$index'),
-                        leading: CircleAvatar(
-                          radius: 16.0,
-                          backgroundColor: Colors.blue,
-                          child: Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.0,
-                            ),
+            Expanded(
+              child: ReorderableListView.builder(
+                padding: EdgeInsets.only(top: 16.0),
+                itemCount: itemList.length,
+                itemBuilder: (context, index) {
+                  return isItemDeletedList[index]
+                      ? SizedBox.shrink()
+                      : ReorderableDragStartListener(
+                    index: index,
+                    key: Key('item_$index'), // 고유한 키를 할당합니다.
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 16.0,
+                        backgroundColor: Colors.blue,
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.0,
                           ),
                         ),
-                        title: Text(itemList[index]),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            _deleteItem(index);
-                          },
-                        ),
-                      );
-              },
-              onReorder: (oldIndex, newIndex) {
-                if (newIndex > oldIndex) {
-                  newIndex -= 1;
-                }
-                setState(() {
-                  final item = itemList.removeAt(oldIndex);
-                  itemList.insert(newIndex, item);
-                });
-              },
+                      ),
+                      title: Text(itemList[index]),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _deleteItem(index);
+                        },
+                      ),
+                    ),
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+                  setState(() {
+                    final item = itemList.removeAt(oldIndex);
+                    itemList.insert(newIndex, item);
+                  });
+                },
+              ),
             ),
+          ],
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.grey,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ],
-      ),
-    );
+          title: Row(
+            children: [
+              Text(
+                'Google Maps',
+                style: TextStyle(color: Colors.black),
+              ),
+              Spacer(),
+              Icon(Icons.map_outlined, color: Colors.grey),
+              SizedBox(width: 10),
+              Icon(Icons.menu, color: Colors.grey),
+            ],
+          ),
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 }
