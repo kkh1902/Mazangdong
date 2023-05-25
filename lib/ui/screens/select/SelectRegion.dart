@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
-import 'package:mazangdong/ui/screens/select/SelectThema.dart';
+import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
+
+import 'indicator.dart' as PageCount;
 
 class SelectRegionPage extends StatefulWidget {
   final ConvModel convModel;
@@ -17,32 +19,58 @@ class SelectRegionPage extends StatefulWidget {
   _SelectRegionPageState createState() => _SelectRegionPageState();
 }
 
-
 class _SelectRegionPageState extends State<SelectRegionPage> {
   final RegionModel regionModel = RegionModel();
-  List<bool> isItemSelected = [false, false, false, false, false, false,false, false];
+  List<bool> isItemSelected = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
   int? selectedRegionIndex; // Track the selected region index
 
   void handleSelection(int index) {
     setState(() {
-      if (selectedRegionIndex == index) {
-        selectedRegionIndex = null; // Deselect the region if it's already selected
-      } else {
-        selectedRegionIndex = index; // Select the region
-      }
-      widget.regionModel.selectedRegions.clear(); // Clear the previous selected region
-      if (selectedRegionIndex != null) {
-        widget.regionModel.selectedRegions.add(index); // Add the selected region
+      isItemSelected[index] = !isItemSelected[index];
+      widget.convModel.selectedRegions.clear();
+      for (int i = 0; i < isItemSelected.length; i++) {
+        if (isItemSelected[i]) {
+          widget.convModel.selectedRegions.add(1);
+        } else {
+          widget.convModel.selectedRegions.add(0);
+        }
       }
     });
   }
 
+  // void handleSelection(int index) {
+  //   setState(() {
+  //     if (selectedRegionIndex == index) {
+  //       selectedRegionIndex =
+  //           null; // Deselect the region if it's already selected
+  //     } else {
+  //       selectedRegionIndex = index; // Select the region
+  //     }
+  //     widget.regionModel.selectedRegions
+  //         .clear(); // Clear the previous selected region
+  //     if (selectedRegionIndex != null) {
+  //       widget.regionModel.selectedRegions
+  //           .add(index); // Add the selected region
+  //     }
+  //   });
+  // }
+
   void goToNextPage() {
-    print("regionModel: ${widget.regionModel}");
+    print("regionModel: ${widget.convModel}");
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SelectThemaPage(
+        builder: (context) => SelectCompletePage(
           convModel: widget.convModel,
           regionModel: widget.regionModel,
         ),
@@ -50,140 +78,138 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 50),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 50),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                backgroundColor: Colors.grey[200],
-                value: 0.8,
-                minHeight: 8.0,
+          padding: EdgeInsets.fromLTRB(5.0, 55.0, 5.0, 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    '여행지 선택',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'PretendardSemiBold',
+                        color: Colors.black),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 50),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        '지역 입력',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          backgroundColor: Colors.grey,
-                          fontFamily: 'PretendardBold',
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '여행지를 선택해주세요',
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontFamily: 'PretendardSemiBold',
+                      color: Colors.black),
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height / 1.5,
+                ),
+                child: Expanded(
+                    child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [
+                              buildInputRow('서울특별시', 0, 'assets/images/region/seoul.png'),
+                              SizedBox(width: 10),
+                              buildInputRow('부산광역시', 1, 'assets/images/region/busan.png'),
+                            ]),
+                            SizedBox(height: 10),
+                            Row(children: [
+                              buildInputRow('인천광역시', 2, 'assets/images/region/incheon.png'),
+                              SizedBox(width: 10),
+                              buildInputRow('대구광역시', 3, 'assets/images/region/daegu.png'),
+                            ]),
+                            SizedBox(height: 10),
+                            Row(children: [
+                              buildInputRow('대전광역시', 4, 'assets/images/region/daejeon.png'),
+                              SizedBox(width: 10),
+                              buildInputRow('광주광역시', 5, 'assets/images/region/gwangju.png'),
+                            ]),
+                            SizedBox(height: 10),
+                            Row(children: [
+                              buildInputRow('울산광역시', 6, 'assets/images/region/ulsan.png'),
+                              SizedBox(width: 10),
+                              buildInputRow('세종특별자치시', 7, 'assets/images/region/sejong.png'),
+                            ]),
+                            SizedBox(height: 10),
+                            Row(children: [
+                              buildInputRow('제주특별자치도', 8, 'assets/images/region/jeju.png'),
+                              SizedBox(width: 10),
+                              Text("")
+                            ]),
+                          ],
+                        ))),
+              ),
+              SizedBox(height: 10),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5,
+                  minHeight: MediaQuery.of(context).size.height / 10,
+                ),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      side: BorderSide(color: Color(0xFF00adef))),
+                  onPressed: () {
+                    handleSelection(0);
+                    goToNextPage();
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(""),
+                        Text(
+                          '다음',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'PretendardSemiBold',
+                              color: Colors.black),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Row(
-                      children: [
-                        SizedBox(width: 10), // 왼쪽 여백
-                        buildInputRow('assets/images/trip.png', '서울특별시', 0),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '부산광역시', 1),
-                        SizedBox(width: 10), // 오른쪽 여백
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '인천광역시', 2),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '대구광역시', 3),
-                        SizedBox(width: 10),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '대전광역시', 4),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '광주광역시', 5),
-                        SizedBox(width: 10),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '울산광역시', 6),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '세종시', 7),
-                        SizedBox(width: 10),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                  ],
+                        Icon(Icons.arrow_forward_ios),
+                      ]),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Handle previous button press
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xff50bcdf),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: PageViewDotIndicator(
+                  currentItem: 4,
+                  count: PageCount.PageCount().count,
+                  unselectedColor: Colors.black26,
+                  selectedColor: Colors.blue,
+                  size: const Size(18.0, 9.0),
+                  unselectedSize: const Size(8, 8),
+                  duration: Duration(milliseconds: 200),
+                  boxShape: BoxShape.circle,
                 ),
-                child: Text('이전',
-                    style: TextStyle(fontSize:20, fontFamily: 'PretendardBold')),
               ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  goToNextPage(); // Handle next button pressed
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xffa3cc9b),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: Text('다음',
-                    style: TextStyle(fontSize:20, fontFamily: 'PretendardBold')),
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          )),
     );
   }
 
-  Widget buildInputRow(String image, String text, int index) {
-    final isSelected = selectedRegionIndex == index;
-
+  Widget buildInputRow(String text, int index, String imagePath) {
     return Expanded(
       child: InkWell(
         onTap: () => handleSelection(index),
@@ -192,20 +218,22 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isSelected ? Colors.green : Colors.grey[200]!,
+              color: isItemSelected[index] ? Color(0xFF00adef) : Colors.grey[200]!,
               width: 2.0,
             ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 10),
-              Image.asset(
-                image,
-                width: 50,
-                height: 50,
+              SizedBox(
+                width: 40, // Set the desired width for the image
+                height: 40, // Set the desired height for the image
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover, // Adjust the image's fit property as needed
+                ),
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 8),
               Text(
                 text,
                 style: TextStyle(
@@ -219,6 +247,6 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
       ),
     );
   }
-}
 
+}
 

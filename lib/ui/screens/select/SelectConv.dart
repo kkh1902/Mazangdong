@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
+import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
+
+import 'indicator.dart' as PageCount;
 
 class SelectConvPage extends StatefulWidget {
   final ConvModel convModel;
@@ -14,9 +18,19 @@ class SelectConvPage extends StatefulWidget {
 }
 
 class _SelectConvPageState extends State<SelectConvPage> {
-  List<bool> isItemSelected = [false, false, false, false, false];
+  List<bool> isItemSelected = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
   int counter = 1;
-
 
   void handleSelection(int index) {
     setState(() {
@@ -31,11 +45,6 @@ class _SelectConvPageState extends State<SelectConvPage> {
       }
     });
   }
-
-
-
-
-
 
   void goToNextPage() {
     print("convenienceModel: ${widget.convModel}");
@@ -54,123 +63,136 @@ class _SelectConvPageState extends State<SelectConvPage> {
     return Scaffold(
       appBar: null,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 50),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 50),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                backgroundColor: Colors.grey[200],
-                value: 0.6,
-                minHeight: 8.0,
+          padding: EdgeInsets.fromLTRB(5.0, 55.0, 5.0, 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    '서비스 선택',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'PretendardSemiBold',
+                        color: Colors.black),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 50),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        '편의시설 입력',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          backgroundColor: Colors.grey,
-                          fontFamily: 'PretendardBold',
+              SizedBox(
+                height: 30, // Set the desired height for the Container
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    '필요한 서비스를 선택해주세요',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontFamily: 'PretendardSemiBold',
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height / 1.5,
+                ),
+                child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          buildInputRow('장애인 주차구역', 0, 'assets/images/convservice/parking.png'),
+                          SizedBox(width: 10),
+                          buildInputRow('안내견', 1,  'assets/images/convservice/dog.png'),
+                        ]),
+                        SizedBox(height: 10),
+                        Row(children: [
+                          buildInputRow('휠체어 대여', 2, 'assets/images/convservice/wheel.png'),
+                          SizedBox(width: 10),
+                          buildInputRow('관광 가이드', 3, 'assets/images/convservice/tourguide.png'),
+                        ]),
+                        SizedBox(height: 10),
+                        Row(children: [
+                          buildInputRow('엘리베이터', 4, 'assets/images/convservice/elevator.png'),
+                          SizedBox(width: 10),
+                          buildInputRow('수화 통역', 5,  'assets/images/convservice/hand.png'),
+                        ]),
+                        SizedBox(height: 10),
+                        Row(children: [
+                          buildInputRow('장애인 전용 화장실', 6,  'assets/images/convservice/wc.png'),
+                          SizedBox(width: 10),
+                          buildInputRow('청각 보조기', 7,  'assets/images/convservice/earplug.png'),
+                        ]),
+                        SizedBox(height: 10),
+                        Row(children: [
+                          buildInputRow('장애인 전용 객실', 8,  'assets/images/convservice/room.png'),
+                          SizedBox(width: 10),
+                          buildInputRow('점자 안내서', 9,  'assets/images/convservice/dots.png'),
+                        ]),
+                      ],
+                    )),
+              ),
+              SizedBox(height: 10),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5,
+                  minHeight: MediaQuery.of(context).size.height / 10,
+                ),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      side: BorderSide(color: Color(0xFF00adef))),
+                  onPressed: () {
+                    handleSelection(0);
+                    goToNextPage();
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(""),
+                        Text(
+                          '다음',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'PretendardSemiBold',
+                              color: Colors.black),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Row(
-                      children: [
-                        SizedBox(width: 10), // 왼쪽 여백
-                        buildInputRow('assets/images/trip.png', '장애인 주차장', 0),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '휠체어 대어', 1),
-                        SizedBox(width: 10), // 오른쪽 여백
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '장애인 전용 화장실', 2),
-                        SizedBox(width: 20),
-                        buildInputRow('assets/images/trip.png', '무단차/경사로', 3),
-                        SizedBox(width: 10),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
-                        buildInputRow('assets/images/trip.png', '엘리베이터', 4),
-                        SizedBox(width: 20),
-                      ],
-                    ),
-                  ],
+                        Icon(Icons.arrow_forward_ios),
+                      ]),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xff50bcdf), // 214, 260, 245
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: Text(
-                  '이전',
-                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: PageViewDotIndicator(
+                  currentItem: 3,
+                  count: PageCount.PageCount().count,
+                  unselectedColor: Colors.black26,
+                  selectedColor: Colors.blue,
+                  size: const Size(18.0, 9.0),
+                  unselectedSize: const Size(8, 8),
+                  duration: Duration(milliseconds: 200),
+                  boxShape: BoxShape.circle,
                 ),
               ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  goToNextPage();
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xffa3cc9b),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: Text(
-                  '다음',
-                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          )),
     );
   }
 
-  Widget buildInputRow(String image, String text, int index) {
+  Widget buildInputRow(String text, int index, String imagePath) {
     return Expanded(
       child: InkWell(
         onTap: () => handleSelection(index),
@@ -179,24 +201,26 @@ class _SelectConvPageState extends State<SelectConvPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isItemSelected[index] ? Colors.green : Colors.grey[200]!,
+              color: isItemSelected[index] ? Color(0xFF00adef) : Colors.grey[200]!,
               width: 2.0,
             ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 10),
-              Image.asset(
-                image,
-                width: 50,
-                height: 50,
+              SizedBox(
+                width: 40, // Set the desired width for the image
+                height: 40, // Set the desired height for the image
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover, // Adjust the image's fit property as needed
+                ),
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 8),
               Text(
                 text,
                 style: TextStyle(
-                  fontFamily: 'PretendardSemiBOld',
+                  fontFamily: 'PretendardSemiBold',
                   fontSize: 18,
                 ),
               ),
@@ -206,7 +230,7 @@ class _SelectConvPageState extends State<SelectConvPage> {
       ),
     );
   }
-}
 
+}
 
 

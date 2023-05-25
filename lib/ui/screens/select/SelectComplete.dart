@@ -1,108 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/models/ConvModel.dart';
 import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
-import 'package:mazangdong/models/ResponseModel.dart';
-import 'package:mazangdong/ui/screens/travel/TravelList.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 
-class SelectCompletePage extends StatefulWidget {
+import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
+
+import 'indicator.dart' as PageCount;
+
+class SelectCompletePage extends StatelessWidget {
   final ConvModel convModel;
   final RegionModel regionModel;
-  final ThemaModel themaModel;
 
   SelectCompletePage({
     required this.convModel,
     required this.regionModel,
-    required this.themaModel,
-  });
-
-  @override
-  _SelectCompletePageState createState() => _SelectCompletePageState();
-}
-
-class _SelectCompletePageState extends State<SelectCompletePage> {
-  late ResponseModel responseModel;
-
-  @override
-  void initState() {
-    super.initState();
-    responseModel = ResponseModel(trip: [], lodging: []);
+  }) {
+    print("convModel: $convModel");
+    print("regionModel: $regionModel");
   }
 
-  Future<void> _sendRequest() async {
-    var url = 'https://majangdong.run.goorm.site/info';
+  void _sendRequest() async {
+    var url = 'https://se-fjnsi.run.goorm.site/info';
+
+    // JSON 데이터 변경후 GET 요청하기
+
+    // var data = {
+    //   'together': convModel.isTravelingAlone,
+    //   'parking': convModel.selectedOptions,
+    //   'bathchair': convModel.selectedOptions,
+    //   'restroom': convModel.selectedOptions,
+    //   'region': regionModel.selectedRegions,
+    // };
+    // print("data $data");
+
     var data = {
       'together': '1',
       'parking': '1',
-      'wheelchair': '1',
+      'bathchair': '1',
       'restroom': '1',
-      'region': '8',
+      'region': '1',
     };
 
+    // GET 요청의 쿼리 매개변수로 JSON 데이터 추가
     var uri = Uri.parse(url);
-    var queryParameters = data.entries.map((e) => '${e.key}=${e.value}').join('&');
+    var queryParameters =
+    data.entries.map((e) => '${e.key}=${e.value}').join('&');
     var requestUrl = Uri.parse('$uri?$queryParameters');
 
-    try {
-      var response = await http.get(requestUrl);
+    var response = await http.get(requestUrl);
 
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
-        print('SSSSS$jsonResponse');
+    print("uri: $uri");
+    print("queryParameters: $queryParameters");
+    print("requestUrl: $requestUrl");
 
-        responseModel = ResponseModel.fromJson(jsonResponse);
-
-        // Iterate over trip models and add latitude and longitude
-        for (var tripModel in responseModel.trip) {
-          var geocodeUrl =
-              'https://maps.googleapis.com/maps/api/geocode/json?address=${tripModel.juso}&key=AIzaSyAD2Tf6yBI9jb2abxGVZGlMKmoqDglhYzs';
-          print("tripModel: ${tripModel.juso}");
-          print('geocodeUrl: $geocodeUrl');
-          var geocodeResponse = await http.get(Uri.parse(geocodeUrl));
-          if (geocodeResponse.statusCode == 200) {
-            var geocodeJson = json.decode(geocodeResponse.body);
-            if (geocodeJson['results'] != null && geocodeJson['results'].isNotEmpty) {
-              var location = geocodeJson['results'][0]['geometry']['location'];
-              tripModel.latitude = location['lat'];
-              tripModel.longitude = location['lng'];
-            }
-          }
-        }
-
-        // Iterate over lodging models and add latitude and longitude
-        for (var lodgingModel in responseModel.lodging) {
-          var geocodeUrl =
-              'https://maps.googleapis.com/maps/api/geocode/json?address=${lodgingModel.sungbaksiseoljuso}&key=AIzaSyAD2Tf6yBI9jb2abxGVZGlMKmoqDglhYzs';
-          var geocodeResponse = await http.get(Uri.parse(geocodeUrl));
-          if (geocodeResponse.statusCode == 200) {
-            var geocodeJson = json.decode(geocodeResponse.body);
-            if (geocodeJson['results'] != null && geocodeJson['results'].isNotEmpty) {
-              var location = geocodeJson['results'][0]['geometry']['location'];
-              lodgingModel.latitude = location['lat'];
-              lodgingModel.longitude = location['lng'];
-            }
-          }
-        }
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error occurred during request: $error');
+    if (response.statusCode == 200) {
+      print('Response: ${response.body}');
+      print('uri: ${uri}');
+      print('queryParameters: ${queryParameters}');
+      print('requestUrl: ${requestUrl}');
+      final decodedData = json.decode(response.body);
+      debugPrint('Response: $decodedData');
+      // TODO: Handle the response data here
+    } else {
+      print('Request failed with status: ${response.statusCode}');
     }
   }
 
-
-
-  void goToNextPage(BuildContext context) async {
-    await _sendRequest();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TravelListPage(responseModel: responseModel),
-      ),
-    );
+  void goToNextPage(BuildContext context) {
+    _sendRequest();
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => TravelListPage(),
+    //   ),
+    // );
   }
 
   @override
@@ -110,74 +85,88 @@ class _SelectCompletePageState extends State<SelectCompletePage> {
     return Scaffold(
       appBar: null,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 50),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 50),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                backgroundColor: Colors.grey[200],
-                value: 1.0,
-                minHeight: 8.0,
-              ),
-            ),
-            SizedBox(height: 20),
-            Image.asset('assets/images/trip.png'),
-            SizedBox(height: 20),
-            Text(
-              '완료되었습니다.',
-              style: TextStyle(fontSize: 20),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xff50bcdf),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+          padding: EdgeInsets.fromLTRB(5.0, 55.0, 5.0, 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                ),
-                child: Text(
-                  '이전',
-                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
-                ),
-              ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  goToNextPage(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xffa3cc9b),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                  SizedBox(width: 10),
+                  Text(
+                    '',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'PretendardSemiBold',
+                        color: Colors.black),
                   ),
-                ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  '다음',
-                  style: TextStyle(fontSize: 20, fontFamily: 'PretendardBold'),
+                  '선택이 완료되었습니다',
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontFamily: 'PretendardSemiBold',
+                      color: Colors.black),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+              SizedBox(
+                height: 128,
+                width: 128,
+                child: Image.asset('assets/images/icons/complete_logo.png'),
+              ),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5,
+                  minHeight: MediaQuery.of(context).size.height / 10,
+                ),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      side: BorderSide(color: Color(0xFF00adef))),
+                  onPressed: () {
+                    goToNextPage(context);
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(""),
+                        Text(
+                          '확인',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'PretendardSemiBold',
+                              color: Colors.black),
+                        ),
+                        Icon(Icons.arrow_forward_ios),
+                      ]),
+                ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: PageViewDotIndicator(
+                  currentItem: 5,
+                  count: PageCount.PageCount().count,
+                  unselectedColor: Colors.black26,
+                  selectedColor: Colors.blue,
+                  size: const Size(18.0, 9.0),
+                  unselectedSize: const Size(8, 8),
+                  duration: Duration(milliseconds: 200),
+                  boxShape: BoxShape.circle,
+                ),
+              ),
+            ],
+          )),
     );
   }
 }

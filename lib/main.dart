@@ -7,11 +7,12 @@ import 'package:mazangdong/models/RegionModel.dart';
 import 'package:mazangdong/models/ThemaModel.dart';
 import 'package:mazangdong/models/ResponseModel.dart';
 import 'package:mazangdong/ui/screens/select/SelectConv.dart';
+import 'package:mazangdong/ui/screens/select/SelectBus.dart';
 import 'package:mazangdong/ui/screens/select/SelectGuardian.dart';
 import 'package:mazangdong/ui/screens/select/SelectRegion.dart';
 import 'package:mazangdong/ui/screens/select/SelectComplete.dart';
 import 'package:mazangdong/ui/screens/select/SelectNickname.dart';
-import 'package:mazangdong/ui/screens/select/SelectThema.dart';
+import 'package:mazangdong/ui/screens/select/SelectTransportation.dart';
 import 'package:mazangdong/ui/screens/travel/TravelList.dart';
 import 'package:mazangdong/ui/screens/travel/TravleDetail.dart';
 import 'package:mazangdong/ui/screens/travel/RecommedTourlist.dart';
@@ -47,19 +48,20 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/selectGuardian': (context) => SelectGuardianPage(),
         '/selectNickname': (context) =>
-            SelectNicknamePage(convModel: convModel),
+            SelectNicknamePage(),
+        '/selectGuardian': (context) => SelectGuardianPage(convModel: convModel),
+        '/selectTransportation': (context) => SelectTransportationPage(
+          convModel: convModel,
+        ),
+        '/selectBus': (context) => SelectBusPage(
+          convModel: convModel,
+        ),
         '/selectConv': (context) => SelectConvPage(convModel: convModel),
         '/selectRegion': (context) => SelectRegionPage(convModel: convModel),
-        '/selectThema': (context) => SelectThemaPage(
-              convModel: convModel,
-              regionModel: regionModel,
-            ),
         '/selectComplete': (context) => SelectCompletePage(
             convModel: convModel,
-            regionModel: regionModel,
-            themaModel: themaModel),
+            regionModel: regionModel),
         '/travelList': (context) => MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => SelectedModel()),
@@ -79,55 +81,87 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: null,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Image.asset(
-                'assets/images/trip.png',
-                width: 1000,
-                height: 1000,
+          appBar: null,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                // color: Color(0xfff8f8f8),
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  minWidth: MediaQuery.of(context).size.width,
+                  maxHeight: MediaQuery.of(context).size.height / 1.5,
+                ),
+                decoration: BoxDecoration(
+                  // color: Color(0xFFEBEBEB),
+                    color: Color(0xFFF3F3F3),
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(125),
+                        bottomRight: Radius.circular(125)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3))
+                    ]),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 80),
+                      Text(
+                        "환영합니다.",
+                        style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF000000)),
+                      ),
+                      SizedBox(
+                        height: 300,
+                        width: 350,
+                        child: Image.asset('assets/images/logo/main_mapo_logo.png'),
+                      )
+                    ]),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+              Container(
+                margin: EdgeInsets.only(top: 80),
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5,
+                  minHeight: MediaQuery.of(context).size.height / 10,
+                ),
+                child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        side: BorderSide(color: Color(0xFF00adef))),
+                    onPressed: () {
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SelectGuardianPage(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                              builder: (context) => SelectNicknamePage()));
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(""),
+                        Text(
+                          "시작하기",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                        primary: Color(0xffa3cc9b), // 초록색 배경
-                      ),
-                      child: Text(
-                        '시작하기',
-                        style: TextStyle(
-                            fontSize: 20.0, fontFamily: 'PretendardBold'),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+                        Icon(Icons.arrow_forward_ios)
+                      ],
+                    )),
+              )
+            ],
+          )),
     );
   }
 }
