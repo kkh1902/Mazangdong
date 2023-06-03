@@ -63,6 +63,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         key: _scaffoldKey,
         body: Stack(
           children: [
