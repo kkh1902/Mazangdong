@@ -1,3 +1,4 @@
+import 'package:dong/screens/drawer/myreport.dart';
 import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierinfo.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
@@ -13,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Naver Map',
       initialRoute: '/',
       routes: {
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/barrierpicture': (context) => BarrierpicturePage(),
         '/barriercategory': (context) => BarriercategoryPage(),
         '/barrierperson': (context) => BarrierwatchPage(),
+        '/myreport': (context) => MyReportPage(),
       },
     );
   }
@@ -73,7 +76,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                   _controller = controller;
                 });
               },
-              initialCameraPosition: CameraPosition(
+              initialCameraPosition: const CameraPosition(
                 target: LatLng(
                   37.5665,
                   126.9780,
@@ -99,10 +102,10 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(left: 4.0),
+                              padding: const EdgeInsets.only(left: 4.0),
                               child: Icon(Icons.edit, size: 16.0),
                             ),
-                            SizedBox(width: 4.0),
+                            const SizedBox(width: 4.0),
                             Text(
                               '배리어 제보',
                               style: TextStyle(
@@ -121,7 +124,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     SizedBox(
                       width: 120.0,
                       height: 30.0,
@@ -132,11 +135,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Padding(
+                            const Padding(
                               padding: EdgeInsets.only(left: 4.0),
                               child: Icon(Icons.record_voice_over, size: 16.0),
                             ),
-                            SizedBox(width: 4.0),
+                            const SizedBox(width: 4.0),
                             Text(
                               'GPT 안내',
                               style: TextStyle(
@@ -155,7 +158,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     SizedBox(
                       width: 120.0,
                       height: 30.0,
@@ -189,7 +192,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 32.0,
                     ), // Add the desired height for the blank space
                   ],
@@ -199,7 +202,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
             Align(
               alignment: Alignment.bottomRight,
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: FloatingActionButton(
                   onPressed: () {
                     if (_controller != null) {
@@ -229,7 +232,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       prefixIcon: IconButton(
-                        icon: Icon(Icons.menu),
+                        icon: const Icon(Icons.menu),
                         onPressed: () {
                           _scaffoldKey.currentState!.openDrawer();
                         },
@@ -238,10 +241,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                   ),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -251,11 +255,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20.0),
                           ),
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 3.0,
                             horizontal: 10.0,
                           ),
-                          margin: EdgeInsets.only(right: 8.0),
+                          margin: const EdgeInsets.only(right: 8.0),
                           child: Row(
                             children: [
                               Icon(icons[index], size: 20.0),
@@ -276,19 +280,24 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
           child: ListView(
             padding: EdgeInsets.only(left: 16.0, right: 16.0),
             children: [
-              DrawerHeader(
-                child: Text(
-                  '누구님',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
+              const DrawerHeader(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text("김기훈",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8.0),
+                  Text("010-7296-9664",
+                      style: TextStyle(fontSize: 14.0, color: Colors.grey)),
+                ],
+              )),
               ListTile(
                 title: Text('나의 제보'),
                 onTap: () {
                   // Handle onTap for Item 1
+                  Navigator.pushNamed(context, '/myreport');
                 },
               ),
               Divider(),
@@ -303,6 +312,13 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 title: Text('공지사항'),
                 onTap: () {
                   // Handle onTap for Item 3
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text('전화 문의'),
+                onTap: () {
+                  // Handle onTap for Item 4
                 },
               ),
               Divider(),

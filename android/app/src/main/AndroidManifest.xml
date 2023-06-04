@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dong">
     <application
-        android:label="DongJunDev"
+        android:label="dong"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
