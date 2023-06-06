@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   flutter_naver_map: ^0.10.7
   image_picker: ^0.8.4+4
+  geolocator: ^7.6.2
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -4,6 +4,7 @@ import 'package:dong/screens/barrier/barriercategory.dart';
 import 'package:dong/screens/barrier/barrierpicture.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() {
   runApp(MyApp());
@@ -60,9 +61,41 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     super.dispose();
   }
 
+  void _goToCurrentLocation() async {
+    if (_controller != null) {
+      // Check if location permission is granted
+      bool isLocationPermissionGranted =
+          await Geolocator.isLocationServiceEnabled();
+      if (!isLocationPermissionGranted) {
+        // Location permission is not granted, handle accordingly
+        return;
+      }
+
+      // Get the current position
+      Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Create a new camera position with the current location
+      CameraPosition cameraPosition = CameraPosition(
+        target: LatLng(
+          currentPosition.latitude,
+          currentPosition.longitude,
+        ),
+        zoom: 15.0,
+      );
+
+      // Move the camera to the new position
+      _controller!.moveCamera(
+        CameraUpdate.toCameraPosition(cameraPosition),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         key: _scaffoldKey,
         body: Stack(
           children: [
@@ -71,6 +104,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 setState(() {
                   _controller = controller;
                 });
+                _goToCurrentLocation(); // Call _goToCurrentLocation to set the initial camera position to the current location
               },
               initialCameraPosition: CameraPosition(
                 target: LatLng(
@@ -200,12 +234,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               child: Padding(
                 padding: EdgeInsets.all(16.0),
                 child: FloatingActionButton(
-                  onPressed: () {
-                    if (_controller != null) {
-                      _controller!
-                          .setLocationTrackingMode(LocationTrackingMode.Follow);
-                    }
-                  },
+                  onPressed: _goToCurrentLocation, // 현재 위치로 이동하는 함수 호출
                   child: Icon(Icons.my_location),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
