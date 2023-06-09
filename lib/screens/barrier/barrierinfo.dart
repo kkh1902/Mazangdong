@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierpicture.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
-class BarrierInfoPage extends StatelessWidget {
+class BarrierInfoPage extends StatefulWidget {
+  @override
+  _BarrierInfoPageState createState() => _BarrierInfoPageState();
+}
+
+class _BarrierInfoPageState extends State<BarrierInfoPage> {
+  LatLng _markerPosition = LatLng(35.1567, 129.0704); // Initial marker position
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        centerTitle: true, // Center-align the title
+        centerTitle: true,
         title: Text(
           '배리어 제보',
           style: TextStyle(color: Colors.black),
@@ -23,8 +31,8 @@ class BarrierInfoPage extends StatelessWidget {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
           child: Container(
-            color: Colors.grey[300], // Border color
-            height: 1.0, // Border height
+            color: Colors.grey[300],
+            height: 1.0,
           ),
         ),
       ),
@@ -39,54 +47,57 @@ class BarrierInfoPage extends StatelessWidget {
             ),
             SizedBox(height: 20.0),
             Container(
-              height: 40.0, // Set a fixed height for the text field
+              height: 40.0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Enter detailed address:',
+                    '상세 주소를 입력하세요:',
                     style: TextStyle(
-                      color: Colors.black, // Text color
+                      color: Colors.black,
                     ),
                   ),
                   Divider(
-                    color: Colors.grey, // Underline color
-                    thickness: 1.0, // Underline thickness
+                    color: Colors.grey,
+                    thickness: 1.0,
                   ),
                 ],
               ),
             ),
             Container(
-              height: 30.0, // Set a fixed height for the text field
+              height: 30.0,
               child: TextFormField(
                 decoration: InputDecoration(
                   border: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.grey), // Underline color
+                    borderSide: BorderSide(color: Colors.grey),
                   ),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.grey), // Underline color
+                    borderSide: BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.grey), // Underline color
+                    borderSide: BorderSide(color: Colors.grey),
                   ),
-                  hintText: 'Enter address',
+                  hintText: '주소를 입력하세요',
                 ),
               ),
             ),
             SizedBox(height: 16.0),
             Expanded(
               child: Container(
-                color: Colors.grey[200], // Placeholder color for the map
+                color: Colors.grey[200],
                 child: NaverMap(
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                        37.5665, 126.9780), // Set the initial map position
-                    zoom: 15.0, // Set the initial zoom level
+                    target: _markerPosition,
+                    zoom: 15.0,
                   ),
-                  // Add other NaverMap configurations as needed
+                  markers: [
+                    Marker(
+                      markerId: 'marker_id',
+                      position: _markerPosition,
+                      anchor: AnchorPoint(0.5, 0.5),
+                    ),
+                  ],
+                  onMapCreated: (controller) {},
                 ),
               ),
             ),
@@ -101,18 +112,16 @@ class BarrierInfoPage extends StatelessWidget {
               child: Text(
                 '다음',
                 style: TextStyle(
-                  fontSize: 20.0, // Set the font size to 20
-                  color: Colors.black, // Set the text color to black
+                  fontSize: 20.0,
+                  color: Colors.black,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.yellow, // Set the background color to yellow
+                primary: Colors.yellow,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      30.0), // Set the border radius to make it rounded
+                  borderRadius: BorderRadius.circular(30.0),
                 ),
-                minimumSize: Size(double.infinity,
-                    50.0), // Set the minimum size with desired height
+                minimumSize: Size(double.infinity, 50.0),
               ),
             ),
           ],

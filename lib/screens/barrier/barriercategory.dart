@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:dong/main.dart';
 
 class BarriercategoryPage extends StatefulWidget {
   @override
@@ -96,7 +97,7 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => BarrierwatchPage()),
+                  MaterialPageRoute(builder: (context) => NaverMapScreen()),
                 );
                 // Code for the next button
               },

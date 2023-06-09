@@ -3,7 +3,17 @@ import 'package:dong/screens/barrier/barrierinfo.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
 import 'package:dong/screens/barrier/barrierpicture.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
+import 'package:dong/screens/tags/BarriertagsPage.dart';
+import 'package:dong/screens/tags/Tourtags.dart';
+import 'package:dong/screens/tags/wctags.dart';
+import 'package:dong/screens/tags/wheelenergytag.dart';
+import 'package:dong/screens/search/search.dart';
+import 'package:dong/screens/search/searchresult.dart';
+import 'package:dong/screens/search/searchfinal.dart';
+import 'package:dong/screens/record/myrecord.dart';
+import 'package:dong/screens/record/recorddetail.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart' show LatLng, CameraUpdate, Marker;
 import 'package:geolocator/geolocator.dart';
 
 void main() {
@@ -14,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Naver Map',
       initialRoute: '/',
       routes: {
@@ -22,6 +33,15 @@ class MyApp extends StatelessWidget {
         '/barrierpicture': (context) => BarrierpicturePage(),
         '/barriercategory': (context) => BarriercategoryPage(),
         '/barrierperson': (context) => BarrierwatchPage(),
+        '/barriertags': (context) => BarrierTagsPage(),
+        '/wctags': (context) => wcTagsPage(),
+        '/tourtags': (context) => tourTagsPage(),
+        '/wheelenergytags': (context) => wheelenergyTagsPage(),
+        '/search': (context) => SearchPage(),
+        '/searchresult': (context) => SearchResultPage(),
+        '/searchfinal': (context) => SearchFinalPage(),
+        '/myrecord': (context) => MyRecordPage(),
+        '/recorddetail': (context) => MyRecordDetailPage(),
       },
     );
   }
@@ -35,25 +55,27 @@ class NaverMapScreen extends StatefulWidget {
 class _NaverMapScreenState extends State<NaverMapScreen> {
   NaverMapController? _controller;
   TextEditingController _searchController = TextEditingController();
-
-  List<String> tags = ['배리어', '휠체어충전', '화장실', '관광지', '육교'];
+  CameraPosition? _initialCameraPosition;
+  List<Marker> _markers = [];
+  List<String> tags = ['배리어', '휠체어충전', '화장실', '관광지'];
   List<IconData> icons = [
     Icons.warning,
     Icons.battery_charging_full,
     Icons.wc,
-    Icons.camera,
-    Icons.directions_walk,
+    Icons.card_travel,
   ];
 
-  bool _isDrawerOpen = false;
+
+
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _toggleDrawer() {
+  void _onMapCreated(NaverMapController controller) {
     setState(() {
-      _isDrawerOpen = !_isDrawerOpen;
+      _controller = controller;
     });
   }
+
 
   @override
   void dispose() {
@@ -61,36 +83,62 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     super.dispose();
   }
 
-  void _goToCurrentLocation() async {
-    if (_controller != null) {
-      // Check if location permission is granted
-      bool isLocationPermissionGranted =
-          await Geolocator.isLocationServiceEnabled();
-      if (!isLocationPermissionGranted) {
-        // Location permission is not granted, handle accordingly
-        return;
-      }
 
-      // Get the current position
-      Position currentPosition = await Geolocator.getCurrentPosition(
+
+
+  void _handleTagPressed(String tag) {
+    print('Selected tag: $tag');
+
+    if (tag == '배리어') {
+      // Navigate to the Barrier Tags screen
+      Navigator.pushNamed(context, '/barriertags');
+    } else if (tag == '휠체어충전') {
+      // Handle the case for '휠체어충전'
+      // Perform additional actions specific to '휠체어충전'
+      Navigator.pushNamed(context, '/wheelenergytags');
+    } else if (tag == '화장실') {
+      // Handle the case for '경사로'
+      // Perform additional actions specific to '경사로'
+      Navigator.pushNamed(context, '/wctags');
+    } else if (tag == '관광지') {
+      // Handle the case for '승강기'
+      // Perform additional actions specific to '승강기'
+      Navigator.pushNamed(context, '/tourtags');
+    } else {
+      // Handle the case for other tags
+      // Perform additional actions for other tags
+    }
+
+    // Perform additional actions as needed
+  }
+
+
+
+  void getCurrentLocation() async {
+    Position? position;
+    try {
+      position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
+        forceAndroidLocationManager: true,
       );
+    } catch (e) {
+      print('Error: $e');
+    }
 
-      // Create a new camera position with the current location
-      CameraPosition cameraPosition = CameraPosition(
-        target: LatLng(
-          currentPosition.latitude,
-          currentPosition.longitude,
-        ),
-        zoom: 15.0,
-      );
+    if (position != null) {
+      final latitude = position.latitude;
+      final longitude = position.longitude;
+      print('현재 위치 좌표: $latitude, $longitude');
 
-      // Move the camera to the new position
-      _controller!.moveCamera(
-        CameraUpdate.toCameraPosition(cameraPosition),
-      );
+      final target = LatLng(latitude, longitude);
+      final cameraUpdate = CameraUpdate.scrollTo(target);
+      _controller?.moveCamera(cameraUpdate);
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,19 +148,9 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
         body: Stack(
           children: [
             NaverMap(
-              onMapCreated: (controller) {
-                setState(() {
-                  _controller = controller;
-                });
-                _goToCurrentLocation(); // Call _goToCurrentLocation to set the initial camera position to the current location
-              },
-              initialCameraPosition: CameraPosition(
-                target: LatLng(
-                  37.5665,
-                  126.9780,
-                ),
-                zoom: 15.0,
-              ),
+              onMapCreated: _onMapCreated, // Use the modified callback
+              initialCameraPosition: _initialCameraPosition,
+              markers: _markers,
             ),
             Align(
               alignment: Alignment.bottomLeft,
@@ -151,40 +189,6 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                               .yellow, // Set the background color to yellow
                           foregroundColor: Colors
                               .black, // Set the text and icon color to black
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.0),
-                    SizedBox(
-                      width: 120.0,
-                      height: 30.0,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Code for the second button (GPT Guide)
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: 4.0),
-                              child: Icon(Icons.record_voice_over, size: 16.0),
-                            ),
-                            SizedBox(width: 4.0),
-                            Text(
-                              'GPT 안내',
-                              style: TextStyle(
-                                  fontSize: 12.0, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          backgroundColor:
-                              Colors.green, // Set the background color to green
-                          foregroundColor: Colors
-                              .white, // Set the text and icon color to white
                         ),
                       ),
                     ),
@@ -234,7 +238,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               child: Padding(
                 padding: EdgeInsets.all(16.0),
                 child: FloatingActionButton(
-                  onPressed: _goToCurrentLocation, // 현재 위치로 이동하는 함수 호출
+                  onPressed:getCurrentLocation, // 현재 위치로 이동하는 함수 호출
                   child: Icon(Icons.my_location),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
@@ -252,6 +256,13 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 children: [
                   TextField(
                     controller: _searchController,
+                    onChanged: (text) {
+                      // 입력이 발생할 때마다 실행되는 콜백
+                      // 여기에 /search 요청을 수행하는 코드를 작성하세요
+                      if (text.isNotEmpty) {
+                        Navigator.pushNamed(context, '/search');
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: '어디로 갈까요?',
                       filled: true,
@@ -274,22 +285,30 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: List.generate(tags.length, (index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: 3.0,
-                            horizontal: 10.0,
-                          ),
-                          margin: EdgeInsets.only(right: 8.0),
-                          child: Row(
-                            children: [
-                              Icon(icons[index], size: 20.0),
-                              SizedBox(width: 5.0),
-                              Text(tags[index]),
-                            ],
+                        return GestureDetector(
+                          onTap: () {
+                            // 여기에 태그를 눌렀을 때 호출할 함수를 작성하세요.
+                            // 예를 들어, _handleTagPressed(tags[index])와 같이 함수를 호출할 수 있습니다.
+                            // 각 태그에 대한 동작을 원하는 대로 구현해야 합니다.
+                            _handleTagPressed(tags[index]);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 3.0,
+                              horizontal: 10.0,
+                            ),
+                            margin: EdgeInsets.only(right: 8.0),
+                            child: Row(
+                              children: [
+                                Icon(icons[index], size: 20.0),
+                                SizedBox(width: 5.0),
+                                Text(tags[index]),
+                              ],
+                            ),
                           ),
                         );
                       }),
@@ -298,6 +317,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 ],
               ),
             ),
+
           ],
         ),
         drawer: Drawer(
@@ -323,6 +343,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               ListTile(
                 title: Text('나의 여정 기록'),
                 onTap: () {
+                  Navigator.pushNamed(context, '/myrecord');
                   // Handle onTap for Item 2
                 },
               ),
@@ -330,6 +351,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               ListTile(
                 title: Text('공지사항'),
                 onTap: () {
+                  Navigator.pushNamed(context, '/recorddetail');
                   // Handle onTap for Item 3
                 },
               ),

@@ -11,13 +11,15 @@ class BarrierpicturePage extends StatefulWidget {
 
 class _BarrierpicturePageState extends State<BarrierpicturePage> {
   File? _image;
+  List<File> _imageList = [];
 
   Future<void> _pickImage() async {
     final pickedImage =
-        await ImagePicker().getImage(source: ImageSource.gallery);
+    await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
         _image = File(pickedImage.path);
+        _imageList.add(_image!);
       });
     }
   }
@@ -57,6 +59,21 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20.0),
+            if (_imageList.isNotEmpty)
+              Expanded(
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: _imageList
+                      .map(
+                        (image) => SizedBox(
+                      width: 200.0, // Set the desired width of the image
+                      child: Image.file(image),
+                    ),
+                  )
+                      .toList(),
+                ),
+              ),
+            SizedBox(height: 16.0),
             ElevatedButton.icon(
               onPressed: _pickImage,
               icon: Icon(Icons.add),
@@ -76,14 +93,14 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
               ),
             ),
             SizedBox(height: 16.0),
-            if (_image != null) Image.file(_image!),
             Spacer(),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => BarriercategoryPage()),
+                    builder: (context) => BarriercategoryPage(),
+                  ),
                 );
               },
               child: Text(

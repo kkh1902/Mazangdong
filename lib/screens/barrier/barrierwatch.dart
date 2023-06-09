@@ -45,7 +45,7 @@ class _BarrierwatchPageState extends State<BarrierwatchPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '특별히 조심해야 할 대상은 누구인가요?',
+              '조심해야 할 대상은 누구인가요?',
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20.0),
