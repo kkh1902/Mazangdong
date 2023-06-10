@@ -1,3 +1,4 @@
+import 'package:dong/screens/drawer/myhistory.dart';
 import 'package:dong/screens/drawer/myreport.dart';
 import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierinfo.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/barriercategory': (context) => BarriercategoryPage(),
         '/barrierperson': (context) => BarrierwatchPage(),
         '/myreport': (context) => MyReportPage(),
+        '/myhistory': (context) => MyHistoryPage(),
       },
     );
   }
@@ -305,6 +307,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 title: Text('나의 여정 기록'),
                 onTap: () {
                   // Handle onTap for Item 2
+                  Navigator.pushNamed(context, '/myhistory');
                 },
               ),
               Divider(),

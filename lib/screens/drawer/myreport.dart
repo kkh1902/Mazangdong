@@ -8,8 +8,8 @@ class MyReportPage extends StatefulWidget {
 class _MyReportPageState extends State<MyReportPage> {
   List<String> dropdownList = ['필터', '필터2', '필터3'];
   String selectedDropdwon = '필터';
-
   int numberOfReports = 10;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +59,7 @@ class _MyReportPageState extends State<MyReportPage> {
                       const Text(
                         "2023년 05월 29일 ~ 2023년 05월 30일",
                         style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.bold),
+                            fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -108,7 +108,6 @@ class _MyReportPageState extends State<MyReportPage> {
                             border: Border.all(color: Colors.grey[300]!),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          height: 80,
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Row(
@@ -139,12 +138,12 @@ class _MyReportPageState extends State<MyReportPage> {
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(height: 5.0),
+                                      SizedBox(height: 2.0),
                                       Text(
-                                        "2023년 05월 30일 16:42",
+                                        "2023년 05월 31일 16:42",
                                         style: TextStyle(
                                             color: Colors.grey,
-                                            fontSize: 12,
+                                            fontSize: 10,
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ],
