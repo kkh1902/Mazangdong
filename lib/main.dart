@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         '/barrierperson': (context) => BarrierwatchPage(),
         '/myreport': (context) => MyReportPage(),
         '/myhistory': (context) => MyHistoryPage(),
+        '/myhistorydetail': (context) => MyHistoryDetailPage(),
       },
     );
   }
