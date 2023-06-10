@@ -3,6 +3,7 @@ import 'package:dong/screens/barrier/barrierinfo.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
 import 'package:dong/screens/barrier/barrierpicture.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
+import 'package:dong/screens/search.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 void main() {
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         '/barrierpicture': (context) => BarrierpicturePage(),
         '/barriercategory': (context) => BarriercategoryPage(),
         '/barrierperson': (context) => BarrierwatchPage(),
+        '/search': (context) => SearchPage(),
       },
     );
   }
@@ -60,8 +62,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  @override  Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         key: _scaffoldKey,
@@ -223,6 +224,9 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
+                    onPressed: () {
+                          Navigator.pushNamed(context, '/search');
+                        },
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: '어디로 갈까요?',
