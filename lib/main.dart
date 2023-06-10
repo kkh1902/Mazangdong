@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierinfo.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
@@ -15,12 +18,18 @@ import 'package:dong/screens/record/recorddetail.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart' show LatLng, CameraUpdate, Marker;
 import 'package:geolocator/geolocator.dart';
+import 'package:dong/models/barrierdata.dart';
+
+
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  var Barrier = BarrierData();
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,8 +39,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => NaverMapScreen(),
         '/barrier': (context) => BarrierInfoPage(),
-        '/barrierpicture': (context) => BarrierpicturePage(),
-        '/barriercategory': (context) => BarriercategoryPage(),
+        '/barrierpicture': (context) => BarrierpicturePage(barrier: Barrier),
+        '/barriercategory': (context) => BarriercategoryPage(barrier: Barrier),
         '/barrierperson': (context) => BarrierwatchPage(),
         '/barriertags': (context) => BarrierTagsPage(),
         '/wctags': (context) => wcTagsPage(),
@@ -56,7 +65,9 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   NaverMapController? _controller;
   TextEditingController _searchController = TextEditingController();
   CameraPosition? _initialCameraPosition;
-  List<Marker> _markers = [];
+
+  final markers = <Marker>[];
+
   List<String> tags = ['배리어', '휠체어충전', '화장실', '관광지'];
   List<IconData> icons = [
     Icons.warning,
@@ -65,26 +76,48 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     Icons.card_travel,
   ];
 
-
-
+  // Map<String, String> barrierType = {"횡단보도" : "test"};
+  //
+  // Map<int, List> barrierPos = {1 : [35.3123, 125.123]};
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 지도에 추가할 커스텀 마커를 생성합니다.
+    final customMarker1 = Marker(
+      markerId: '1',
+      position: LatLng(37.5666103, 126.9783882),
+      captionText: '서울특별시청',
+      width: 50,
+      height: 50,
+    );
+
+    final customMarker2 = Marker(
+      markerId: '2',
+      position: LatLng(37.5062959, 127.0230839),
+      captionText: '강남역',
+      width: 50,
+      height: 50,
+    );
+
+    markers.addAll([customMarker1, customMarker2]);
+  }
 
   void _onMapCreated(NaverMapController controller) {
     setState(() {
       _controller = controller;
+      getCurrentLocation();
     });
   }
-
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-
-
-
 
   void _handleTagPressed(String tag) {
     print('Selected tag: $tag');
@@ -114,6 +147,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
 
 
 
+
+
+
+
+
   void getCurrentLocation() async {
     Position? position;
     try {
@@ -128,16 +166,15 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     if (position != null) {
       final latitude = position.latitude;
       final longitude = position.longitude;
-      print('현재 위치 좌표: $latitude, $longitude');
+      print('Current Location: $latitude, $longitude');
 
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
+
+
     }
   }
-
-
-
 
 
   @override
@@ -150,7 +187,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
             NaverMap(
               onMapCreated: _onMapCreated, // Use the modified callback
               initialCameraPosition: _initialCameraPosition,
-              markers: _markers,
+              markers: List<Marker>.of(markers),  // 여러 개의 커스텀 마커를 지도에 추가합니다.
             ),
             Align(
               alignment: Alignment.bottomLeft,

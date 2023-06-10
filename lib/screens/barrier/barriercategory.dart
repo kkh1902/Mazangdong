@@ -2,20 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:dong/main.dart';
+import 'package:dong/models/barrierdata.dart';
+import 'package:http/http.dart' as http;
+
 
 class BarriercategoryPage extends StatefulWidget {
+  final BarrierData barrier;
+
+  BarriercategoryPage({required this.barrier});
+
   @override
   _BarriercategoryPageState createState() => _BarriercategoryPageState();
 }
 
 class _BarriercategoryPageState extends State<BarriercategoryPage> {
-  bool _isCrosswalkChecked = false;
-  bool _isFacilitiesChecked = false;
-  bool _isVehicleEntrancesChecked = false;
-  bool _isPedestrianSpacesChecked = false;
+  String? _selectedType;
+
+  void _updateAndInsertBarrierData(BuildContext context) async {
+    if (_selectedType != null) {
+      // Update the 'barrier' object with the selected type.
+      widget.barrier.type = _selectedType!;
+
+      // // Convert the 'barrier' object to JSON.
+      // final barrierJson = widget.barrier.toJson();
+
+      final requestData = {
+        'type': widget.barrier.type,
+        'address': widget.barrier.address,
+        'lat': widget.barrier.latitude.toString(),
+        'log': widget.barrier.longitude.toString(),
+        'pass': widget.barrier.bypass.toString(),
+        'name': widget.barrier.nickname,
+        'image': widget.barrier.photo,
+        'address_detail': widget.barrier.detailedAddress,
+      };
+
+      try {
+        // Send a POST request to the server with the 'barrier' JSON data.
+        final response = await http.post(
+          Uri.parse('https://majangdong.run.goorm.site'),
+          body: requestData,
+        );
+
+        // Check the response status code.
+        if (response.statusCode == 200) {
+          // TODO: Handle the successful response from the server.
+          // You can navigate to the next screen or perform any other actions.
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NaverMapScreen()),
+          );
+        } else {
+          // TODO: Handle the error response from the server.
+          // Display an error message or perform any other error handling logic.
+          print('Error: ${response.statusCode}');
+        }
+      } catch (error) {
+        // TODO: Handle any exceptions that occur during the request.
+        print('Error: $error');
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    widget.barrier.printData();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -49,57 +101,50 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20.0),
-            CheckboxListTile(
+            RadioListTile<String>(
               title: Text('횡단보도'),
-              value: _isCrosswalkChecked,
-              onChanged: (newValue) {
+              value: '횡단보도',
+              groupValue: _selectedType,
+              onChanged: (value) {
                 setState(() {
-                  _isCrosswalkChecked = newValue!;
+                  _selectedType = value;
                 });
               },
-              controlAffinity: ListTileControlAffinity.leading,
             ),
-            Divider(),
-            CheckboxListTile(
+            RadioListTile<String>(
               title: Text('시설물'),
-              value: _isFacilitiesChecked,
-              onChanged: (newValue) {
+              value: '시설물',
+              groupValue: _selectedType,
+              onChanged: (value) {
                 setState(() {
-                  _isFacilitiesChecked = newValue!;
+                  _selectedType = value;
                 });
               },
-              controlAffinity: ListTileControlAffinity.leading,
             ),
-            Divider(),
-            CheckboxListTile(
+            RadioListTile<String>(
               title: Text('차량진입구역'),
-              value: _isVehicleEntrancesChecked,
-              onChanged: (newValue) {
+              value: '차량진입구역',
+              groupValue: _selectedType,
+              onChanged: (value) {
                 setState(() {
-                  _isVehicleEntrancesChecked = newValue!;
+                  _selectedType = value;
                 });
               },
-              controlAffinity: ListTileControlAffinity.leading,
             ),
-            Divider(),
-            CheckboxListTile(
+            RadioListTile<String>(
               title: Text('보행공간'),
-              value: _isPedestrianSpacesChecked,
-              onChanged: (newValue) {
+              value: '보행공간',
+              groupValue: _selectedType,
+              onChanged: (value) {
                 setState(() {
-                  _isPedestrianSpacesChecked = newValue!;
+                  _selectedType = value;
                 });
               },
-              controlAffinity: ListTileControlAffinity.leading,
             ),
             Spacer(),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NaverMapScreen()),
-                );
-                // Code for the next button
+                _updateAndInsertBarrierData(context);
               },
               child: Text(
                 '다음',

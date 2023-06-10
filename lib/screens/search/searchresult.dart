@@ -42,23 +42,28 @@ class SearchResultPage extends StatelessWidget {
             padding: EdgeInsets.all(16.0),
             child: Column(
               children: [
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '출발지',
-                    border: OutlineInputBorder(),
+                Container(
+                  height: 50.0,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: '출발지',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16.0),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '도착지',
-                    border: OutlineInputBorder(),
+                Container(
+                  height: 50.0,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: '도착지',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 16.0),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -71,15 +76,13 @@ class SearchResultPage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 16.0),
           ...searchResults.map((result) {
             return GestureDetector(
               onTap: () {
                 if (result['title'] == '최단경로') {
                   Navigator.pushNamed(context, '/searchfinal');
                 } else {
-                  // Handle other item clicks
-                  print('Clicked: ${result['title']}');
+                  // Handle other result taps
                 }
               },
               child: Container(
@@ -132,9 +135,13 @@ class SearchResultPage extends StatelessWidget {
   Widget _buildTagButton(String tag) {
     return ElevatedButton(
       onPressed: () {
-        // Handle tag button pressed
       },
       child: Text(tag),
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+      ),
     );
   }
 }
