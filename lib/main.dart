@@ -4,6 +4,7 @@ import 'package:dong/screens/barrier/barriercategory.dart';
 import 'package:dong/screens/barrier/barrierpicture.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
 import 'package:dong/screens/search.dart';
+import 'package:dong/screens/searchresult.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 void main() {
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/barriercategory': (context) => BarriercategoryPage(),
         '/barrierperson': (context) => BarrierwatchPage(),
         '/search': (context) => SearchPage(),
+        '/searchresult': (context) => SearchResultPage(),
       },
     );
   }
@@ -62,7 +64,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     super.dispose();
   }
 
-  @override  Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         key: _scaffoldKey,
@@ -224,27 +227,26 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
-                    onPressed: () {
-                          Navigator.pushNamed(context, '/search');
-                        },
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: '어디로 갈까요?',
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: IconButton(
-                        icon: Icon(Icons.menu),
-                        onPressed: () {
-                          _scaffoldKey.currentState!.openDrawer();
-                        },
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: '어디로 갈까요?',
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: IconButton(
+                          icon: Icon(Icons.menu),
+                          onPressed: () {
+                            _scaffoldKey.currentState!.openDrawer();
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0),
-                    ),
-                  ),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/searchresult');
+                      }),
                   SizedBox(height: 10.0),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
