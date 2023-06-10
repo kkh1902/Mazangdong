@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dong/models/barrierdata.dart';
 import 'dart:io';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class BarrierpicturePage extends StatefulWidget {
   final BarrierData barrier;
@@ -30,10 +30,27 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
     }
   }
 
+  // Future<String> _encodeImage(File image) async {
+  //   final bytes = await image.readAsBytes();
+  //   return base64Encode(bytes);
+  // }
+
   Future<String> _encodeImage(File image) async {
+    // final compressedImage = await FlutterImageCompress.compressWithFile(
+    //   image.path,
+    //   quality: 50,
+    // );
+
+    // final encodedImage = base64Encode(compressedImage!); // Add the null-aware operator here
+    // return encodedImage;
+
+
     final bytes = await image.readAsBytes();
     return base64Encode(bytes);
   }
+
+
+
 
   Future<void> _updateModelAndNavigateNext() async {
     if (_imageList.isNotEmpty) {

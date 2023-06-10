@@ -4,6 +4,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:dong/main.dart';
 import 'package:dong/models/barrierdata.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 
 class BarriercategoryPage extends StatefulWidget {
@@ -31,7 +33,7 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
         'address': widget.barrier.address,
         'lat': widget.barrier.latitude.toString(),
         'log': widget.barrier.longitude.toString(),
-        'pass': widget.barrier.bypass.toString(),
+        'pass': '0',
         'name': widget.barrier.nickname,
         'image': widget.barrier.photo,
         'address_detail': widget.barrier.detailedAddress,
@@ -40,7 +42,7 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
       try {
         // Send a POST request to the server with the 'barrier' JSON data.
         final response = await http.post(
-          Uri.parse('https://majangdong.run.goorm.site'),
+          Uri.parse('https://majangdong.run.goorm.site/insertBarrier'),
           body: requestData,
         );
 
@@ -102,8 +104,8 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
             ),
             SizedBox(height: 20.0),
             RadioListTile<String>(
-              title: Text('횡단보도'),
-              value: '횡단보도',
+              title: Text('턱'),
+              value: '턱',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {
@@ -132,8 +134,8 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               },
             ),
             RadioListTile<String>(
-              title: Text('보행공간'),
-              value: '보행공간',
+              title: Text('공사시설'),
+              value: '공사시설',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {
@@ -141,6 +143,7 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
                 });
               },
             ),
+
             Spacer(),
             ElevatedButton(
               onPressed: () {

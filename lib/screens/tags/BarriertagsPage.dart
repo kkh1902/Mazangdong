@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class BarrierTagsPage extends StatefulWidget {
   @override
@@ -17,6 +20,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
 
   double listViewHeight = 200.0;
   bool isExpanded = false;
+  List<Marker> markers = [];
+  List<Marker> barrierMarkers = [];
 
   void toggleListViewSize() {
     setState(() {
@@ -28,6 +33,61 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
       }
     });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBarrierLocations();
+  }
+
+  void fetchBarrierLocations() async {
+    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    if (response.statusCode == 200) {
+      final barrierData = json.decode(response.body);
+      print('ssss');
+      print(barrierData[0]);
+      print("barielength");
+      print(barrierData[0].length);
+
+      // Create the markers based on the data
+      for (int i = 0; i < barrierData[0].length; i++) {
+        Map<String, dynamic> location = barrierData[0][i];
+        double? latitude = double.tryParse(location['위도']);
+        double? longitude = double.tryParse(location['경도']);
+
+        if (latitude != null && longitude != null) {
+          Marker marker = Marker(
+            markerId: location['번호'].toString(),
+            position: LatLng(latitude, longitude),
+            iconTintColor: Colors.blue,
+            // Add other properties of the marker if necessary
+          );
+          barrierMarkers.add(marker);
+        } else {
+          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+        }
+      }
+
+
+      // Update the markers list in the state and refresh the UI
+      setState(() {
+        markers = barrierMarkers;
+      });
+
+    } else {
+      // Handle error response
+      print('Failed to fetch barrier locations: ${response.statusCode}');
+    }
+  }
+
+
+
+  // final markers = barrierData.map((location) => Marker(
+  //   markerId: location['id'],
+  //   position: LatLng(location['latitude'], location['longitude']),
+  //   // Set other properties of the marker as needed
+  // )).toList();
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +120,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
               ), // Example coordinates
               zoom: 14.0,
             ),
+            markers: List<Marker>.from(barrierMarkers),
           ),
           Positioned(
             bottom: 16.0,

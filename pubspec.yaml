@@ -36,6 +36,7 @@ dependencies:
   permission_handler: ^10.3.0
   geocoding: ^2.0.0
   http: ^0.13.3
+  flutter_image_compress: ^2.0.3
 
 
 

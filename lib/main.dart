@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:ffi';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierinfo.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
@@ -66,7 +67,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   TextEditingController _searchController = TextEditingController();
   CameraPosition? _initialCameraPosition;
 
-  final markers = <Marker>[];
+  List<Marker> markers = [];
+  List<Marker> barrierMarkers = [];
 
   List<String> tags = ['배리어', '휠체어충전', '화장실', '관광지'];
   List<IconData> icons = [
@@ -85,31 +87,13 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   @override
   void initState() {
     super.initState();
-
-    // 지도에 추가할 커스텀 마커를 생성합니다.
-    final customMarker1 = Marker(
-      markerId: '1',
-      position: LatLng(37.5666103, 126.9783882),
-      captionText: '서울특별시청',
-      width: 50,
-      height: 50,
-    );
-
-    final customMarker2 = Marker(
-      markerId: '2',
-      position: LatLng(37.5062959, 127.0230839),
-      captionText: '강남역',
-      width: 50,
-      height: 50,
-    );
-
-    markers.addAll([customMarker1, customMarker2]);
   }
 
   void _onMapCreated(NaverMapController controller) {
     setState(() {
       _controller = controller;
       getCurrentLocation();
+      fetchBarrierLocations();
     });
   }
 
@@ -117,37 +101,21 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+    fetchBarrierLocations();
   }
 
   void _handleTagPressed(String tag) {
-    print('Selected tag: $tag');
-
     if (tag == '배리어') {
-      // Navigate to the Barrier Tags screen
       Navigator.pushNamed(context, '/barriertags');
     } else if (tag == '휠체어충전') {
-      // Handle the case for '휠체어충전'
-      // Perform additional actions specific to '휠체어충전'
       Navigator.pushNamed(context, '/wheelenergytags');
     } else if (tag == '화장실') {
-      // Handle the case for '경사로'
-      // Perform additional actions specific to '경사로'
       Navigator.pushNamed(context, '/wctags');
     } else if (tag == '관광지') {
-      // Handle the case for '승강기'
-      // Perform additional actions specific to '승강기'
       Navigator.pushNamed(context, '/tourtags');
     } else {
-      // Handle the case for other tags
-      // Perform additional actions for other tags
     }
-
-    // Perform additional actions as needed
   }
-
-
-
-
 
 
 
@@ -177,6 +145,67 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   }
 
 
+  // List<Marker> createMarkers(List<Map<String, dynamic>> locations) {
+  //   List<Marker> markers = [];
+  //
+  //   for (var location in locations) {
+  //     markers.add(
+  //       Marker(
+  //         markerId: location['id'],
+  //         position: LatLng(location['latitude'], location['longitude']),
+  //         captionText: location['name'],
+  //       ),
+  //     );
+  //   }
+  //   return markers;
+  // }
+
+
+  void fetchBarrierLocations() async {
+    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    if (response.statusCode == 200) {
+      final barrierData = json.decode(response.body);
+      print('ssss');
+      print(barrierData[0]);
+      print("barielength");
+      print(barrierData[0].length);
+
+      // Create the markers based on the data
+      for (int i = 0; i < barrierData[0].length; i++) {
+        Map<String, dynamic> location = barrierData[0][i];
+        double? latitude = double.tryParse(location['위도']);
+        double? longitude = double.tryParse(location['경도']);
+
+        if (latitude != null && longitude != null) {
+          Marker marker = Marker(
+            markerId: location['번호'].toString(),
+            position: LatLng(latitude, longitude),
+            iconTintColor: Colors.blue,
+            // Add other properties of the marker if necessary
+          );
+          barrierMarkers.add(marker);
+          print(barrierMarkers);
+        } else {
+          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+        }
+      }
+
+
+      // Update the markers list in the state and refresh the UI
+      setState(() {
+        markers = barrierMarkers;
+      });
+
+    } else {
+      // Handle error response
+      print('Failed to fetch barrier locations: ${response.statusCode}');
+    }
+  }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,7 +216,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
             NaverMap(
               onMapCreated: _onMapCreated, // Use the modified callback
               initialCameraPosition: _initialCameraPosition,
-              markers: List<Marker>.of(markers),  // 여러 개의 커스텀 마커를 지도에 추가합니다.
+              markers: List<Marker>.from(barrierMarkers),
             ),
             Align(
               alignment: Alignment.bottomLeft,
