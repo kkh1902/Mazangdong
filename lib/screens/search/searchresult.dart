@@ -152,7 +152,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     child: TextButton(
                         onPressed: () {},
                         child: Text(
-                          '버스',
+                          '지하철',
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.bold,
@@ -170,7 +170,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     child: TextButton(
                         onPressed: () {},
                         child: Text(
-                          '지하철',
+                          '버스 + 지하철',
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.bold,

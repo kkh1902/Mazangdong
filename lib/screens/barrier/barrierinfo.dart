@@ -221,11 +221,11 @@ class _BarrierInfoPageState extends State<BarrierInfoPage> {
                 '다음',
                 style: TextStyle(
                   fontSize: 20.0,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
+                backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),

@@ -124,8 +124,8 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               },
             ),
             RadioListTile<String>(
-              title: Text('불법 주정차'),
-              value: '불법 주정차',
+              title: Text('공사'),
+              value: '공사',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {
@@ -134,18 +134,8 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               },
             ),
             RadioListTile<String>(
-              title: Text('자갈길'),
-              value: '자갈길',
-              groupValue: _selectedType,
-              onChanged: (value) {
-                setState(() {
-                  _selectedType = value;
-                });
-              },
-            ),
-            RadioListTile<String>(
-              title: Text('나무'),
-              value: '나무',
+              title: Text('기타'),
+              value: '기타',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {
@@ -163,11 +153,11 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
                 '다음',
                 style: TextStyle(
                   fontSize: 20.0,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.yellow,
+                primary: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),

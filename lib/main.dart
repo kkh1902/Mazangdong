@@ -2,6 +2,8 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dong/screens/drawer/myhistory.dart';
+import 'package:dong/screens/drawer/myreport.dart';
 import 'package:flutter/material.dart';
 import 'package:dong/screens/barrier/barrierinfo.dart';
 import 'package:dong/screens/barrier/barriercategory.dart';
@@ -13,11 +15,8 @@ import 'package:dong/screens/tags/wctags.dart';
 import 'package:dong/screens/tags/wheelenergytag.dart';
 import 'package:dong/screens/search/search.dart';
 import 'package:dong/screens/search/searchresult.dart';
-import 'package:dong/screens/search/searchfinal.dart';
-import 'package:dong/screens/record/myrecord.dart';
-import 'package:dong/screens/record/recorddetail.dart';
-import 'package:dong/screens/direction.dart';
-import 'package:dong/screens/directionresult.dart';
+import 'package:dong/screens/search/direction.dart';
+import 'package:dong/screens/search/directionresult.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart' show LatLng, CameraUpdate, Marker;
 import 'package:geolocator/geolocator.dart';
@@ -51,11 +50,11 @@ class MyApp extends StatelessWidget {
         '/wheelenergytags': (context) => wheelenergyTagsPage(),
         '/search': (context) => SearchPage(),
         '/searchresult': (context) => SearchResultPage(),
-        '/searchfinal': (context) => SearchFinalPage(),
-        '/myrecord': (context) => MyRecordPage(),
-        '/recorddetail': (context) => MyRecordDetailPage(),
         '/direction': (context) => DirectionPage(),
         '/directionresult': (context) => DirectionResultPage(),
+        '/myreport': (context) => MyReportPage(),
+        '/myhistory': (context) => MyHistoryPage(),
+        '/myhistorydetail': (context) => MyHistoryDetailPage(),
       },
     );
   }
@@ -97,7 +96,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     setState(() {
       _controller = controller;
       getCurrentLocation();
-      fetchBarrierLocations();
+      // fetchBarrierLocations();
     });
   }
 
@@ -105,7 +104,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-    fetchBarrierLocations();
+    // fetchBarrierLocations();
   }
 
   void _handleTagPressed(String tag) {
@@ -149,62 +148,48 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   }
 
 
-  // List<Marker> createMarkers(List<Map<String, dynamic>> locations) {
-  //   List<Marker> markers = [];
+
+
+  // void fetchBarrierLocations() async {
+  //   final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+  //   if (response.statusCode == 200) {
+  //     final barrierData = json.decode(response.body);
+  //     print('ssss');
+  //     print(barrierData[0]);
+  //     print("barielength");
+  //     print(barrierData[0].length);
   //
-  //   for (var location in locations) {
-  //     markers.add(
-  //       Marker(
-  //         markerId: location['id'],
-  //         position: LatLng(location['latitude'], location['longitude']),
-  //         captionText: location['name'],
-  //       ),
-  //     );
+  //     // Create the markers based on the data
+  //     for (int i = 0; i < barrierData[0].length; i++) {
+  //       Map<String, dynamic> location = barrierData[0][i];
+  //       double? latitude = double.tryParse(location['위도']);
+  //       double? longitude = double.tryParse(location['경도']);
+  //
+  //       if (latitude != null && longitude != null) {
+  //         Marker marker = Marker(
+  //           markerId: location['번호'].toString(),
+  //           position: LatLng(latitude, longitude),
+  //           iconTintColor: Colors.blue,
+  //           // Add other properties of the marker if necessary
+  //         );
+  //         barrierMarkers.add(marker);
+  //         print(barrierMarkers);
+  //       } else {
+  //         print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+  //       }
+  //     }
+  //
+  //
+  //     // Update the markers list in the state and refresh the UI
+  //     setState(() {
+  //       markers = barrierMarkers;
+  //     });
+  //
+  //   } else {
+  //     // Handle error response
+  //     print('Failed to fetch barrier locations: ${response.statusCode}');
   //   }
-  //   return markers;
   // }
-
-
-  void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
-    if (response.statusCode == 200) {
-      final barrierData = json.decode(response.body);
-      print('ssss');
-      print(barrierData[0]);
-      print("barielength");
-      print(barrierData[0].length);
-
-      // Create the markers based on the data
-      for (int i = 0; i < barrierData[0].length; i++) {
-        Map<String, dynamic> location = barrierData[0][i];
-        double? latitude = double.tryParse(location['위도']);
-        double? longitude = double.tryParse(location['경도']);
-
-        if (latitude != null && longitude != null) {
-          Marker marker = Marker(
-            markerId: location['번호'].toString(),
-            position: LatLng(latitude, longitude),
-            iconTintColor: Colors.blue,
-            // Add other properties of the marker if necessary
-          );
-          barrierMarkers.add(marker);
-          print(barrierMarkers);
-        } else {
-          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
-        }
-      }
-
-
-      // Update the markers list in the state and refresh the UI
-      setState(() {
-        markers = barrierMarkers;
-      });
-
-    } else {
-      // Handle error response
-      print('Failed to fetch barrier locations: ${response.statusCode}');
-    }
-  }
 
 
 
@@ -243,7 +228,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                               padding: EdgeInsets.only(left: 2.0),
                               child: Icon(Icons.edit, size: 16.0),
                             ),
-                            SizedBox(width: 4.0),
+                            const SizedBox(width: 4.0),
                             Text(
                               '배리어 제보',
                               style: TextStyle(
@@ -262,7 +247,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     SizedBox(
                       width: 120.0,
                       height: 30.0,
@@ -296,7 +281,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 32.0,
                     ), // Add the desired height for the blank space
                   ],
@@ -352,9 +337,6 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                       children: List.generate(tags.length, (index) {
                         return GestureDetector(
                           onTap: () {
-                            // 여기에 태그를 눌렀을 때 호출할 함수를 작성하세요.
-                            // 예를 들어, _handleTagPressed(tags[index])와 같이 함수를 호출할 수 있습니다.
-                            // 각 태그에 대한 동작을 원하는 대로 구현해야 합니다.
                             _handleTagPressed(tags[index]);
                           },
                           child: Container(
@@ -362,11 +344,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20.0),
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               vertical: 3.0,
                               horizontal: 10.0,
                             ),
-                            margin: EdgeInsets.only(right: 8.0),
+                            margin: const EdgeInsets.only(right: 8.0),
                             child: Row(
                               children: [
                                 Icon(icons[index], size: 20.0),
@@ -379,37 +361,41 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                       }),
                     ),
                   ),
+
                 ],
               ),
             ),
-
           ],
         ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.only(left: 16.0, right: 16.0),
             children: [
-              DrawerHeader(
-                child: Text(
-                  '누구님',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
+              const DrawerHeader(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text("김기훈",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8.0),
+                  Text("010-7296-9664",
+                      style: TextStyle(fontSize: 14.0, color: Colors.grey)),
+                ],
+              )),
               ListTile(
                 title: Text('나의 제보'),
                 onTap: () {
                   // Handle onTap for Item 1
+                  Navigator.pushNamed(context, '/myreport');
                 },
               ),
               Divider(),
               ListTile(
                 title: Text('나의 여정 기록'),
                 onTap: () {
-                  Navigator.pushNamed(context, '/myrecord');
-                  // Handle onTap for Item 2
+                  Navigator.pushNamed(context, '/myhistory');
                 },
               ),
               Divider(),
@@ -418,6 +404,13 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 onTap: () {
                   Navigator.pushNamed(context, '/recorddetail');
                   // Handle onTap for Item 3
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text('전화 문의'),
+                onTap: () {
+                  // Handle onTap for Item 4
                 },
               ),
               Divider(),

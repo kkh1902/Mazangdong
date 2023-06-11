@@ -120,7 +120,7 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
             SizedBox(height: 16.0),
             ElevatedButton.icon(
               onPressed: _pickImage,
-              icon: Icon(Icons.add),
+              icon: Icon(Icons.add, color: Colors.black),
               label: Text(
                 '사진 등록',
                 style: TextStyle(
@@ -129,13 +129,16 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
+                primary: Colors.white,
+                onPrimary: Colors.black,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black),
                 ),
                 minimumSize: Size(double.infinity, 50.0),
               ),
             ),
+
             SizedBox(height: 16.0),
             Spacer(),
             ElevatedButton(
@@ -144,11 +147,11 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
                 '다음',
                 style: TextStyle(
                   fontSize: 20.0,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.yellow,
+                primary: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
