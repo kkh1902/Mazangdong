@@ -114,8 +114,8 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               },
             ),
             RadioListTile<String>(
-              title: Text('시설물'),
-              value: '시설물',
+              title: Text('경사로'),
+              value: '경사로',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {
@@ -124,8 +124,8 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               },
             ),
             RadioListTile<String>(
-              title: Text('차량진입구역'),
-              value: '차량진입구역',
+              title: Text('불법 주정차'),
+              value: '불법 주정차',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {
@@ -134,8 +134,18 @@ class _BarriercategoryPageState extends State<BarriercategoryPage> {
               },
             ),
             RadioListTile<String>(
-              title: Text('공사시설'),
-              value: '공사시설',
+              title: Text('자갈길'),
+              value: '자갈길',
+              groupValue: _selectedType,
+              onChanged: (value) {
+                setState(() {
+                  _selectedType = value;
+                });
+              },
+            ),
+            RadioListTile<String>(
+              title: Text('나무'),
+              value: '나무',
               groupValue: _selectedType,
               onChanged: (value) {
                 setState(() {

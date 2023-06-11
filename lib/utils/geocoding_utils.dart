@@ -17,8 +17,7 @@ Future<String> getAddressFromLatLng(LatLng latLng) async {
       'X-NCP-APIGW-API-KEY': GEOCODING_API_KEY2, // 동일한 키를 사용하는 경우 추가하세요.
     },
   );
-  print("response 값 확인");
-  print(response.body);
+
 
   if (response.statusCode == 200) {
     print(" 요청이 잘 갔음");
@@ -31,8 +30,7 @@ Future<String> getAddressFromLatLng(LatLng latLng) async {
         ' ' +
         results[0]["region"]["area3"]["name"] ;
 
-    print("주소");
-    print(address);
+
 
     return address;
   } else {

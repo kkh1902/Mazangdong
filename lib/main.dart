@@ -16,6 +16,8 @@ import 'package:dong/screens/search/searchresult.dart';
 import 'package:dong/screens/search/searchfinal.dart';
 import 'package:dong/screens/record/myrecord.dart';
 import 'package:dong/screens/record/recorddetail.dart';
+import 'package:dong/screens/direction.dart';
+import 'package:dong/screens/directionresult.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart' show LatLng, CameraUpdate, Marker;
 import 'package:geolocator/geolocator.dart';
@@ -52,6 +54,8 @@ class MyApp extends StatelessWidget {
         '/searchfinal': (context) => SearchFinalPage(),
         '/myrecord': (context) => MyRecordPage(),
         '/recorddetail': (context) => MyRecordDetailPage(),
+        '/direction': (context) => DirectionPage(),
+        '/directionresult': (context) => DirectionResultPage(),
       },
     );
   }
@@ -219,7 +223,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               markers: List<Marker>.from(barrierMarkers),
             ),
             Align(
-              alignment: Alignment.bottomLeft,
+              alignment: Alignment.bottomRight,
               child: Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
@@ -236,14 +240,14 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(left: 4.0),
+                              padding: EdgeInsets.only(left: 2.0),
                               child: Icon(Icons.edit, size: 16.0),
                             ),
                             SizedBox(width: 4.0),
                             Text(
                               '배리어 제보',
                               style: TextStyle(
-                                  fontSize: 13.0, color: Colors.black),
+                                  fontSize: 13.0, color: Colors.white),
                             ),
                           ],
                         ),
@@ -252,9 +256,9 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                           backgroundColor: Colors
-                              .yellow, // Set the background color to yellow
+                              .blue, // Set the background color to yellow
                           foregroundColor: Colors
-                              .black, // Set the text and icon color to black
+                              .white, // Set the text and icon color to black
                         ),
                       ),
                     ),
@@ -273,11 +277,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                               padding: EdgeInsets.only(left: 4.0),
                               child: Icon(Icons.videocam, size: 16.0),
                             ),
-                            SizedBox(width: 4.0),
+                            SizedBox(width: 6.0),
                             Text(
                               '여정 기록',
                               style: TextStyle(
-                                  fontSize: 12.0, color: Colors.white),
+                                  fontSize: 13.0, color: Colors.white),
                             ),
                           ],
                         ),
@@ -300,9 +304,9 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               ),
             ),
             Align(
-              alignment: Alignment.bottomRight,
+              alignment: Alignment.bottomLeft,
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.only(left: 10.0, bottom: 40.0),
                 child: FloatingActionButton(
                   onPressed:getCurrentLocation, // 현재 위치로 이동하는 함수 호출
                   child: Icon(Icons.my_location),
@@ -339,7 +343,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                       ),
                       onTap: () {
-                        Navigator.pushNamed(context, '/searchresult');
+                        Navigator.pushNamed(context, '/search');
                       }),
                   SizedBox(height: 10.0),
                   SingleChildScrollView(

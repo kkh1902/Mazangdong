@@ -30,21 +30,9 @@ class _BarrierpicturePageState extends State<BarrierpicturePage> {
     }
   }
 
-  // Future<String> _encodeImage(File image) async {
-  //   final bytes = await image.readAsBytes();
-  //   return base64Encode(bytes);
-  // }
+
 
   Future<String> _encodeImage(File image) async {
-    // final compressedImage = await FlutterImageCompress.compressWithFile(
-    //   image.path,
-    //   quality: 50,
-    // );
-
-    // final encodedImage = base64Encode(compressedImage!); // Add the null-aware operator here
-    // return encodedImage;
-
-
     final bytes = await image.readAsBytes();
     return base64Encode(bytes);
   }

@@ -85,7 +85,6 @@ class _BarrierInfoPageState extends State<BarrierInfoPage> {
     if (position != null) {
       final latitude = position.latitude;
       final longitude = position.longitude;
-      print('Current Location: $latitude, $longitude');
 
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
