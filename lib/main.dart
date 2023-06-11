@@ -5,6 +5,8 @@ import 'package:dong/screens/barrier/barrierpicture.dart';
 import 'package:dong/screens/barrier/barrierwatch.dart';
 import 'package:dong/screens/search.dart';
 import 'package:dong/screens/searchresult.dart';
+import 'package:dong/screens/direction.dart';
+import 'package:dong/screens/directionresult.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 void main() {
@@ -25,6 +27,8 @@ class MyApp extends StatelessWidget {
         '/barrierperson': (context) => BarrierwatchPage(),
         '/search': (context) => SearchPage(),
         '/searchresult': (context) => SearchResultPage(),
+        '/direction': (context) => DirectionPage(),
+        '/directionresult': (context) => DirectionResultPage(),
       },
     );
   }
@@ -245,7 +249,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                       ),
                       onTap: () {
-                        Navigator.pushNamed(context, '/searchresult');
+                        Navigator.pushNamed(context, '/search');
                       }),
                   SizedBox(height: 10.0),
                   SingleChildScrollView(
