@@ -49,12 +49,12 @@ class _SearchResultPageState extends State<SearchResultPage> {
                 children: <Widget>[
                   Flexible(
                       child: TextField(
-                        decoration: InputDecoration(
-                            hintText: 'ㅁㅁㅁㅁㅁㅁ',
-                            filled: true,
-                            fillColor: Colors.grey,
-                            contentPadding: const EdgeInsets.all(16.0)),
-                      )),
+                    decoration: InputDecoration(
+                        hintText: 'ㅁㅁㅁㅁㅁㅁ',
+                        filled: true,
+                        fillColor: Colors.grey,
+                        contentPadding: const EdgeInsets.all(16.0)),
+                  )),
                   Text('12312313')
                 ],
               )
@@ -85,43 +85,43 @@ class _SearchResultPageState extends State<SearchResultPage> {
 }
 
 // constraints: BoxConstraints(
-//     maxHeight: 100.0, maxWidth: double.infinity),
-// width: double.infinity,
-// height: 40.0,
-// color: Colors.white,
-// padding: const EdgeInsets.all(16.0),
-// child: Row(children: [
-//   Column(children: [
-//     TextField(
-//       decoration: InputDecoration(
-//         hintText: '어디로 갈까요?',
-//         filled: true,
-//         fillColor: Colors.grey[100],
-//         border: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(10.0),
-//           borderSide: BorderSide.none,
-//         ),
-//         contentPadding:
-//             const EdgeInsets.symmetric(vertical: 12.0),
-//       ),
-//     ),
-//     TextField(
-//       decoration: InputDecoration(
-//         hintText: '어디로 갈까요?',
-//         filled: true,
-//         fillColor: Colors.grey[100],
-//         border: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(10.0),
-//           borderSide: BorderSide.none,
-//         ),
-//         contentPadding:
-//             const EdgeInsets.symmetric(vertical: 12.0),
-//       ),
-//     )
-//   ]),
-//   IconButton(
-//     icon: const Icon(Icons.close,
-//         color: Colors.black, size: 18.0),
-//     onPressed: () {},
-//   ),
-// ])
+                  //     maxHeight: 100.0, maxWidth: double.infinity),
+                  // width: double.infinity,
+                  // height: 40.0,
+                  // color: Colors.white,
+                  // padding: const EdgeInsets.all(16.0),
+                  // child: Row(children: [
+                  //   Column(children: [
+                  //     TextField(
+                  //       decoration: InputDecoration(
+                  //         hintText: '어디로 갈까요?',
+                  //         filled: true,
+                  //         fillColor: Colors.grey[100],
+                  //         border: OutlineInputBorder(
+                  //           borderRadius: BorderRadius.circular(10.0),
+                  //           borderSide: BorderSide.none,
+                  //         ),
+                  //         contentPadding:
+                  //             const EdgeInsets.symmetric(vertical: 12.0),
+                  //       ),
+                  //     ),
+                  //     TextField(
+                  //       decoration: InputDecoration(
+                  //         hintText: '어디로 갈까요?',
+                  //         filled: true,
+                  //         fillColor: Colors.grey[100],
+                  //         border: OutlineInputBorder(
+                  //           borderRadius: BorderRadius.circular(10.0),
+                  //           borderSide: BorderSide.none,
+                  //         ),
+                  //         contentPadding:
+                  //             const EdgeInsets.symmetric(vertical: 12.0),
+                  //       ),
+                  //     )
+                  //   ]),
+                  //   IconButton(
+                  //     icon: const Icon(Icons.close,
+                  //         color: Colors.black, size: 18.0),
+                  //     onPressed: () {},
+                  //   ),
+                  // ])

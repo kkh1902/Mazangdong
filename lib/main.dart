@@ -321,31 +321,26 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
-                    controller: _searchController,
-                    onChanged: (text) {
-                      // 입력이 발생할 때마다 실행되는 콜백
-                      // 여기에 /search 요청을 수행하는 코드를 작성하세요
-                      if (text.isNotEmpty) {
-                        Navigator.pushNamed(context, '/search');
-                      }
-                    },
-                    decoration: InputDecoration(
-                      hintText: '어디로 갈까요?',
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: IconButton(
-                        icon: Icon(Icons.menu),
-                        onPressed: () {
-                          _scaffoldKey.currentState!.openDrawer();
-                        },
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: '어디로 갈까요?',
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: IconButton(
+                          icon: Icon(Icons.menu),
+                          onPressed: () {
+                            _scaffoldKey.currentState!.openDrawer();
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0),
-                    ),
-                  ),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/searchresult');
+                      }),
                   SizedBox(height: 10.0),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
