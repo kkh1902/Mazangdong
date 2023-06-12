@@ -2,7 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 class SearchPage extends StatelessWidget {
-  List<String> searchHistory = ['서면시장', '아-트빌'];
+  List<String> searchHistory = ['냉정역' , '서면시장' ];
+
+  void navigateToSearchResultPage(BuildContext context, String searchItem) {
+    double latitude;
+    double longitude;
+    String goalarea;
+
+    if (searchItem == '냉정역') {
+      latitude = 35.151169;  // Set the actual latitude for '냉정역'
+      longitude = 129.012124;  // Set the actual longitude for '냉정역'
+      goalarea = searchItem;
+    } else if (searchItem == '서면시장') {
+      latitude = 35.155819;  // Set the actual latitude for '서면시장'
+      longitude = 129.057768;  // Set the actual longitude for '서면시장'
+      goalarea = searchItem;
+    } else {
+      // Handle other search items or provide default coordinates
+      latitude = 0.0;
+      longitude = 0.0;
+      goalarea = '';
+    }
+
+    final coordinates = {
+      "latitude": latitude,
+      "longitude": longitude,
+      "goalarea": searchItem,
+    };
+
+    Navigator.pushNamed(context, '/searchresult', arguments: coordinates);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,23 +92,32 @@ class SearchPage extends StatelessWidget {
                 children: [
                   for (var i = 0; i < searchHistory.length; i++)
                     Container(
-                        color: Colors.transparent,
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                      color: Colors.transparent,
+                      padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          navigateToSearchResultPage(context, searchHistory[i]);
+                        },
                         child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                searchHistory[i],
-                                style: TextStyle(
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold),
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              searchHistory[i],
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
                               ),
-                              IconButton(
-                                icon: Icon(Icons.close,
-                                    color: Colors.black, size: 18.0),
-                                onPressed: () {},
-                              ),
-                            ])),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close, color: Colors.black, size: 18.0),
+                              onPressed: () {
+                                // Handle close button press action
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   Divider(
                     color: Colors.transparent, // Underline color
                     thickness: 1.0, // Underline thickness

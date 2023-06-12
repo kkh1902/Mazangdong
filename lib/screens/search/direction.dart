@@ -1,7 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:bottom_drawer/bottom_drawer.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart' as naver;
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
 
 class DirectionPage extends StatefulWidget {
   @override
@@ -10,23 +13,32 @@ class DirectionPage extends StatefulWidget {
 
 class _DirectionPageState extends State<DirectionPage> {
   NaverMapController? _controller;
-  String startLocation = "";
-  String goalLocation = "";
-  String startTime = "";
-  CameraPosition? _initialCameraPosition;
+  String startLocation = "부산광역시 사상구 주례로 47";
+  String goalLocation = "동서 슈퍼";
+  String startTime = "오늘 11시 45분 출발";
+  BottomDrawerController controller = BottomDrawerController();
+  late CameraPosition _initialCameraPosition;
+  List<Marker> markers = [];
+  List<LatLng> polylineCoordinates = [];
+  List<List<LatLng>> polygons = [];
+
 
   @override
   void initState() {
     super.initState();
     fetchCoordinates();
+    getCurrentLocation();
+    Future.delayed(Duration(milliseconds: 500), () {
+      controller.open();
+    });
   }
 
   void fetchCoordinates() async {
-    final url = Uri.parse('https://majangdong.run.goorm.site/find');
+    final url = Uri.parse('https://majangdong.run.goorm.site/findR');
     final payload = {
-      "home": {"x": 127.0289, "y": 37.4971},
-      "trip": {"x": 128.0289, "y": 38.4971},
-      "busChk": 0
+      "origin": [37.5497, 127.1284],
+      "destination": [37.5457, 127.1019],
+      "type": 1
     };
 
     final response = await http.post(
@@ -39,22 +51,21 @@ class _DirectionPageState extends State<DirectionPage> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      final tripCoordinates = data;
 
-      final homeCoordinates = data[0];
-      final tripCoordinates = data.sublist(1);
-
-      final startLatitude = homeCoordinates['sy'];
-      final startLongitude = homeCoordinates['sx'];
+      final startLatitude = data[0][1][0];
+      final startLongitude = data[0][1][1];
 
       List<double> destinationLatitudes = [];
       List<double> destinationLongitudes = [];
 
       for (var i = 0; i < tripCoordinates.length; i++) {
-        final destinationLatitude = tripCoordinates[i]['ey'];
-        final destinationLongitude = tripCoordinates[i]['ex'];
+        final coordinate = tripCoordinates[i][1];
+        final destinationLatitude = double.parse(coordinate[1].toString());
+        final destinationLongitude = double.parse(coordinate[0].toString());
 
-        destinationLatitudes.add(destinationLatitude.toDouble());
-        destinationLongitudes.add(destinationLongitude.toDouble());
+        destinationLatitudes.add(destinationLatitude);
+        destinationLongitudes.add(destinationLongitude);
       }
 
       setState(() {
@@ -66,118 +77,337 @@ class _DirectionPageState extends State<DirectionPage> {
           zoom: 13.0,
         );
 
-        // TODO: Fetch and display route using Naver Map Directions API
+        markers = [
+          Marker(
+            markerId: 'start',
+            position: LatLng(startLatitude.toDouble(), startLongitude.toDouble()),
+          ),
+          for (var i = 0; i < tripCoordinates.length; i++)
+            Marker(
+              markerId: 'destination_$i',
+              position: LatLng(
+                destinationLatitudes[i],
+                destinationLongitudes[i],
+              ),
+            ),
+        ];
+
+        final tripPolygons = data[0][2];
+
+        for (var i = 0; i < tripPolygons.length; i++) {
+          final polygonCoordinates = tripPolygons[i];
+          final coordinates = polygonCoordinates.map<LatLng>((coord) =>
+              LatLng(coord[1].toDouble(), coord[0].toDouble())).toList();
+
+          polygons.add(coordinates);
+        }
       });
-    } else {
-      print('Failed to fetch coordinates: ${response.statusCode}');
     }
   }
 
-  void _onMapCreated(NaverMapController controller) {
-    setState(() {
-      _controller = controller;
-    });
+
+  void getCurrentLocation() async {
+    Position? position;
+    try {
+      position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        forceAndroidLocationManager: true,
+      );
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    if (position != null) {
+      final latitude = position.latitude;
+      final longitude = position.longitude;
+      print('Current Location: $latitude, $longitude');
+
+      final target = LatLng(latitude, longitude);
+      final cameraUpdate = CameraUpdate.scrollTo(target);
+      _controller?.moveCamera(cameraUpdate);
+
+
+    }
+  }
+
+
+
+
+  Widget buildBottomDrawer(BuildContext context) {
+    return BottomDrawer(
+
+      /// your customized drawer header.
+      header: Container(
+        margin: const EdgeInsets.all(11.0),
+        width: 80.0,
+        height: 6.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: Colors.grey[300],
+        ),
+      ),
+
+      /// your customized drawer body.
+      body: Container(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 8.0),
+                            child: Text(
+                              "1시간 15분",
+                              style: TextStyle(
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text(
+                            "5.5km",
+                            style:
+                            TextStyle(fontSize: 16.0, color: Colors.grey),
+                          ),
+                        ]),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, '/directionresult');
+                            },
+                            child: Text(
+                              '길 안내 평가',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12.0),
+                            ),
+                            style: ButtonStyle(
+                                minimumSize:
+                                MaterialStateProperty.all<Size>(
+                                    Size.zero),
+                                padding: MaterialStateProperty.all<
+                                    EdgeInsets>(
+                                    EdgeInsets.all(6.0)),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(20.0),
+                                        side: BorderSide(
+                                            color: Colors.black,
+                                            width: 1.2))))),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 8.0),
+                          child: Row(children: [
+                            Icon(
+                              Icons.wheelchair_pickup,
+                              size: 16.0,
+                            ),
+                            Text('휠체어'),
+                            Text(
+                              "1시간 59분",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ]),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.pause_outlined,
+                              size: 16.0,
+                            ),
+                            Text('목발'),
+                            Text(
+                              "3시간 56분",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Divider(
+              thickness: 4.0,
+              color: Colors.grey[100],
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 12.0),
+              child: Row(children: [
+                Container(
+                    width: 48.0,
+                    margin: EdgeInsets.only(right: 16.0),
+                    alignment: Alignment.center,
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 4.0),
+                          child: Icon(
+                            Icons.circle,
+                            color: Colors.blue,
+                            size: 14.0,
+                          ),
+                        ),
+                        Text(
+                          '출발',
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    )),
+                Text(
+                  startLocation,
+                  style: TextStyle(
+                      color: Colors.grey[900], fontSize: 16.0),
+                )
+              ]),
+            ),
+            Divider(
+              thickness: 1.0,
+              color: Colors.grey[100],
+            ),
+            Container(
+              margin: EdgeInsets.only(right: 16.0),
+              padding: EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 12.0),
+              child: Row(children: [
+                Container(
+                    alignment: Alignment.center,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48.0,
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.only(right: 4.0),
+                          child: Icon(
+                            Icons.directions_walk,
+                            color: Colors.grey,
+                            size: 24.0,
+                          ),
+                        ),
+                      ],
+                    )),
+                Text(
+                  startLocation,
+                  style: TextStyle(
+                      color: Colors.grey[900], fontSize: 16.0),
+                )
+              ]),
+            )
+          ],
+        ),
+      ),
+
+      headerHeight: 28.0,
+      drawerHeight: 300.0,
+
+      /// drawer background color.
+      color: Colors.white,
+
+      /// drawer controller.
+      controller: controller,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 80.0,
-              child: Text(
-                startLocation,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16.0,
-                ),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          // Center-align the title
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 80.0,
+                child: Text(startLocation,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16.0)),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.fromLTRB(4.0, 0.0, 4.0, 0.0),
-              child: Icon(
-                Icons.arrow_right_alt_rounded,
-                color: Colors.grey,
+              Container(
+                  padding: EdgeInsets.fromLTRB(4.0, 0.0, 4.0, 0.0),
+                  child:
+                  Icon(
+                      Icons.arrow_right_alt_rounded, color: Colors.grey)),
+              SizedBox(
+                width: 80.0,
+                child: Text(goalLocation,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16.0)),
               ),
-            ),
-            SizedBox(
-              width: 80.0,
-              child: Text(
-                goalLocation,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ],
-        ),
-        leading: IconButton(
-          icon: Icon(
+            ],
+          ),
+          leading: Icon(
             Icons.arrow_back_ios_rounded,
             color: Colors.grey,
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.black, size: 18.0),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.grey[100],
-            height: 4.0,
+          actions: <Widget>[
+            IconButton(
+                icon: const Icon(
+                    Icons.close, color: Colors.black, size: 18.0),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1.0),
+            child: Container(
+              color: Colors.grey[100], // Border color
+              height: 4.0, // Border height
+            ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          if (_initialCameraPosition != null)
-            NaverMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: _initialCameraPosition!,
-            ),
-          if (_initialCameraPosition == null)
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Naver Map',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: DirectionPage(),
-    );
+        body: Stack(
+          children: [
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Flexible(
+                child: NaverMap(
+                  onMapCreated: (controller) {
+                    setState(() {
+                      _controller = controller;
+                    });
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(
+                      37.5665,
+                      126.9780,
+                    ),
+                    zoom: 15.0,
+                  ),
+                  markers: markers.toList(),
+                ),
+              )
+            ]),
+            buildBottomDrawer(context),
+          ],
+        ));
   }
 }

@@ -11,11 +11,42 @@ class SearchResultPage extends StatefulWidget {
 class _SearchResultPageState extends State<SearchResultPage> {
   String startLocation = "부산광역시 사상구 주례로 47";
   String goalLocation = "서면시장";
-  String startTime = '오늘 ${DateTime.now().hour}시 ${DateTime.now().minute}분 출발';
+  String startTime = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setStartTime();
+  }
+
+  void setStartTime() {
+    setState(() {
+      startTime = '오늘 ${DateTime.now().hour}시 ${DateTime.now().minute}분 출발';
+    });
+  }
 
 
   @override
   Widget build(BuildContext context) {
+
+    final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (arguments != null) {
+      final double latitude = arguments['latitude'];
+      final double longitude = arguments['longitude'];
+      final String goalarea = arguments['goalarea'];
+
+      if (goalarea != null) {
+        setState(() {
+          goalLocation = goalarea;
+        });
+      }
+
+      // Use the received values as needed
+      // For example, you can update the goalLocation variable with the received goalarea value
+
+      // Use the latitude and longitude for further processing
+    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,

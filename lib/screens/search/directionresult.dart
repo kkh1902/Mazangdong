@@ -47,11 +47,6 @@ class _DirectionResultPageState extends State<DirectionResultPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
-                        '~와 함께',
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
-                      const Text(
                         '만족스러운 이동 하셨나요?',
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
