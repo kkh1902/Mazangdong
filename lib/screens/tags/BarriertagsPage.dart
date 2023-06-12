@@ -5,17 +5,22 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:dong/settings.dart' as settings;
+
 class BarrierTagsPage extends StatefulWidget {
   @override
   _BarrierTagsPageState createState() => _BarrierTagsPageState();
 }
 
 class _BarrierTagsPageState extends State<BarrierTagsPage> {
+  String URL = settings.settings().URL;
   NaverMapController? _controller;
   BottomDrawerController controller = BottomDrawerController();
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
+
+  List<Map<String, dynamic>> interfaceData = [];
 
   @override
   void initState() {
@@ -28,7 +33,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
   }
 
   void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    final response =
+        await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
       print('ssss');
@@ -39,6 +45,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
       // Create the markers based on the data
       for (int i = 0; i < barrierData[0].length; i++) {
         Map<String, dynamic> location = barrierData[0][i];
+        interfaceData.add(barrierData[0][i]);
+        // print(interfaceData);
         double? latitude = double.tryParse(location['위도']);
         double? longitude = double.tryParse(location['경도']);
 
@@ -52,16 +60,15 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
           barrierMarkers.add(marker);
           print(barrierMarkers);
         } else {
-          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+          print(
+              "Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
         }
       }
-
 
       // Update the markers list in the state and refresh the UI
       setState(() {
         markers = Set.of(barrierMarkers);
       });
-
     } else {
       // Handle error response
       print('Failed to fetch barrier locations: ${response.statusCode}');
@@ -87,11 +94,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
-
-
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +233,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                                     ),
                                   ],
                                 ),
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
                                   PopupMenuItem<String>(
                                     value: "filter1",
                                     child: ListTile(
@@ -312,14 +317,14 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "단차",
+                                interfaceData[index]['유형'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "부산광역시 사상구 주례동 88-7",
+                                interfaceData[index]['주소'],
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),
@@ -385,11 +390,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                           ),
                           // Add your image widget here
                         ),
-
                       ],
-
                     ),
-
                   );
                 },
               ),
@@ -404,5 +406,3 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
     );
   }
 }
-
-

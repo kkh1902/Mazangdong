@@ -4,6 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dong/settings.dart' as settings;
 
 class wcTagsPage extends StatefulWidget {
   @override
@@ -11,24 +12,27 @@ class wcTagsPage extends StatefulWidget {
 }
 
 class _wcTagsPageState extends State<wcTagsPage> {
+  String URL = settings.settings().URL;
   NaverMapController? _controller;
   BottomDrawerController controller = BottomDrawerController();
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
 
+  CameraPosition? _initialCameraPosition;
+
   @override
   void initState() {
     super.initState();
     getCurrentLocation();
     fetchBarrierLocations();
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       controller.open();
     });
   }
 
   void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    final response = await http.get(Uri.parse('$URL/barrier'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
       print('ssss');
@@ -52,16 +56,15 @@ class _wcTagsPageState extends State<wcTagsPage> {
           barrierMarkers.add(marker);
           print(barrierMarkers);
         } else {
-          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+          print(
+              "Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
         }
       }
-
 
       // Update the markers list in the state and refresh the UI
       setState(() {
         markers = Set.of(barrierMarkers);
       });
-
     } else {
       // Handle error response
       print('Failed to fetch barrier locations: ${response.statusCode}');
@@ -87,11 +90,8 @@ class _wcTagsPageState extends State<wcTagsPage> {
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
-
-
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,13 +148,7 @@ class _wcTagsPageState extends State<wcTagsPage> {
                       _controller = controller;
                     });
                   },
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      37.5665,
-                      126.9780,
-                    ),
-                    zoom: 17.0,
-                  ),
+                  initialCameraPosition: _initialCameraPosition,
                   markers: List<Marker>.from(barrierMarkers),
                 ),
               ),
@@ -229,7 +223,8 @@ class _wcTagsPageState extends State<wcTagsPage> {
                                     ),
                                   ],
                                 ),
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
                                   PopupMenuItem<String>(
                                     value: "filter1",
                                     child: ListTile(
@@ -385,11 +380,8 @@ class _wcTagsPageState extends State<wcTagsPage> {
                           ),
                           // Add your image widget here
                         ),
-
                       ],
-
                     ),
-
                   );
                 },
               ),
@@ -404,5 +396,3 @@ class _wcTagsPageState extends State<wcTagsPage> {
     );
   }
 }
-
-

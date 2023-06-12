@@ -339,6 +339,9 @@ class _MyHistoryDetailPageState extends State<MyHistoryDetailPage> {
                         Marker(
                             markerId: "marker1",
                             position: LatLng(37.5665, 126.9780)),
+                        Marker(
+                            markerId: "marker2",
+                            position: LatLng(37.5565, 126.9780))
                       ],
                     ),
                   ),

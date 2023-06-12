@@ -208,14 +208,14 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                         onPressed: () {
                           Navigator.pushNamed(context, '/barrier');
                         },
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: EdgeInsets.only(left: 2.0),
                               child: Icon(Icons.edit, size: 16.0),
                             ),
-                            const SizedBox(width: 4.0),
+                            SizedBox(width: 2.0),
                             Text(
                               '배리어 제보',
                               style: TextStyle(
