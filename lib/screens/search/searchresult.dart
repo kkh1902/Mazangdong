@@ -259,13 +259,13 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     Container(
                       margin: EdgeInsets.only(right: 8.0),
                       child: Text(
-                        "1시간 15분",
+                        "17분",
                         style: TextStyle(
                             fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Text(
-                      "5.5km",
+                      "700m",
                       style: TextStyle(fontSize: 16.0, color: Colors.grey),
                     ),
                   ],
@@ -284,7 +284,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         ),
                         Text('휠체어'),
                         Text(
-                          "1시간 59분",
+                          "17분",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       ]),
@@ -297,7 +297,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         ),
                         Text('목발'),
                         Text(
-                          "3시간 56분",
+                          "30분",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       ],
