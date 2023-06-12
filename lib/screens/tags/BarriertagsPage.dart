@@ -4,6 +4,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:typed_data';
+
 
 class BarrierTagsPage extends StatefulWidget {
   @override
@@ -17,6 +19,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
   List<Map<String, dynamic>> barrierList = [];
+
 
 
   @override
@@ -37,12 +40,35 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
       print(barrierData[0]);
       print("barielength");
       print(barrierData[0].length);
+      print(barrierData);
 
       // Create the markers based on the data
       for (int i = 0; i < barrierData[0].length; i++) {
         Map<String, dynamic> location = barrierData[0][i];
+
+        print('location');
+        print(location);
         double? latitude = double.tryParse(location['위도']);
         double? longitude = double.tryParse(location['경도']);
+        String barrierName = location['유형'] ?? '';
+        String barrierAddress = location['주소'] ?? '';
+        String barrierDetailedAddress = location['상세주소'] ?? ''; // '상세주소' 필드가 null인 경우 빈 문자열 처리
+        String barrierPhoto = location['사진'];
+        Uint8List decodedImage = base64Decode(barrierPhoto); // blob 데이터를 Uint8List로 변환
+        String barrierBypass = location['우회여부']?.toString() ?? "0";
+
+
+        Map<String, dynamic> barrierInfo = {
+          '유형': barrierName,
+          '주소': barrierAddress,
+          '상세주소': barrierDetailedAddress,
+          // '사진': barrierPhotoString,
+          '우회여부': barrierBypass ,
+        };
+
+        barrierList.add(barrierInfo);
+
+
 
         if (latitude != null && longitude != null) {
           Marker marker = Marker(
@@ -52,7 +78,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
             // Add other properties of the marker if necessary
           );
           barrierMarkers.add(marker);
-          print(barrierMarkers);
         } else {
           print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
         }
@@ -97,6 +122,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('barrierlistssss');
+    print(barrierList);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -287,10 +314,19 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
             Expanded(
               child: ListView.builder(
                 // ListView.builder로 변경
-                itemCount: barrierMarkers.length,
+                itemCount: barrierList.length, // Use the barrierList length instead of barrierMarkers length
                 itemBuilder: (BuildContext context, int index) {
-                  Map<String, dynamic> data = barrierList[index];
-                  Marker marker = barrierMarkers[index];
+                  Map<String, dynamic> location = barrierList[index];
+                  String barrierType = location['유형'];
+                  String barrierAddress = location['주소'];
+                  String barrierDetailedAddress = location['상세주소'];
+                  String barrierPhoto = location['사진'];
+                  Uint8List decodedImage = base64Decode(barrierPhoto);
+                  String barrierBypass = location['우회여부'] ?? "0";
+
+
+
+
                   return ListTile(
                     subtitle: Row(
                       children: [
@@ -315,14 +351,21 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "단차",
+                                barrierType,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "부산광역시 사상구 주례동 88-7",
+                                barrierAddress,
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              Text(
+                                barrierDetailedAddress,
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),
@@ -386,7 +429,15 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                             ),
                             borderRadius: BorderRadius.circular(4.0),
                           ),
-                          // Add your image widget here
+                          child: barrierPhoto.isNotEmpty
+                              ? Image.memory(
+                            decodedImage,
+                            fit: BoxFit.cover,
+                          )
+                              : Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                          ),
                         ),
 
                       ],
@@ -407,5 +458,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
     );
   }
 }
+
+
 
 

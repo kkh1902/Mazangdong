@@ -60,8 +60,9 @@ class _DirectionPageState extends State<DirectionPage> {
       final originLongitude = position.longitude;
 
       final payload = {
-        "origin": [originLatitude, originLongitude],
-        "destination": [35.1512, 129.0124],
+        // "origin": [originLatitude, originLongitude],
+        "origin": [37.5497, 127.1284],
+        "destination": [37.5457, 127.1019],
         "type": 1
       };
 
