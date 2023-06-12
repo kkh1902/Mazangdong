@@ -1,5 +1,6 @@
 import 'dart:collection';
-import 'dart:ffi';
+// import 'dart:ffi';
+import 'package:dong/screens/drawer/notice.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dong/screens/drawer/myhistory.dart';
@@ -18,11 +19,10 @@ import 'package:dong/screens/search/searchresult.dart';
 import 'package:dong/screens/search/direction.dart';
 import 'package:dong/screens/search/directionresult.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart' show LatLng, CameraUpdate, Marker;
+import 'package:flutter_naver_map/flutter_naver_map.dart'
+    show LatLng, CameraUpdate, Marker;
 import 'package:geolocator/geolocator.dart';
 import 'package:dong/models/barrierdata.dart';
-
-
 
 void main() {
   runApp(MyApp());
@@ -30,7 +30,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   var Barrier = BarrierData();
-
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/myreport': (context) => MyReportPage(),
         '/myhistory': (context) => MyHistoryPage(),
         '/myhistorydetail': (context) => MyHistoryDetailPage(),
+        '/notice': (context) => NoticePage(),
       },
     );
   }
@@ -116,12 +116,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
       Navigator.pushNamed(context, '/wctags');
     } else if (tag == '관광지') {
       Navigator.pushNamed(context, '/tourtags');
-    } else {
-    }
+    } else {}
   }
-
-
-
 
   void getCurrentLocation() async {
     Position? position;
@@ -142,13 +138,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
-
-
     }
   }
-
-
-
 
   // void fetchBarrierLocations() async {
   //   final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
@@ -190,10 +181,6 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
   //     print('Failed to fetch barrier locations: ${response.statusCode}');
   //   }
   // }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -240,8 +227,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
-                          backgroundColor: Colors
-                              .blue, // Set the background color to yellow
+                          backgroundColor:
+                              Colors.blue, // Set the background color to yellow
                           foregroundColor: Colors
                               .white, // Set the text and icon color to black
                         ),
@@ -293,7 +280,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0, bottom: 40.0),
                 child: FloatingActionButton(
-                  onPressed:getCurrentLocation, // 현재 위치로 이동하는 함수 호출
+                  onPressed: getCurrentLocation, // 현재 위치로 이동하는 함수 호출
                   child: Icon(Icons.my_location),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
@@ -361,7 +348,6 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                       }),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -402,7 +388,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               ListTile(
                 title: Text('공지사항'),
                 onTap: () {
-                  Navigator.pushNamed(context, '/recorddetail');
+                  Navigator.pushNamed(context, '/notice');
                   // Handle onTap for Item 3
                 },
               ),

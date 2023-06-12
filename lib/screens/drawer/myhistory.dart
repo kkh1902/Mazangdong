@@ -224,7 +224,8 @@ class _MyHistoryDetailPageState extends State<MyHistoryDetailPage> {
                 const SizedBox(height: 8),
                 const Row(
                   children: [
-                    Text("여정 일정"),
+                    Text("여정 일정",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(width: 24),
                     Text("2023년 05월 30일"),
                   ],
@@ -232,7 +233,8 @@ class _MyHistoryDetailPageState extends State<MyHistoryDetailPage> {
                 Divider(color: Colors.grey[500], height: 48),
                 const Row(
                   children: [
-                    Text("여정 거리"),
+                    Text("여정 거리",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(width: 24),
                     Text("0.00012" "km"),
                   ],
@@ -240,7 +242,8 @@ class _MyHistoryDetailPageState extends State<MyHistoryDetailPage> {
                 Divider(color: Colors.grey[500], height: 48),
                 const Row(
                   children: [
-                    Text("여정 시간"),
+                    Text("여정 시간",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(width: 24),
                     Text("1분"),
                   ],
@@ -250,51 +253,69 @@ class _MyHistoryDetailPageState extends State<MyHistoryDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("여정 경로"),
+                    const Text("여정 경로",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(width: 24),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Colors.yellow,
-                                shape: BoxShape.circle,
+                    SizedBox(
+                      width: 250,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Colors.yellow,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text("18:18",
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 12),
-                            const Text(
-                              "부산광역시 사상구 주례로 47 동서대학교",
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Colors.blue,
-                                shape: BoxShape.circle,
+                              const SizedBox(width: 12),
+                              const Text("18:18",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 12),
+                              const SizedBox(
+                                width: 150,
+                                child: Text(
+                                  "부산광역시 사상구 주례로 47 동서대학교",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 310,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text("18:18",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 12),
+                                const SizedBox(
+                                  width: 150,
+                                  child: Text(
+                                    "부산광역시 사상구 주례로 47 동서대학교",
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 12),
-                            const Text("18:18",
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 12),
-                            const Text("부산광역시 사상구 주례로 47 동서대학교"),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                      ],
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -314,6 +335,11 @@ class _MyHistoryDetailPageState extends State<MyHistoryDetailPage> {
                         ),
                         zoom: 15.0,
                       ),
+                      markers: [
+                        Marker(
+                            markerId: "marker1",
+                            position: LatLng(37.5665, 126.9780)),
+                      ],
                     ),
                   ),
                 ),
