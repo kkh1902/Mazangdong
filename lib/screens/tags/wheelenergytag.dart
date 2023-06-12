@@ -212,48 +212,6 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
                                 ),
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
-                              child: PopupMenuButton<String>(
-                                icon: Row(
-                                  children: [
-                                    Text(
-                                      '전체',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    value: "filter1",
-                                    child: ListTile(
-                                      title: Text("전체"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter2",
-                                    child: ListTile(
-                                      title: Text("턱"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter3",
-                                    child: ListTile(
-                                      title: Text("시설물"),
-                                    ),
-                                  ),
-                                ],
-                                onSelected: (String value) {
-                                  // 선택된 필터 처리 로직 작성
-                                },
-                              ),
                             ),
                           ],
                         ),

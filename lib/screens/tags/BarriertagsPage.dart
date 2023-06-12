@@ -142,10 +142,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
             ),
           ],
         ),
-        leading: Icon(
-          Icons.arrow_back_ios_rounded,
-          color: Colors.grey,
-        ),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.close, color: Colors.black, size: 18.0),
@@ -225,18 +221,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 150.0),
-                            Container(
-                              width: 75,
-                              margin: EdgeInsets.only(right: 8.0),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(4.0),
                               ),
                             ),
                           ],
