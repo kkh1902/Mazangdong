@@ -154,8 +154,8 @@ figma로 UI 디자인을 하였습니다.<br>
 
 
 ## 활용 데이터
-![image](https://github.com/kkh1902/Mazangdong/assets/91061890/6e9b14c3-8bf9-40d3-8742-1ebbf4662a2b)
 ![image](https://github.com/kkh1902/Mazangdong/assets/91061890/ea7bbc69-2269-448c-9d19-946b99524528)
+![image](https://github.com/kkh1902/Mazangdong/assets/91061890/e2274c6e-c57f-4b9e-8cb0-39e470b7d414)
 
 
 ## 팀소개
