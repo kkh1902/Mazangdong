@@ -19,8 +19,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
-  List<Map<String, dynamic>> barrierList = [];
-
 
   List<Map<String, dynamic>> interfaceData = [];
 
@@ -35,14 +33,13 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
   }
 
   void fetchBarrierLocations() async {
-    final response =
-        await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    final response = await http.get(Uri.parse('$URL/barrier'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
-      print('ssss');
-      print(barrierData[0]);
-      print("barielength");
-      print(barrierData[0].length);
+      // print('ssss');
+      // print(barrierData[0]);
+      // print("barielength");
+      // print(barrierData[0].length);
 
       // Create the markers based on the data
       for (int i = 0; i < barrierData[0].length; i++) {
@@ -207,60 +204,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 150.0),
-                            Container(
-                              width: 75,
-                              margin: EdgeInsets.only(right: 8.0),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              child: PopupMenuButton<String>(
-                                icon: Row(
-                                  children: [
-                                    Text(
-                                      '전체',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    value: "filter1",
-                                    child: ListTile(
-                                      title: Text("전체"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter2",
-                                    child: ListTile(
-                                      title: Text("턱"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter3",
-                                    child: ListTile(
-                                      title: Text("시설물"),
-                                    ),
-                                  ),
-                                ],
-                                onSelected: (String value) {
-                                  // 선택된 필터 처리 로직 작성
-                                },
-                              ),
-                            ),
                           ],
                         ),
                       ],
@@ -294,7 +237,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                 // ListView.builder로 변경
                 itemCount: barrierMarkers.length,
                 itemBuilder: (BuildContext context, int index) {
-                  Map<String, dynamic> data = barrierList[index];
                   Marker marker = barrierMarkers[index];
                   return ListTile(
                     subtitle: Row(

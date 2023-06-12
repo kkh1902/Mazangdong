@@ -18,7 +18,7 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
-  List<Map<String, dynamic>> barrierData = [{}];
+  List<Map<String, dynamic>> interfaceData = [{}];
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
   }
 
   void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('$URL/barrier'));
+    final response = await http.get(Uri.parse('$URL/wheel'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
       print('ssss');
@@ -42,7 +42,7 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
       // Create the markers based on the data
       for (int i = 0; i < barrierData[0].length; i++) {
         Map<String, dynamic> location = barrierData[0][i];
-        barrierData.add(location);
+        interfaceData.add(barrierData[0][i]);
         double? latitude = double.tryParse(location['위도']);
         double? longitude = double.tryParse(location['경도']);
 
@@ -289,8 +289,6 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
                 itemCount: barrierMarkers.length,
                 itemBuilder: (BuildContext context, int index) {
                   Marker marker = barrierMarkers[index];
-                  print("asdasd");
-                  print(barrierData);
                   return ListTile(
                     subtitle: Row(
                       children: [
