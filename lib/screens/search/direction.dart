@@ -5,6 +5,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart' as naver;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'dart:collection';
+
 
 class DirectionPage extends StatefulWidget {
   @override
@@ -14,13 +16,17 @@ class DirectionPage extends StatefulWidget {
 class _DirectionPageState extends State<DirectionPage> {
   NaverMapController? _controller;
   String startLocation = "부산광역시 사상구 주례로 47";
-  String goalLocation = "동서 슈퍼";
+  String goalLocation = "냉정역";
   String startTime = "오늘 11시 45분 출발";
   BottomDrawerController controller = BottomDrawerController();
   late CameraPosition _initialCameraPosition;
+  List<Marker> barrierMarkers = [];
   List<Marker> markers = [];
   List<LatLng> polylineCoordinates = [];
-  List<List<LatLng>> polygons = [];
+  List<PathOverlay> pathOverlays = [];
+  List<Map<String, dynamic>> barrierList = [];
+
+
 
 
   @override
@@ -28,82 +34,154 @@ class _DirectionPageState extends State<DirectionPage> {
     super.initState();
     fetchCoordinates();
     getCurrentLocation();
+    fetchBarrierLocations();
     Future.delayed(Duration(milliseconds: 500), () {
       controller.open();
     });
   }
 
   void fetchCoordinates() async {
+    Position? position;
+
+    try {
+      position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        forceAndroidLocationManager: true,
+      );
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    print('시작');
     final url = Uri.parse('https://majangdong.run.goorm.site/findR');
-    final payload = {
-      "origin": [37.5497, 127.1284],
-      "destination": [37.5457, 127.1019],
-      "type": 1
-    };
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(payload),
-    );
+    if (position != null) {
+      final originLatitude = position.latitude;
+      final originLongitude = position.longitude;
 
+      final payload = {
+        "origin": [originLatitude, originLongitude],
+        "destination": [35.1512, 129.0124],
+        "type": 1
+      };
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        print('성공');
+        final data = json.decode(response.body);
+        final tripCoordinates = data;
+        print('skkks');
+        print(data[0]);
+
+        final startLatitude = data[0][1][0];
+        final startLongitude = data[0][1][1];
+        print('ssss');
+        print(data[0]);
+
+
+
+        List<double> destinationLatitudes = [];
+        List<double> destinationLongitudes = [];
+
+        for (var i = 0; i < tripCoordinates.length; i++) {
+          final coordinate = tripCoordinates[i][1];
+          final destinationLatitude = double.parse(coordinate[1].toString());
+          final destinationLongitude = double.parse(coordinate[0].toString());
+
+          destinationLatitudes.add(destinationLatitude);
+          destinationLongitudes.add(destinationLongitude);
+
+          polylineCoordinates.add(LatLng(destinationLatitude, destinationLongitude));
+        }
+
+        setState(() {
+          startLocation = "부산광역시 사상구 주례로 47";
+          goalLocation = "서면시장";
+          startTime = "오늘 11시 45분 출발";
+          _initialCameraPosition = CameraPosition(
+            target: LatLng(startLatitude.toDouble(), startLongitude.toDouble()),
+            zoom: 13.0,
+          );
+
+          print('start');
+          print(startLatitude);
+          markers = [
+            for (var i = 0; i < tripCoordinates.length; i++)
+              Marker(
+                markerId: 'destination_$i',
+                position: LatLng(
+                  destinationLatitudes[i],
+                  destinationLongitudes[i],
+                ),
+              ),
+            Marker(
+              markerId: 'start',
+              position: LatLng(originLatitude, originLongitude),
+            ),
+            Marker(
+              markerId: 'goal',
+              position: LatLng(destinationLatitudes.last, destinationLongitudes.last),
+            ),
+          ];
+
+          pathOverlays = [
+            PathOverlay(
+              PathOverlayId('1'),  // ID (여기서는 예시로 1을 사용했으나, 고유한 값을 사용하십시오.)
+              polylineCoordinates,
+              color: Colors.blue,
+              width: 1,
+              outlineColor: Colors.blue,
+              outlineWidth: 3,
+            ),
+          ];
+        });
+      }
+    }
+  }
+
+  void fetchBarrierLocations() async {
+    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final tripCoordinates = data;
+      final barrierData = json.decode(response.body);
+      print(barrierData[0]);
+      print(barrierData[0].length);
 
-      final startLatitude = data[0][1][0];
-      final startLongitude = data[0][1][1];
+      // Create the markers based on the data
+      for (int i = 0; i < barrierData[0].length; i++) {
+        Map<String, dynamic> location = barrierData[0][i];
+        double? latitude = double.tryParse(location['위도']);
+        double? longitude = double.tryParse(location['경도']);
 
-      List<double> destinationLatitudes = [];
-      List<double> destinationLongitudes = [];
-
-      for (var i = 0; i < tripCoordinates.length; i++) {
-        final coordinate = tripCoordinates[i][1];
-        final destinationLatitude = double.parse(coordinate[1].toString());
-        final destinationLongitude = double.parse(coordinate[0].toString());
-
-        destinationLatitudes.add(destinationLatitude);
-        destinationLongitudes.add(destinationLongitude);
+        if (latitude != null && longitude != null) {
+          Marker marker = Marker(
+            markerId: location['번호'].toString(),
+            position: LatLng(latitude, longitude),
+            iconTintColor: Colors.blue, // Set the desired color for barrier markers
+          );
+          barrierMarkers.add(marker);
+          print(barrierMarkers);
+        } else {
+          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+        }
       }
 
       setState(() {
-        startLocation = "부산광역시 사상구 주례로 47";
-        goalLocation = "서면시장";
-        startTime = "오늘 11시 45분 출발";
-        _initialCameraPosition = CameraPosition(
-          target: LatLng(startLatitude.toDouble(), startLongitude.toDouble()),
-          zoom: 13.0,
-        );
-
-        markers = [
-          Marker(
-            markerId: 'start',
-            position: LatLng(startLatitude.toDouble(), startLongitude.toDouble()),
-          ),
-          for (var i = 0; i < tripCoordinates.length; i++)
-            Marker(
-              markerId: 'destination_$i',
-              position: LatLng(
-                destinationLatitudes[i],
-                destinationLongitudes[i],
-              ),
-            ),
-        ];
-
-        final tripPolygons = data[0][2];
-
-        for (var i = 0; i < tripPolygons.length; i++) {
-          final polygonCoordinates = tripPolygons[i];
-          final coordinates = polygonCoordinates.map<LatLng>((coord) =>
-              LatLng(coord[1].toDouble(), coord[0].toDouble())).toList();
-
-          polygons.add(coordinates);
-        }
+        markers.addAll(barrierMarkers); // Add barrier markers to the markers list
       });
+    } else {
+      // Handle error response
+      print('Failed to fetch barrier locations: ${response.statusCode}');
     }
   }
+
+
 
 
   void getCurrentLocation() async {
@@ -122,6 +200,7 @@ class _DirectionPageState extends State<DirectionPage> {
       final longitude = position.longitude;
       print('Current Location: $latitude, $longitude');
 
+
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
@@ -129,6 +208,29 @@ class _DirectionPageState extends State<DirectionPage> {
 
     }
   }
+
+
+
+
+  // void setPathOverlays(List<dynamic> coordinates) {
+  //   List<LatLng> pathCoordinates = coordinates.map((coord) {
+  //     return LatLng(coord[1].toDouble(), coord[0].toDouble());
+  //   }).toList();
+  //
+  //   PathOverlay newPathOverlay = PathOverlay(
+  //     path: pathCoordinates,
+  //     color: Colors.red,
+  //     width: 5,
+  //     outlineColor: Colors.red,
+  //     outlineWidth: 5,
+  //   );
+  //
+  //   setState(() {
+  //     pathOverlays.add(newPathOverlay);
+  //   });
+  // }
+
+
 
 
 
@@ -165,14 +267,14 @@ class _DirectionPageState extends State<DirectionPage> {
                           Container(
                             margin: EdgeInsets.only(right: 8.0),
                             child: Text(
-                              "1시간 15분",
+                              "17분",
                               style: TextStyle(
                                   fontSize: 24.0,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
                           Text(
-                            "5.5km",
+                            "700m",
                             style:
                             TextStyle(fontSize: 16.0, color: Colors.grey),
                           ),
@@ -219,7 +321,7 @@ class _DirectionPageState extends State<DirectionPage> {
                             ),
                             Text('휠체어'),
                             Text(
-                              "1시간 59분",
+                              "17분",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold),
                             )
@@ -233,7 +335,7 @@ class _DirectionPageState extends State<DirectionPage> {
                             ),
                             Text('목발'),
                             Text(
-                              "3시간 56분",
+                              "30분",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold),
                             )
@@ -329,6 +431,7 @@ class _DirectionPageState extends State<DirectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    LinkedHashSet<PathOverlay> pathOverlaysSet = LinkedHashSet<PathOverlay>.from(pathOverlays);
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -403,6 +506,7 @@ class _DirectionPageState extends State<DirectionPage> {
                     zoom: 15.0,
                   ),
                   markers: markers.toList(),
+                  pathOverlays: pathOverlaysSet,
                 ),
               )
             ]),

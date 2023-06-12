@@ -81,15 +81,12 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     Icons.card_travel,
   ];
 
-  // Map<String, String> barrierType = {"횡단보도" : "test"};
-  //
-  // Map<int, List> barrierPos = {1 : [35.3123, 125.123]};
-
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    fetchBarrierLocations();
   }
 
   void _onMapCreated(NaverMapController controller) {
@@ -141,46 +138,46 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     }
   }
 
-  // void fetchBarrierLocations() async {
-  //   final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
-  //   if (response.statusCode == 200) {
-  //     final barrierData = json.decode(response.body);
-  //     print('ssss');
-  //     print(barrierData[0]);
-  //     print("barielength");
-  //     print(barrierData[0].length);
-  //
-  //     // Create the markers based on the data
-  //     for (int i = 0; i < barrierData[0].length; i++) {
-  //       Map<String, dynamic> location = barrierData[0][i];
-  //       double? latitude = double.tryParse(location['위도']);
-  //       double? longitude = double.tryParse(location['경도']);
-  //
-  //       if (latitude != null && longitude != null) {
-  //         Marker marker = Marker(
-  //           markerId: location['번호'].toString(),
-  //           position: LatLng(latitude, longitude),
-  //           iconTintColor: Colors.blue,
-  //           // Add other properties of the marker if necessary
-  //         );
-  //         barrierMarkers.add(marker);
-  //         print(barrierMarkers);
-  //       } else {
-  //         print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
-  //       }
-  //     }
-  //
-  //
-  //     // Update the markers list in the state and refresh the UI
-  //     setState(() {
-  //       markers = barrierMarkers;
-  //     });
-  //
-  //   } else {
-  //     // Handle error response
-  //     print('Failed to fetch barrier locations: ${response.statusCode}');
-  //   }
-  // }
+  void fetchBarrierLocations() async {
+    final response =
+        await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    if (response.statusCode == 200) {
+      final barrierData = json.decode(response.body);
+      print('ssss');
+      print(barrierData[0]);
+      print("barielength");
+      print(barrierData[0].length);
+
+      // Create the markers based on the data
+      for (int i = 0; i < barrierData[0].length; i++) {
+        Map<String, dynamic> location = barrierData[0][i];
+        double? latitude = double.tryParse(location['위도']);
+        double? longitude = double.tryParse(location['경도']);
+
+        if (latitude != null && longitude != null) {
+          Marker marker = Marker(
+            markerId: location['번호'].toString(),
+            position: LatLng(latitude, longitude),
+            iconTintColor: Colors.blue,
+            // Add other properties of the marker if necessary
+          );
+          barrierMarkers.add(marker);
+          print(barrierMarkers);
+        } else {
+          print(
+              "Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+        }
+      }
+
+      // Update the markers list in the state and refresh the UI
+      setState(() {
+        markers = barrierMarkers;
+      });
+    } else {
+      // Handle error response
+      print('Failed to fetch barrier locations: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

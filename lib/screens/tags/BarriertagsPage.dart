@@ -19,6 +19,8 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
+  List<Map<String, dynamic>> barrierList = [];
+
 
   List<Map<String, dynamic>> interfaceData = [];
 
@@ -292,6 +294,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                 // ListView.builder로 변경
                 itemCount: barrierMarkers.length,
                 itemBuilder: (BuildContext context, int index) {
+                  Map<String, dynamic> data = barrierList[index];
                   Marker marker = barrierMarkers[index];
                   return ListTile(
                     subtitle: Row(
