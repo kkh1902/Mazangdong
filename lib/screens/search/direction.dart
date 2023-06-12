@@ -59,10 +59,16 @@ class _DirectionPageState extends State<DirectionPage> {
       final originLatitude = position.latitude;
       final originLongitude = position.longitude;
 
-      final payload = {
-        // "origin": [37.5454, 126.9523],
+      final payload =
+      //   // "origin": [37.5454, 126.9523],
+      //   "origin": [originLatitude, originLongitude],
+      //   // "destination": [37.5476, 126.9539],
+      //   "destination": [35.1511, 129.012], //냉정역
+      //   "type": "턱"
+
+
+      {
         "origin": [originLatitude, originLongitude],
-        // "destination": [37.5476, 126.9539],
         "destination": [35.1511, 129.012], //냉정역
         "type": "턱"
       };
@@ -501,10 +507,7 @@ class _DirectionPageState extends State<DirectionPage> {
                     });
                   },
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      37.5665,
-                      126.9780,
-                    ),
+                    target: LatLng(35.1467, 129.0093),
                     zoom: 15.0,
                   ),
                   markers: markers.toList(),

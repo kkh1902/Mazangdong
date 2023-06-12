@@ -7,8 +7,6 @@ import 'package:dong/utils/geocoding_utils.dart';
 import 'package:dong/models/barrierdata.dart';
 
 
-
-
 class BarrierInfoPage extends StatefulWidget {
   @override
   _BarrierInfoPageState createState() => _BarrierInfoPageState();
@@ -27,13 +25,16 @@ class _BarrierInfoPageState extends State<BarrierInfoPage> {
   @override
   void initState() {
     super.initState();
-    _markerPosition = LatLng(35.1577, 129.0591); // Set initial marker position to Busan Sasang-gu
+    _markerPosition = LatLng(35.1467, 129.0093); // Set initial marker position to Busan Sasang-gu
     _markers.add(Marker(
       markerId: 'centerMarker',
       position: _markerPosition!,
       width: 48,
       height: 48,
     ));
+    setState(() {
+      getCurrentLocation();
+    });
   }
 
   void _onMapCreated(NaverMapController controller) {

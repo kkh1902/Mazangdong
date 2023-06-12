@@ -68,7 +68,10 @@ class NaverMapScreen extends StatefulWidget {
 class _NaverMapScreenState extends State<NaverMapScreen> {
   NaverMapController? _controller;
   TextEditingController _searchController = TextEditingController();
-  CameraPosition? _initialCameraPosition;
+  CameraPosition? _initialCameraPosition = CameraPosition(
+    target: LatLng(35.1467, 129.0093), // 수정할 초기 위치 좌표
+    zoom: 16.0, // 수정할 줌 레벨
+  );
 
   List<Marker> markers = [];
   List<Marker> barrierMarkers = [];
