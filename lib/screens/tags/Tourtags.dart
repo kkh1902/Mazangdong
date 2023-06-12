@@ -4,7 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:dong/settings.dart' as settings;
 
 class tourTagsPage extends StatefulWidget {
   @override
@@ -12,11 +12,13 @@ class tourTagsPage extends StatefulWidget {
 }
 
 class _tourTagsPageState extends State<tourTagsPage> {
+  String URL = settings.settings().URL;
   NaverMapController? _controller;
   BottomDrawerController controller = BottomDrawerController();
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
+  List<Map<String, dynamic>> interfaceData = [];
 
   @override
   void initState() {
@@ -29,40 +31,37 @@ class _tourTagsPageState extends State<tourTagsPage> {
   }
 
   void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    final response = await http.get(Uri.parse('$URL/trip'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
-      print('ssss');
-      print(barrierData[0]);
-      print("barielength");
-      print(barrierData[0].length);
 
       // Create the markers based on the data
       for (int i = 0; i < barrierData[0].length; i++) {
         Map<String, dynamic> location = barrierData[0][i];
-        double? latitude = double.tryParse(location['위도']);
-        double? longitude = double.tryParse(location['경도']);
+        interfaceData.add(barrierData[0][i]);
 
-        if (latitude != null && longitude != null) {
-          Marker marker = Marker(
-            markerId: location['번호'].toString(),
-            position: LatLng(latitude, longitude),
-            iconTintColor: Colors.blue,
-            // Add other properties of the marker if necessary
-          );
-          barrierMarkers.add(marker);
-          print(barrierMarkers);
-        } else {
-          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
-        }
+      double? latitude = double.tryParse(location['위도']);
+      double? longitude = double.tryParse(location['경도']);
+
+      if (latitude != null && longitude != null) {
+        Marker marker = Marker(
+          markerId: location['관광지번호'].toString(),
+          position: LatLng(latitude, longitude),
+          iconTintColor: Colors.green,
+          // Add other properties of the marker if necessary
+        );
+        barrierMarkers.add(marker);
+        print(barrierMarkers);
+      } else {
+        print(
+            "Invalid coordinates for location ${location['관광지번호']}: ${location['위도']}, ${location['경도']}");
       }
+    }
 
-
-      // Update the markers list in the state and refresh the UI
-      setState(() {
-        markers = Set.of(barrierMarkers);
-      });
-
+    // Update the markers list in the state and refresh the UI
+    setState(() {
+      markers = Set.of(barrierMarkers);
+    });
     } else {
       // Handle error response
       print('Failed to fetch barrier locations: ${response.statusCode}');
@@ -88,11 +87,8 @@ class _tourTagsPageState extends State<tourTagsPage> {
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
-
-
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -195,64 +191,11 @@ class _tourTagsPageState extends State<tourTagsPage> {
                             Container(
                               margin: EdgeInsets.only(right: 8.0),
                               child: Text(
-                                "주변 베리어",
+                                "주변 관광지",
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 150.0),
-                            Container(
-                              width: 75,
-                              margin: EdgeInsets.only(right: 8.0),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              child: PopupMenuButton<String>(
-                                icon: Row(
-                                  children: [
-                                    Text(
-                                      '전체',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    value: "filter1",
-                                    child: ListTile(
-                                      title: Text("전체"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter2",
-                                    child: ListTile(
-                                      title: Text("턱"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter3",
-                                    child: ListTile(
-                                      title: Text("시설물"),
-                                    ),
-                                  ),
-                                ],
-                                onSelected: (String value) {
-                                  // 선택된 필터 처리 로직 작성
-                                },
                               ),
                             ),
                           ],
@@ -286,9 +229,9 @@ class _tourTagsPageState extends State<tourTagsPage> {
             Expanded(
               child: ListView.builder(
                 // ListView.builder로 변경
-                itemCount: barrierMarkers.length,
+                itemCount: interfaceData.length,
                 itemBuilder: (BuildContext context, int index) {
-                  Marker marker = barrierMarkers[index];
+                  // Marker marker = barrierMarkers[index];
                   return ListTile(
                     subtitle: Row(
                       children: [
@@ -304,7 +247,7 @@ class _tourTagsPageState extends State<tourTagsPage> {
                                 ),
                                 padding: EdgeInsets.all(4.0),
                                 child: Text(
-                                  "승인 완료",
+                                  interfaceData[index]['분류'],
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -313,84 +256,157 @@ class _tourTagsPageState extends State<tourTagsPage> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "단차",
+                                interfaceData[index]['관광지이름'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "부산광역시 사상구 주례동 88-7",
+                                interfaceData[index]['주소'],
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),
                               ),
                               SizedBox(height: 8.0),
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    padding: EdgeInsets.all(4.0),
-                                    child: Text(
-                                      "#단차",
-                                      style: TextStyle(
-                                        color: Colors.black,
+                              Text(
+                                interfaceData[index]['문의번호'],
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              SizedBox(
+                                width: 350,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius:
+                                            BorderRadius.circular(4.0),
+                                      ),
+                                      padding: EdgeInsets.all(4.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.local_parking,
+                                            color:
+                                                Color.fromARGB(255, 1, 138, 1),
+                                            size: 16.0,
+                                          ),
+                                          if (interfaceData[index]['주차여부'] ==
+                                              "1")
+                                            Text(
+                                              "주차 가능",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                          else
+                                            Text(
+                                              "주차 불가능",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          // Text(
+                                          //   interfaceData[index]['주차여부'],
+                                          //   style: TextStyle(
+                                          //     color: Colors.black,
+                                          //   ),
+                                          // ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    padding: EdgeInsets.all(4.0),
-                                    child: Text(
-                                      "#휠체어 이용자",
-                                      style: TextStyle(
-                                        color: Colors.black,
+                                    SizedBox(width: 8.0),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius:
+                                            BorderRadius.circular(4.0),
+                                      ),
+                                      padding: EdgeInsets.all(4.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.wheelchair_pickup,
+                                            color:
+                                                Color.fromARGB(255, 1, 138, 1),
+                                            size: 16.0,
+                                          ),
+                                          if (interfaceData[index]['휠체어대여'] ==
+                                              "1")
+                                            Text(
+                                              "휠체어 대여가능",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                          else
+                                            Text(
+                                              "대여 불가능",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    padding: EdgeInsets.all(4.0),
-                                    child: Text(
-                                      "#시각 장애인",
-                                      style: TextStyle(
-                                        color: Colors.black,
+                                    SizedBox(width: 8.0),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius:
+                                            BorderRadius.circular(4.0),
+                                      ),
+                                      padding: EdgeInsets.all(4.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.elevator_outlined,
+                                            color:
+                                                Color.fromARGB(255, 1, 138, 1),
+                                            size: 16.0,
+                                          ),
+                                          if (interfaceData[index]['엘리베이터'] ==
+                                              "1")
+                                            Text(
+                                              "엘리베이터 있음",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                          else
+                                            Text(
+                                              "엘리베이터 없음",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        Container(
-                          width: 80.0,
-                          height: 80.0,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.0,
-                            ),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          // Add your image widget here
-                        ),
-
+                        // Container(
+                        //   width: 80.0,
+                        //   height: 80.0,
+                        //   decoration: BoxDecoration(
+                        //     border: Border.all(
+                        //       color: Colors.grey,
+                        //       width: 1.0,
+                        //     ),
+                        //     borderRadius: BorderRadius.circular(4.0),
+                        //   ),
+                        //   // Add your image widget here
+                        // ),
                       ],
-
                     ),
-
                   );
                 },
               ),
@@ -405,6 +421,3 @@ class _tourTagsPageState extends State<tourTagsPage> {
     );
   }
 }
-
-
-

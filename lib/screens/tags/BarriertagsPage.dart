@@ -4,8 +4,6 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:typed_data';
-
 
 class BarrierTagsPage extends StatefulWidget {
   @override
@@ -53,8 +51,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
         String barrierName = location['유형'] ?? '';
         String barrierAddress = location['주소'] ?? '';
         String barrierDetailedAddress = location['상세주소'] ?? ''; // '상세주소' 필드가 null인 경우 빈 문자열 처리
-        String barrierPhoto = location['사진'];
-        Uint8List decodedImage = base64Decode(barrierPhoto); // blob 데이터를 Uint8List로 변환
+        // String barrierPhoto = location['사진'] ?? '';
         String barrierBypass = location['우회여부']?.toString() ?? "0";
 
 
@@ -62,7 +59,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
           '유형': barrierName,
           '주소': barrierAddress,
           '상세주소': barrierDetailedAddress,
-          // '사진': barrierPhotoString,
+          // '사진': barrierPhoto,
           '우회여부': barrierBypass ,
         };
 
@@ -74,7 +71,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
           Marker marker = Marker(
             markerId: location['번호'].toString(),
             position: LatLng(latitude, longitude),
-            iconTintColor: Colors.blue,
+            iconTintColor: Colors.grey,
             // Add other properties of the marker if necessary
           );
           barrierMarkers.add(marker);
@@ -241,47 +238,6 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                                 ),
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
-                              child: PopupMenuButton<String>(
-                                icon: Row(
-                                  children: [
-                                    Text(
-                                      '전체',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    value: "filter1",
-                                    child: ListTile(
-                                      title: Text("전체"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter2",
-                                    child: ListTile(
-                                      title: Text("턱"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter3",
-                                    child: ListTile(
-                                      title: Text("시설물"),
-                                    ),
-                                  ),
-                                ],
-                                onSelected: (String value) {
-                                  // 선택된 필터 처리 로직 작성
-                                },
-                              ),
                             ),
                           ],
                         ),
@@ -320,8 +276,7 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                   String barrierType = location['유형'];
                   String barrierAddress = location['주소'];
                   String barrierDetailedAddress = location['상세주소'];
-                  String barrierPhoto = location['사진'];
-                  Uint8List decodedImage = base64Decode(barrierPhoto);
+                  // String barrierPhoto = location['사진'];
                   String barrierBypass = location['우회여부'] ?? "0";
 
 
@@ -429,21 +384,15 @@ class _BarrierTagsPageState extends State<BarrierTagsPage> {
                             ),
                             borderRadius: BorderRadius.circular(4.0),
                           ),
-                          child: barrierPhoto.isNotEmpty
-                              ? Image.memory(
-                            decodedImage,
+                          child: Image.asset(
+                            'assets/icons/tug.jpg', // Check if barrierPhoto is not null before using it
                             fit: BoxFit.cover,
-                          )
-                              : Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey,
+                            // color: Colors.grey, // Optional: Apply a color to the image if it's not available
                           ),
+
                         ),
-
                       ],
-
                     ),
-
                   );
                 },
               ),

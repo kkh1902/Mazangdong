@@ -4,6 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dong/settings.dart' as settings;
 
 class wcTagsPage extends StatefulWidget {
   @override
@@ -11,34 +12,39 @@ class wcTagsPage extends StatefulWidget {
 }
 
 class _wcTagsPageState extends State<wcTagsPage> {
+  String URL = settings.settings().URL;
   NaverMapController? _controller;
   BottomDrawerController controller = BottomDrawerController();
   List<Marker> barrierMarkers = [];
   Set<Marker> markers = {};
   bool isDrawerOpen = false;
+  List<Map<String, dynamic>> interfaceData = [];
+
+  CameraPosition? _initialCameraPosition;
 
   @override
   void initState() {
     super.initState();
     getCurrentLocation();
     fetchBarrierLocations();
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       controller.open();
     });
   }
 
   void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    final response = await http.get(Uri.parse('$URL/restRoom'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
-      print('ssss');
-      print(barrierData[0]);
-      print("barielength");
-      print(barrierData[0].length);
+      // print('ssss');
+      // print(barrierData[0]);
+      // print("barielength");
+      // print(barrierData[0].length);
 
       // Create the markers based on the data
       for (int i = 0; i < barrierData[0].length; i++) {
         Map<String, dynamic> location = barrierData[0][i];
+        interfaceData.add(barrierData[0][i]);
         double? latitude = double.tryParse(location['위도']);
         double? longitude = double.tryParse(location['경도']);
 
@@ -50,18 +56,17 @@ class _wcTagsPageState extends State<wcTagsPage> {
             // Add other properties of the marker if necessary
           );
           barrierMarkers.add(marker);
-          print(barrierMarkers);
+          // print(barrierMarkers);
         } else {
-          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+          print(
+              "Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
         }
       }
-
 
       // Update the markers list in the state and refresh the UI
       setState(() {
         markers = Set.of(barrierMarkers);
       });
-
     } else {
       // Handle error response
       print('Failed to fetch barrier locations: ${response.statusCode}');
@@ -87,11 +92,8 @@ class _wcTagsPageState extends State<wcTagsPage> {
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
-
-
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,13 +150,7 @@ class _wcTagsPageState extends State<wcTagsPage> {
                       _controller = controller;
                     });
                   },
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      37.5665,
-                      126.9780,
-                    ),
-                    zoom: 17.0,
-                  ),
+                  initialCameraPosition: _initialCameraPosition,
                   markers: List<Marker>.from(barrierMarkers),
                 ),
               ),
@@ -194,64 +190,11 @@ class _wcTagsPageState extends State<wcTagsPage> {
                             Container(
                               margin: EdgeInsets.only(right: 8.0),
                               child: Text(
-                                "주변 베리어",
+                                "주변 화장실",
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 150.0),
-                            Container(
-                              width: 75,
-                              margin: EdgeInsets.only(right: 8.0),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              child: PopupMenuButton<String>(
-                                icon: Row(
-                                  children: [
-                                    Text(
-                                      '전체',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    value: "filter1",
-                                    child: ListTile(
-                                      title: Text("전체"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter2",
-                                    child: ListTile(
-                                      title: Text("턱"),
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "filter3",
-                                    child: ListTile(
-                                      title: Text("시설물"),
-                                    ),
-                                  ),
-                                ],
-                                onSelected: (String value) {
-                                  // 선택된 필터 처리 로직 작성
-                                },
                               ),
                             ),
                           ],
@@ -303,7 +246,8 @@ class _wcTagsPageState extends State<wcTagsPage> {
                                 ),
                                 padding: EdgeInsets.all(4.0),
                                 child: Text(
-                                  "승인 완료",
+                                  // "dd",
+                                  interfaceData[index]['구분'],
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -312,14 +256,16 @@ class _wcTagsPageState extends State<wcTagsPage> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "단차",
+                                // "d",
+                                interfaceData[index]['화장실명'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                "부산광역시 사상구 주례동 88-7",
+                                // "dd",
+                                interfaceData[index]['소재지도로명주소'],
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),
@@ -329,43 +275,51 @@ class _wcTagsPageState extends State<wcTagsPage> {
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey,
+                                      color: Colors.grey[300],
                                       borderRadius: BorderRadius.circular(4.0),
                                     ),
                                     padding: EdgeInsets.all(4.0),
-                                    child: Text(
-                                      "#단차",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.man_2_outlined,
+                                          color:
+                                              Color.fromARGB(255, 93, 96, 255),
+                                          size: 16.0,
+                                        ),
+                                        Text(
+                                          interfaceData[index]['남성용장애인대변기수'] +
+                                              "개",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   SizedBox(width: 8.0),
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey,
+                                      color: Colors.grey[300],
                                       borderRadius: BorderRadius.circular(4.0),
                                     ),
                                     padding: EdgeInsets.all(4.0),
-                                    child: Text(
-                                      "#휠체어 이용자",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    padding: EdgeInsets.all(4.0),
-                                    child: Text(
-                                      "#시각 장애인",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.woman_2_outlined,
+                                          color:
+                                              Color.fromARGB(255, 255, 69, 69),
+                                          size: 16.0,
+                                        ),
+                                        Text(
+                                          interfaceData[index]['여성용장애인대변기수'] +
+                                              "개",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -383,13 +337,15 @@ class _wcTagsPageState extends State<wcTagsPage> {
                             ),
                             borderRadius: BorderRadius.circular(4.0),
                           ),
-                          // Add your image widget here
+                          child: Image.asset(
+                            'assets/icons/wc.jpeg', // Check if barrierPhoto is not null before using it
+                            fit: BoxFit.cover,
+                            // color: Colors.grey, // Optional: Apply a color to the image if it's not available
+                          ),
+
                         ),
-
                       ],
-
                     ),
-
                   );
                 },
               ),
@@ -404,5 +360,3 @@ class _wcTagsPageState extends State<wcTagsPage> {
     );
   }
 }
-
-

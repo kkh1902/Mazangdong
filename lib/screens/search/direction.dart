@@ -53,17 +53,18 @@ class _DirectionPageState extends State<DirectionPage> {
     }
 
     print('시작');
-    final url = Uri.parse('https://majangdong.run.goorm.site/findR');
+    final url = Uri.parse('https://majangdong.run.goorm.site/findDirectionR');
 
     if (position != null) {
       final originLatitude = position.latitude;
       final originLongitude = position.longitude;
 
       final payload = {
-        // "origin": [originLatitude, originLongitude],
-        "origin": [37.5497, 127.1284],
-        "destination": [37.5457, 127.1019],
-        "type": 1
+        // "origin": [37.5454, 126.9523],
+        "origin": [originLatitude, originLongitude],
+        // "destination": [37.5476, 126.9539],
+        "destination": [35.1511, 129.012], //냉정역
+        "type": "턱"
       };
 
       final response = await http.post(
