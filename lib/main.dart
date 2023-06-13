@@ -18,11 +18,10 @@ import 'package:dong/screens/search/searchresult.dart';
 import 'package:dong/screens/search/direction.dart';
 import 'package:dong/screens/search/directionresult.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart' show LatLng, CameraUpdate, Marker;
+import 'package:flutter_naver_map/flutter_naver_map.dart'
+    show LatLng, CameraUpdate, Marker;
 import 'package:geolocator/geolocator.dart';
 import 'package:dong/models/barrierdata.dart';
-
-
 
 void main() {
   runApp(MyApp());
@@ -30,7 +29,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   var Barrier = BarrierData();
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +79,6 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
     Icons.card_travel,
   ];
 
-
-
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -115,12 +111,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
       Navigator.pushNamed(context, '/wctags');
     } else if (tag == '관광지') {
       Navigator.pushNamed(context, '/tourtags');
-    } else {
-    }
+    } else {}
   }
-
-
-
 
   void getCurrentLocation() async {
     Position? position;
@@ -141,16 +133,12 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
       final target = LatLng(latitude, longitude);
       final cameraUpdate = CameraUpdate.scrollTo(target);
       _controller?.moveCamera(cameraUpdate);
-
-
     }
   }
 
-
-
-
   void fetchBarrierLocations() async {
-    final response = await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
+    final response =
+        await http.get(Uri.parse('https://majangdong.run.goorm.site/barrier'));
     if (response.statusCode == 200) {
       final barrierData = json.decode(response.body);
       print('ssss');
@@ -174,25 +162,20 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
           barrierMarkers.add(marker);
           print(barrierMarkers);
         } else {
-          print("Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
+          print(
+              "Invalid coordinates for location ${location['번호']}: ${location['위도']}, ${location['경도']}");
         }
       }
-
 
       // Update the markers list in the state and refresh the UI
       setState(() {
         markers = barrierMarkers;
       });
-
     } else {
       // Handle error response
       print('Failed to fetch barrier locations: ${response.statusCode}');
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -239,8 +222,8 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
-                          backgroundColor: Colors
-                              .blue, // Set the background color to yellow
+                          backgroundColor:
+                              Colors.blue, // Set the background color to yellow
                           foregroundColor: Colors
                               .white, // Set the text and icon color to black
                         ),
@@ -292,7 +275,7 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0, bottom: 40.0),
                 child: FloatingActionButton(
-                  onPressed:getCurrentLocation, // 현재 위치로 이동하는 함수 호출
+                  onPressed: getCurrentLocation, // 현재 위치로 이동하는 함수 호출
                   child: Icon(Icons.my_location),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
@@ -360,7 +343,6 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                       }),
                     ),
                   ),
-
                 ],
               ),
             ),
