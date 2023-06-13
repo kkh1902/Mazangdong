@@ -18,6 +18,8 @@ import 'package:dong/screens/search/search.dart';
 import 'package:dong/screens/search/searchresult.dart';
 import 'package:dong/screens/search/direction.dart';
 import 'package:dong/screens/search/directionresult.dart';
+import 'package:dong/screens/search/keywordSearch.dart';
+import 'package:dong/screens/search/direct.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'
     show LatLng, CameraUpdate, Marker;
@@ -33,6 +35,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Naver Map',
@@ -42,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/barrier': (context) => BarrierInfoPage(),
         '/barrierpicture': (context) => BarrierpicturePage(barrier: Barrier),
         '/barriercategory': (context) => BarriercategoryPage(barrier: Barrier),
+        '/keywordsearch': (context) => KeywordSearchPage(),
         '/barrierperson': (context) => BarrierwatchPage(),
         '/barriertags': (context) => BarrierTagsPage(),
         '/wctags': (context) => wcTagsPage(),
@@ -51,6 +55,7 @@ class MyApp extends StatelessWidget {
         '/searchresult': (context) => SearchResultPage(),
         '/direction': (context) => DirectionPage(),
         '/directionresult': (context) => DirectionResultPage(),
+        '/direct': (context) => DirectPage(),
         '/myreport': (context) => MyReportPage(),
         '/myhistory': (context) => MyHistoryPage(),
         '/myhistorydetail': (context) => MyHistoryDetailPage(),

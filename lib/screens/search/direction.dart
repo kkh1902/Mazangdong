@@ -53,7 +53,7 @@ class _DirectionPageState extends State<DirectionPage> {
     }
 
     print('시작');
-    final url = Uri.parse('https://majangdong.run.goorm.site/findDirectionR');
+    final url = Uri.parse('https://majangdong.run.goorm.site/findRR');
 
     if (position != null) {
       final originLatitude = position.latitude;
@@ -69,8 +69,9 @@ class _DirectionPageState extends State<DirectionPage> {
 
       {
         "origin": [originLatitude, originLongitude],
+        // "origin": [35.1467, 129.0093],
         "destination": [35.1511, 129.012], //냉정역
-        "type": "턱"
+        "type": 1
       };
 
       final response = await http.post(
@@ -86,28 +87,39 @@ class _DirectionPageState extends State<DirectionPage> {
         final data = json.decode(response.body);
         final tripCoordinates = data;
         print('skkks');
-        print(data[0]);
+        print(data);
 
-        final startLatitude = data[0][1][0];
-        final startLongitude = data[0][1][1];
+        final startLatitude = data[0][1][1];
+        final startLongitude = data[0][1][0];
         print('ssss');
         print(data[0]);
+        print('start');
+        print(startLatitude);
+        print('len');
+        print(tripCoordinates[0].length);
+        print('zzzz');
+        print(tripCoordinates[0][2]
+        );
+
 
 
 
         List<double> destinationLatitudes = [];
         List<double> destinationLongitudes = [];
 
-        for (var i = 0; i < tripCoordinates.length; i++) {
-          final coordinate = tripCoordinates[i][1];
-          final destinationLatitude = double.parse(coordinate[1].toString());
-          final destinationLongitude = double.parse(coordinate[0].toString());
+        for (var i = 0; i < tripCoordinates[0].length; i++) {
+          if (i.isOdd) { // 홀수 번째만 추가
+            final coordinate = tripCoordinates[0][i]; // tripCoordinates[0]으로 수정
+            final destinationLatitude = double.parse(coordinate[1].toString());
+            final destinationLongitude = double.parse(coordinate[0].toString());
 
-          destinationLatitudes.add(destinationLatitude);
-          destinationLongitudes.add(destinationLongitude);
+            destinationLatitudes.add(destinationLatitude);
+            destinationLongitudes.add(destinationLongitude);
 
-          polylineCoordinates.add(LatLng(destinationLatitude, destinationLongitude));
+            polylineCoordinates.add(LatLng(destinationLatitude, destinationLongitude));
+          }
         }
+
 
         setState(() {
           startLocation = "부산광역시 사상구 주례로 47";

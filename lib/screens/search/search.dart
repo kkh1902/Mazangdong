@@ -33,6 +33,16 @@ class SearchPage extends StatelessWidget {
     Navigator.pushNamed(context, '/searchresult', arguments: coordinates);
   }
 
+  void keywordSearchResultPage(BuildContext context, String searchItem) {
+    // 검색 결과 페이지로 전달할 데이터 처리
+    final coordinates = {
+      "searchItem" : searchItem,
+    };
+
+    Navigator.pushNamed(context, '/keywordsearch', arguments: coordinates);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +54,7 @@ class SearchPage extends StatelessWidget {
         title: TextField(
           textInputAction: TextInputAction.go,
           onSubmitted: (value) {
-            Navigator.pushNamed(context, '/searchresult');
+            keywordSearchResultPage(context, value);
           },
           decoration: InputDecoration(
             hintText: '어디로 갈까요?',
