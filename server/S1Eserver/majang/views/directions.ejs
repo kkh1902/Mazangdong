@@ -1,0 +1,54 @@
+<!-- views/directions.ejs -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Directions API Map Example</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            // Express 앱에서 전달한 경로 정보 사용
+            const origin = '<%= origin %>';
+            const destination = '<%= destination %>';
+            const apiKey = '<%= apiKey %>';
+
+            // 지도 생성
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 37.5045, lng: 127.049 },
+                zoom: 14
+            });
+
+            // DirectionsService 및 DirectionsRenderer 객체 생성
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({ map });
+
+            // DirectionsService로 경로 요청
+            directionsService.route(
+                {
+                    origin,
+                    destination,
+                    travelMode: 'TRANSIT' // 대중교통 모드 설정
+                },
+                function (response, status) {
+                    if (status === 'OK') {
+                        // DirectionsRenderer를 사용하여 경로 표시
+                        directionsRenderer.setDirections(response);
+                    } else {
+                        window.alert('경로를 가져오는 동안 오류가 발생했습니다. 상태: ' + status);
+                    }
+                }
+            );
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= apiKey %>&callback=initMap" async defer></script>
+</body>
+</html>

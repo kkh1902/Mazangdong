@@ -1,0 +1,29 @@
+{
+  "name": "latlng",
+  "version": "1.0.0",
+  "description": "Parse out a longitude and latitude from a value that is either a string or object.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/tape/bin/tape test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jam3/latlng.git"
+  },
+  "keywords": [
+    "parse",
+    "longitude",
+    "latitude",
+    "lat",
+    "long"
+  ],
+  "author": "Mikko Haapoja <me@mikkoh.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jam3/latlng/issues"
+  },
+  "homepage": "https://github.com/Jam3/latlng",
+  "devDependencies": {
+    "tape": "^3.0.1"
+  }
+}
