@@ -201,18 +201,6 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 120.0),
-                            Container(
-                              width: 75,
-                              margin: EdgeInsets.only(right: 8.0),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                            ),
                           ],
                         ),
                       ],
@@ -221,10 +209,7 @@ class _wheelenergyTagsPageState extends State<wheelenergyTagsPage> {
                 ],
               ),
             ),
-            Divider(
-              thickness: 4.0,
-              color: Colors.grey[100],
-            ),
+
             Container(
               padding: EdgeInsets.fromLTRB(40.0, 0, 20.0, 0),
               child: Row(
